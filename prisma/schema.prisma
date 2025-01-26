@@ -38,6 +38,7 @@ model User {
   Membership          Membership[]
   premium             Boolean      @default(false)
   SubscriptionEndDate DateTime
+  created_at          DateTime     @default(now())
 }
 
 model Post {
