@@ -188,7 +188,7 @@ export default function Post({ ...post }: PostProps) {
         <div className="flex gap-3 items-center cursor-pointer">
           <button onClick={likeHandler}>
             {postState.Like.length !== 0 ? (
-              <div className="flex gap-1 items-center cursor-pointer">
+              <div className="flex gap-1 items-center cursor-pointer text-pink-500">
                 <FaHeart />
                 <p>{postState._count.Like}</p>
               </div>
@@ -201,7 +201,7 @@ export default function Post({ ...post }: PostProps) {
           </button>
           <button onClick={saveHandler}>
             {postState.Save.length !== 0 ? (
-              <div className="flex gap-1 items-center cursor-pointer">
+              <div className="flex gap-1 items-center text-yellow-500 cursor-pointer">
                 <IoBookmark />
                 <p>{postState._count.Save}</p>
               </div>
@@ -214,7 +214,7 @@ export default function Post({ ...post }: PostProps) {
           </button>
         </div>
         <div>
-          <IoMdShareAlt size={30} />
+          <IoMdShareAlt size={26} />
         </div>
       </div>
     </div>

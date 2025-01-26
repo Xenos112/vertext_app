@@ -23,6 +23,7 @@ export async function register(userData: UserData) {
       email: userData.email,
       user_name: userData.userName,
       password: hashedPassword,
+      SubscriptionEndDate: new Date(),
     },
   });
   const token = generateToken(user.id);

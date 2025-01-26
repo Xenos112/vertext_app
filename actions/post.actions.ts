@@ -1,8 +1,10 @@
 "use server";
 import { ERRORS } from "@/constants";
+import { CreatePost } from "@/types";
 import prisma from "@/utils/prisma";
 import validateUser from "@/utils/validate-user";
 import { cookies } from "next/headers";
+import fs from "fs";
 
 export const like = async (postId: string) => {
   const cookieStore = await cookies();
@@ -118,4 +120,30 @@ export const deletePost = async (postId: string) => {
   });
 
   return { message: "deteled" };
+};
+
+export const createPost = async ({ files, content }: CreatePost) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+  const user = await validateUser(token);
+  if (!user) return ERRORS.NOT_AUTHENTICATED;
+
+  const urls: string[] = [];
+  if (files) {
+    for (const file of files) {
+      const filePath = `./public/uploads/${file.name}`;
+      const fileBytes = await file.arrayBuffer();
+      fs.writeFileSync(filePath, Buffer.from(fileBytes));
+      urls.push(filePath);
+      console.log(urls);
+    }
+  }
+  const post = await prisma.post.create({
+    data: {
+      content,
+      userId: user.id,
+      medias: urls,
+    },
+  });
+  return post;
 };
