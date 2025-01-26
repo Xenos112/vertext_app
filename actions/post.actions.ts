@@ -5,6 +5,7 @@ import prisma from "@/utils/prisma";
 import validateUser from "@/utils/validate-user";
 import { cookies } from "next/headers";
 import fs from "fs";
+import { createPostSchemaValidator } from "@/validators/post.validators";
 
 export const like = async (postId: string) => {
   const cookieStore = await cookies();
@@ -122,7 +123,14 @@ export const deletePost = async (postId: string) => {
   return { message: "deteled" };
 };
 
-export const createPost = async ({ files, content }: CreatePost) => {
+export const createPost = async (data: CreatePost) => {
+  const {
+    success,
+    error,
+    data: parsed,
+  } = createPostSchemaValidator.safeParse(data);
+  if (!success) return { message: error };
+  const { content, files } = parsed;
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
   const user = await validateUser(token);
@@ -131,11 +139,12 @@ export const createPost = async ({ files, content }: CreatePost) => {
   const urls: string[] = [];
   if (files) {
     for (const file of files) {
-      const filePath = `./public/uploads/${file.name}`;
+      const fileName = file.name;
+      const filePath = `./public/uploads/${fileName}`;
       const fileBytes = await file.arrayBuffer();
       fs.writeFileSync(filePath, Buffer.from(fileBytes));
-      urls.push(filePath);
-      console.log(urls);
+      const url = `http://localhost:3000/uploads/${fileName}`
+      urls.push(url);
     }
   }
   const post = await prisma.post.create({

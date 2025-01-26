@@ -121,6 +121,9 @@ export default function Post({ ...post }: PostProps) {
                     </Avatar>
                     <div>
                       <p>{postState.Author.user_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {formatDate(new Date())}
+                      </p>
                     </div>
                   </div>
                   <div>
@@ -183,6 +186,9 @@ export default function Post({ ...post }: PostProps) {
       </div>
       <div className="mt-3 ml-[50px]">
         <p className="text-lg">{postState.content}</p>
+        {postState.medias.length !== 0 && (
+          <img src={postState.medias[0]} alt="" />
+        )}
       </div>
       <div className="flex justify-between ml-[50px] mt-3">
         <div className="flex gap-3 items-center cursor-pointer">
