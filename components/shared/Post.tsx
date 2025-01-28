@@ -32,6 +32,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { useToast } from "@/hooks/use-toast";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { IoMdShareAlt } from "react-icons/io";
+import { IoCopy } from "react-icons/io5";
 
 const isImage = /\.*(.png|.jpg|.jpeg|.webp)/i;
 
@@ -150,11 +151,20 @@ export default function Post({ ...post }: PostProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 *:text-base">
             <DropdownMenuItem>
-              Copy Link
+              Copy URL
               <DropdownMenuShortcut>
                 <IoMdShareAlt size={20} />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
+            {postState.content && (
+              <DropdownMenuItem>
+                Copy Text
+                <DropdownMenuShortcut>
+                  <IoCopy size={16} />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={likeHandler}>
               Like
               <DropdownMenuShortcut>
