@@ -132,7 +132,7 @@ export default function LeftBar() {
             <Avatar>
               <AvatarImage src={user.image_url!} />
               <AvatarFallback>
-                {user.user_name.slice(0, 2).toUpperCase()}
+                {user?.user_name?.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </>

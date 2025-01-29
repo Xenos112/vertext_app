@@ -19,6 +19,7 @@ export const GET = async () => {
         select: {
           Like: true,
           Save: true,
+          Comment: true,
         },
       },
       Like: {

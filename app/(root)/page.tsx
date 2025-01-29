@@ -9,13 +9,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -26,7 +23,7 @@ import { createPost } from "@/actions/post.actions";
 
 type FeedResponse = APIResponse<ReturnType<typeof GET>>;
 
-const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 export default function Home() {
   const [posts, setPosts] = useState<FeedResponse>([]);
@@ -75,7 +72,7 @@ export default function Home() {
               <Avatar>
                 <AvatarImage src={user.image_url!} />
                 <AvatarFallback>
-                  {formatUserNameForImage(user.user_name)}
+                  {formatUserNameForImage(user?.user_name)}
                 </AvatarFallback>
               </Avatar>
               <Input />

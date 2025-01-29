@@ -143,7 +143,7 @@ export const createPost = async (data: CreatePost) => {
       const filePath = `./public/uploads/${fileName}`;
       const fileBytes = await file.arrayBuffer();
       fs.writeFileSync(filePath, Buffer.from(fileBytes));
-      const url = `http://localhost:3000/uploads/${fileName}`
+      const url = `http://localhost:3000/uploads/${fileName}`;
       urls.push(url);
     }
   }
@@ -155,4 +155,16 @@ export const createPost = async (data: CreatePost) => {
     },
   });
   return post;
+};
+
+const sharePostHandler = async (postId: string) => {
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+  });
+  if (!post) return { message: "Post Not Found" };
+  const updatedPost = await prisma.post.update({
+    where: { id: postId },
+    data: { share_number: post.share_number + 1 },
+  });
+  return updatedPost;
 };

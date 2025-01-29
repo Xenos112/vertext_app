@@ -47,6 +47,7 @@ model Post {
   medias          String[]
   likes_number    Int        @default(0)
   saves_number    Int        @default(0)
+  share_number    Int        @default(0)
   comments_number Int        @default(0)
   Author          User       @relation(fields: [userId], references: [id])
   userId          String

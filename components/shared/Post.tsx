@@ -1,4 +1,5 @@
 import { type APIResponse } from "@/types/api";
+import { FaRegComment, FaRegHeart, FaHeart } from "react-icons/fa";
 import { GET } from "@/app/api/feed/route";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import formatDate from "@/utils/format-date";
@@ -8,7 +9,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { useState } from "react";
 import {
   deletePost,
@@ -18,7 +18,7 @@ import {
   unsave,
 } from "@/actions/post.actions";
 import useUserStore from "@/store/user";
-import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
+import { IoBookmark, IoBookmarkOutline, IoCopy } from "react-icons/io5";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,11 +30,9 @@ import {
 import { Button } from "../ui/button";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useToast } from "@/hooks/use-toast";
-import { MdOutlineDeleteOutline } from "react-icons/md";
+import { MdOutlineDeleteOutline, MdVerified } from "react-icons/md";
 import { IoMdShareAlt } from "react-icons/io";
-import { IoCopy } from "react-icons/io5";
-
-const isImage = /\.*(.png|.jpg|.jpeg|.webp)/i;
+import parsePostContent from "@/utils/parse-post-content";
 
 type PostProps = APIResponse<ReturnType<typeof GET>>[number];
 
@@ -121,21 +119,31 @@ export default function Post({ ...post }: PostProps) {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p>{postState.Author.user_name}</p>
+                      <div className="flex gap-1 items-center">
+                        <p>{postState.Author.user_name}</p>
+                        {postState.Author.premium && <MdVerified />}
+                        <p className="text-muted-foreground">
+                          @{postState.Author.tag}
+                        </p>
+                      </div>
                       <p className="text-sm text-muted-foreground">
                         {formatDate(new Date())}
                       </p>
                     </div>
                   </div>
-                  <div>
+                  {postState.Author.bio && (
                     <p className="text-lg">{postState.Author.bio}</p>
-                  </div>
+                  )}
                 </div>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <div className="flex flex-col">
-            <p>{postState.Author.user_name}</p>
+            <div className="flex gap-1 items-center">
+              <p>{postState.Author.user_name}</p>
+              {postState.Author.premium && <MdVerified />}
+              <p className="text-muted-foreground">@{postState.Author.tag}</p>
+            </div>
             <div className="flex gap-2 items-center">
               <time className="text-sm text-muted-foreground">
                 {formatDate(postState.created_at.toString())}
@@ -195,13 +203,20 @@ export default function Post({ ...post }: PostProps) {
         </DropdownMenu>
       </div>
       <div className="mt-3 ml-[50px]">
-        <p className="text-lg">{postState.content}</p>
+        {postState.content && (
+          <p
+            className="text-lg"
+            dangerouslySetInnerHTML={{
+              __html: parsePostContent(postState.content)!,
+            }}
+          />
+        )}
         {postState.medias.length !== 0 && (
           <img src={postState.medias[0]} alt="" />
         )}
       </div>
       <div className="flex justify-between ml-[50px] mt-3">
-        <div className="flex gap-3 items-center cursor-pointer">
+        <div className="flex items-center gap-4 w-full cursor-pointer">
           <button onClick={likeHandler}>
             {postState.Like.length !== 0 ? (
               <div className="flex gap-1 items-center cursor-pointer text-pink-500">
@@ -228,9 +243,15 @@ export default function Post({ ...post }: PostProps) {
               </div>
             )}
           </button>
-        </div>
-        <div>
-          <IoMdShareAlt size={26} />
+          {/* TODO: make it pop a menu to copy a url */}
+          <button className="flex gap-1 items-center">
+            <IoMdShareAlt />
+            <p>{postState.share_number ?? 0}</p>
+          </button>
+          <button className="flex gap-1 items-center">
+            <FaRegComment />
+            <p>{postState._count.Comment ?? 0}</p>
+          </button>
         </div>
       </div>
     </div>
