@@ -6,6 +6,7 @@ import validateUser from "@/utils/validate-user";
 import { cookies } from "next/headers";
 import fs from "fs";
 import { createPostSchemaValidator } from "@/validators/post.validators";
+import { v4 as uuid } from "uuid";
 
 export const like = async (postId: string) => {
   try {
@@ -35,71 +36,79 @@ export const like = async (postId: string) => {
 };
 
 export const dislike = async (postId: string) => {
- try {
-   const cookieStore = await cookies();
-   const token = cookieStore.get("auth_token")?.value;
-   const user = await validateUser(token);
-   if (!user) return ERRORS.NOT_AUTHENTICATED;
-   const post = await prisma.post.findUnique({ where: { id: postId } });
-   if (!post) return ERRORS.POST_NOT_FOUND;
-   const isLiked = await prisma.like.findFirst({
-     where: { postId: postId, userId: user.id },
-   });
-   if (isLiked) {
-     await prisma.like.delete({
-       where: {
-         postId_userId: { postId: isLiked.postId, userId: isLiked.userId },
-       },
-     });
-     return { message: "Disliked" };
-   }
-   return { message: "Already disliked" };
- } catch (error) {
-    return {error}
- }
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) return ERRORS.NOT_AUTHENTICATED;
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) return ERRORS.POST_NOT_FOUND;
+    const isLiked = await prisma.like.findFirst({
+      where: { postId: postId, userId: user.id },
+    });
+    if (isLiked) {
+      await prisma.like.delete({
+        where: {
+          postId_userId: { postId: isLiked.postId, userId: isLiked.userId },
+        },
+      });
+      return { message: "Disliked" };
+    }
+    return { message: "Already disliked" };
+  } catch (error) {
+    return { error };
+  }
 };
 
 export const save = async (postId: string) => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-  const user = await validateUser(token);
-  if (!user) return ERRORS.POST_NOT_FOUND;
-  const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post) return ERRORS.POST_NOT_FOUND;
-  const isSaved = await prisma.save.findFirst({
-    where: { postId: postId, userId: user.id },
-  });
-  if (isSaved) {
-    return { saved: true };
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) return ERRORS.POST_NOT_FOUND;
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) return ERRORS.POST_NOT_FOUND;
+    const isSaved = await prisma.save.findFirst({
+      where: { postId: postId, userId: user.id },
+    });
+    if (isSaved) {
+      return { message: "Already Saved" };
+    }
+    await prisma.save.create({
+      data: {
+        postId: postId,
+        userId: user.id,
+      },
+    });
+    return { message: "Saved" };
+  } catch (error) {
+    return { error };
   }
-  await prisma.save.create({
-    data: {
-      postId: postId,
-      userId: user.id,
-    },
-  });
-  return { saved: true };
 };
 
 export const unsave = async (postId: string) => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-  const user = await validateUser(token);
-  if (!user) return ERRORS.POST_NOT_FOUND;
-  const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post) return ERRORS.POST_NOT_FOUND;
-  const isSaved = await prisma.save.findFirst({
-    where: { postId: postId, userId: user.id },
-  });
-  if (!isSaved) {
-    return { saved: false };
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) return ERRORS.POST_NOT_FOUND;
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) return ERRORS.POST_NOT_FOUND;
+    const isSaved = await prisma.save.findFirst({
+      where: { postId: postId, userId: user.id },
+    });
+    if (!isSaved) {
+      return { message: "Already Unsaved" };
+    }
+    await prisma.save.delete({
+      where: {
+        postId_userId: { postId: isSaved.postId, userId: isSaved.userId },
+      },
+    });
+    return { message: "UnSaved" };
+  } catch (error) {
+    return { error };
   }
-  await prisma.save.delete({
-    where: {
-      postId_userId: { postId: isSaved.postId, userId: isSaved.userId },
-    },
-  });
-  return { saved: false };
 };
 
 export const deletePost = async (postId: string) => {
@@ -147,7 +156,7 @@ export const createPost = async (data: CreatePost) => {
   const urls: string[] = [];
   if (files) {
     for (const file of files) {
-      const fileName = file.name;
+      const fileName = uuid();
       const filePath = `./public/uploads/${fileName}`;
       const fileBytes = await file.arrayBuffer();
       fs.writeFileSync(filePath, Buffer.from(fileBytes));
