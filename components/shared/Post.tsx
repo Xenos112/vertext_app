@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { useState } from "react";
 import {
   deletePost,
@@ -49,14 +50,34 @@ export default function Post({ ...post }: PostProps) {
         Like: [...prev.Like, { userId: user!.id }],
       }));
 
-      const res = await like(postState.id);
+      const data = await like(postState.id);
+      if ("error" in data) {
+        toast({
+          title: "Error",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: `You Have ${data.message} the Post`,
+        });
+      }
     } else {
       setPostState((prev) => ({
         ...prev,
         _count: { ...prev._count, Like: prev._count.Like - 1 },
         Like: [],
       }));
-      const res = await dislike(postState.id);
+      const data = await dislike(postState.id);
+      if ("error" in data)
+        toast({
+          title: "Error",
+        });
+      else
+        toast({
+          title: "Success",
+          description: `You Have ${data.message} the Post`,
+        });
     }
   };
 
@@ -94,6 +115,16 @@ export default function Post({ ...post }: PostProps) {
       const res = await unsave(postState.id);
     }
   };
+
+  const className = postState.medias.length === 1 ?
+    'grid-cols-1 grid-rows-1' :
+    postState.medias.length === 2 ?
+      'grid-cols-2 grid-rows-1' :
+      postState.medias.length === 3 ?
+        'grid-cols-3 grid-rows-1' :
+        postState.medias.length === 4 ?
+          'grid-cols-4 grid-rows-1' :
+          'grid-cols-5 grid-rows-1';
 
   return (
     <div>
@@ -212,7 +243,13 @@ export default function Post({ ...post }: PostProps) {
           />
         )}
         {postState.medias.length !== 0 && (
-          <img src={postState.medias[0]} alt="" />
+          <div className={`${className} grid gap-1`}>
+            {postState.medias.map((media, index) => (
+              <AspectRatio key={index} ratio={9 / 16}>
+                <img src={media} alt="" className="object-cover size-full" />
+              </AspectRatio>
+            ))}
+          </div>
         )}
       </div>
       <div className="flex justify-between ml-[50px] mt-3">
@@ -229,6 +266,10 @@ export default function Post({ ...post }: PostProps) {
                 <p>{postState._count.Like}</p>
               </div>
             )}
+          </button>
+          <button className="flex gap-1 items-center">
+            <FaRegComment />
+            <p>{postState._count.Comment ?? 0}</p>
           </button>
           <button onClick={saveHandler}>
             {postState.Save.length !== 0 ? (
@@ -247,10 +288,6 @@ export default function Post({ ...post }: PostProps) {
           <button className="flex gap-1 items-center">
             <IoMdShareAlt />
             <p>{postState.share_number ?? 0}</p>
-          </button>
-          <button className="flex gap-1 items-center">
-            <FaRegComment />
-            <p>{postState._count.Comment ?? 0}</p>
           </button>
         </div>
       </div>

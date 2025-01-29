@@ -8,47 +8,55 @@ import fs from "fs";
 import { createPostSchemaValidator } from "@/validators/post.validators";
 
 export const like = async (postId: string) => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-  const user = await validateUser(token);
-  if (!user) return ERRORS.NOT_AUTHENTICATED;
-  const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post) return ERRORS.POST_NOT_FOUND;
-  const isLiked = await prisma.like.findFirst({
-    where: { postId: postId, userId: user.id },
-  });
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) return ERRORS.NOT_AUTHENTICATED;
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) return ERRORS.POST_NOT_FOUND;
+    const isLiked = await prisma.like.findFirst({
+      where: { postId: postId, userId: user.id },
+    });
 
-  if (isLiked) {
-    return { liked: true };
+    if (isLiked) {
+      return { message: "already liked" };
+    }
+    await prisma.like.create({
+      data: {
+        postId: postId,
+        userId: user.id,
+      },
+    });
+    return { message: "liked" };
+  } catch (error) {
+    return { error };
   }
-  await prisma.like.create({
-    data: {
-      postId: postId,
-      userId: user.id,
-    },
-  });
-  return { liked: true };
 };
 
 export const dislike = async (postId: string) => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-  const user = await validateUser(token);
-  if (!user) return ERRORS.NOT_AUTHENTICATED;
-  const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post) return ERRORS.POST_NOT_FOUND;
-  const isLiked = await prisma.like.findFirst({
-    where: { postId: postId, userId: user.id },
-  });
-  if (isLiked) {
-    await prisma.like.delete({
-      where: {
-        postId_userId: { postId: isLiked.postId, userId: isLiked.userId },
-      },
-    });
-    return { liked: false };
-  }
-  return { liked: true };
+ try {
+   const cookieStore = await cookies();
+   const token = cookieStore.get("auth_token")?.value;
+   const user = await validateUser(token);
+   if (!user) return ERRORS.NOT_AUTHENTICATED;
+   const post = await prisma.post.findUnique({ where: { id: postId } });
+   if (!post) return ERRORS.POST_NOT_FOUND;
+   const isLiked = await prisma.like.findFirst({
+     where: { postId: postId, userId: user.id },
+   });
+   if (isLiked) {
+     await prisma.like.delete({
+       where: {
+         postId_userId: { postId: isLiked.postId, userId: isLiked.userId },
+       },
+     });
+     return { message: "Disliked" };
+   }
+   return { message: "Already disliked" };
+ } catch (error) {
+    return {error}
+ }
 };
 
 export const save = async (postId: string) => {
