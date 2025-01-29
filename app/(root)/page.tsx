@@ -75,7 +75,7 @@ export default function Home() {
                   {formatUserNameForImage(user?.user_name)}
                 </AvatarFallback>
               </Avatar>
-              <Input />
+              <Input placeholder='I Guess this is...' />
               <Button>Post</Button>
             </div>
           </DialogTrigger>
