@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useState } from "react";
 import {
   deletePost,
@@ -105,29 +105,51 @@ export default function Post({ ...post }: PostProps) {
         Save: [...prev.Save, { userId: user!.id }],
       }));
 
-      const res = await save(postState.id);
+      const data = await save(postState.id);
+      if ("error" in data)
+        toast({
+          title: "Error",
+          variant: "destructive",
+        });
+      else
+        toast({
+          title: "Success",
+          description: `The Post is ${data.message}`,
+        });
     } else {
       setPostState((prev) => ({
         ...prev,
         _count: { ...prev._count, Save: prev._count.Save - 1 },
         Save: [],
       }));
-      const res = await unsave(postState.id);
+      const data = await unsave(postState.id);
+
+      if ("error" in data)
+        toast({
+          title: "Error",
+          variant: "destructive",
+        });
+      else
+        toast({
+          title: "Success",
+          description: `The Post is ${data.message}`,
+        });
     }
   };
 
-  const className = postState.medias.length === 1 ?
-    'grid-cols-1 grid-rows-1' :
-    postState.medias.length === 2 ?
-      'grid-cols-2 grid-rows-1' :
-      postState.medias.length === 3 ?
-        'grid-cols-3 grid-rows-1' :
-        postState.medias.length === 4 ?
-          'grid-cols-4 grid-rows-1' :
-          'grid-cols-5 grid-rows-1';
+  const className =
+    postState.medias.length === 1
+      ? "grid-cols-1 grid-rows-1"
+      : postState.medias.length === 2
+      ? "grid-cols-2 grid-rows-1"
+      : postState.medias.length === 3
+      ? "grid-cols-3 grid-rows-1"
+      : postState.medias.length === 4
+      ? "grid-cols-4 grid-rows-1"
+      : "grid-cols-5 grid-rows-1";
 
   return (
-    <div>
+    <div className="py-3 border-gray-500 border-b">
       <div className="flex justify-between items-center">
         <div className="flex gap-3">
           <TooltipProvider>
@@ -158,7 +180,7 @@ export default function Post({ ...post }: PostProps) {
                         </p>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {formatDate(new Date())}
+                        {formatDate(postState.Author.created_at)}
                       </p>
                     </div>
                   </div>
@@ -245,8 +267,12 @@ export default function Post({ ...post }: PostProps) {
         {postState.medias.length !== 0 && (
           <div className={`${className} grid gap-1`}>
             {postState.medias.map((media, index) => (
-              <AspectRatio key={index} ratio={9 / 16}>
-                <img src={media} alt="" className="object-cover size-full" />
+              <AspectRatio key={index} ratio={16 / 9}>
+                <img
+                  src={media}
+                  alt="Post"
+                  className="object-cover size-full"
+                />
               </AspectRatio>
             ))}
           </div>
