@@ -34,6 +34,8 @@ import { useToast } from "@/hooks/use-toast";
 import { MdOutlineDeleteOutline, MdVerified } from "react-icons/md";
 import { IoMdShareAlt } from "react-icons/io";
 import parsePostContent from "@/utils/parse-post-content";
+import copyText from "@/utils/copy-text";
+import Link from "next/link";
 
 type PostProps = APIResponse<ReturnType<typeof GET>>[number];
 
@@ -137,6 +139,22 @@ export default function Post({ ...post }: PostProps) {
     }
   };
 
+  const handleCopyText = (text: string) => {
+    const data = copyText(text);
+    if ("error" in data) {
+      toast({
+        title: "Error",
+        description: "Error while copying the text",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Text have Been Coppied to the ClipBoard",
+      });
+    }
+  };
+
   const className =
     postState.medias.length === 1
       ? "grid-cols-1 grid-rows-1"
@@ -155,12 +173,14 @@ export default function Post({ ...post }: PostProps) {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Avatar>
-                  <AvatarImage src={postState.Author.image_url!} />
-                  <AvatarFallback>
-                    {postState.Author.user_name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <Link href={`/user/${postState.Author.id}`}>
+                  <Avatar>
+                    <AvatarImage src={postState.Author.image_url!} />
+                    <AvatarFallback>
+                      {postState.Author.user_name.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
               </TooltipTrigger>
               <TooltipContent className="max-w-[400px]">
                 <div className="flex flex-col gap-3">
@@ -193,9 +213,20 @@ export default function Post({ ...post }: PostProps) {
           </TooltipProvider>
           <div className="flex flex-col">
             <div className="flex gap-1 items-center">
-              <p>{postState.Author.user_name}</p>
-              {postState.Author.premium && <MdVerified />}
-              <p className="text-muted-foreground">@{postState.Author.tag}</p>
+              <Link href={`/user/${postState.Author.id}`}>
+                {postState.Author.user_name}
+              </Link>
+              {postState.Author.premium && (
+                <Link href="/premiem">
+                  <MdVerified />
+                </Link>
+              )}
+              <Link
+                href={`/user/${postState.Author.id}`}
+                className="text-muted-foreground"
+              >
+                @{postState.Author.tag}
+              </Link>
             </div>
             <div className="flex gap-2 items-center">
               <time className="text-sm text-muted-foreground">
@@ -211,14 +242,20 @@ export default function Post({ ...post }: PostProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 *:text-base">
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                handleCopyText(`${window.location.href}/post/${postState.id}`)
+              }
+            >
               Copy URL
               <DropdownMenuShortcut>
                 <IoMdShareAlt size={20} />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
             {postState.content && (
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleCopyText(postState.content!)}
+              >
                 Copy Text
                 <DropdownMenuShortcut>
                   <IoCopy size={16} />
@@ -310,8 +347,12 @@ export default function Post({ ...post }: PostProps) {
               </div>
             )}
           </button>
-          {/* TODO: make it pop a menu to copy a url */}
-          <button className="flex gap-1 items-center">
+          <button
+            className="flex gap-1 items-center"
+            onClick={() =>
+              copyText(`${window.location.href}/post/${postState.id}`)
+            }
+          >
             <IoMdShareAlt />
             <p>{postState.share_number ?? 0}</p>
           </button>
