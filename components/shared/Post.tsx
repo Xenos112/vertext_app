@@ -159,12 +159,12 @@ export default function Post({ ...post }: PostProps) {
     postState.medias.length === 1
       ? "grid-cols-1 grid-rows-1"
       : postState.medias.length === 2
-      ? "grid-cols-2 grid-rows-1"
-      : postState.medias.length === 3
-      ? "grid-cols-3 grid-rows-1"
-      : postState.medias.length === 4
-      ? "grid-cols-4 grid-rows-1"
-      : "grid-cols-5 grid-rows-1";
+        ? "grid-cols-2 grid-rows-1"
+        : postState.medias.length === 3
+          ? "grid-cols-3 grid-rows-1"
+          : postState.medias.length === 4
+            ? "grid-cols-4 grid-rows-1"
+            : "grid-cols-5 grid-rows-1";
 
   return (
     <div className="py-3 border-gray-500 border-b">
@@ -302,7 +302,7 @@ export default function Post({ ...post }: PostProps) {
           />
         )}
         {postState.medias.length !== 0 && (
-          <div className={`${className} grid gap-1`}>
+          <div className={`${className} grid gap-1 mt-3`}>
             {postState.medias.map((media, index) => (
               <AspectRatio key={index} ratio={16 / 9}>
                 <img
