@@ -85,7 +85,7 @@ export default function LeftBar() {
                 <Avatar>
                   <AvatarImage src={user?.image_url!} />
                   <AvatarFallback>
-                    {user?.user_name.slice(0, 2).toUpperCase()}
+                    {user?.id && user?.user_name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <Textarea
@@ -97,7 +97,7 @@ export default function LeftBar() {
                 <Input
                   type="file"
                   multiple
-                  onChange={(e) => setFiles(e.target.files)}
+                  onChange={(e) => setFiles(e.target.files!)}
                   ref={fileInputRef}
                   className="hidden"
                 />
@@ -132,7 +132,7 @@ export default function LeftBar() {
             <Avatar>
               <AvatarImage src={user.image_url!} />
               <AvatarFallback>
-                {user?.user_name?.slice(0, 2).toUpperCase()}
+                {user?.user_name.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </>
