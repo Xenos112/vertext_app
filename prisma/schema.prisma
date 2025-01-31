@@ -39,6 +39,8 @@ model User {
   premium             Boolean      @default(false)
   SubscriptionEndDate DateTime
   created_at          DateTime     @default(now())
+  followers Follow[] @relation("following")
+  following Follow[] @relation("follower")
 }
 
 model Post {
@@ -105,4 +107,15 @@ model Membership {
   communityId String
 
   @@id([userId, communityId])
+}
+
+model Follow {
+  followerId String
+  followingId String
+  createdAt  DateTime @default(now())
+
+  follower User @relation(fields: [followerId], references: [id], name: "follower")
+  following User @relation(fields: [followingId], references: [id], name: "following")
+
+  @@id([followerId, followingId])
 }
