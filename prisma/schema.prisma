@@ -69,6 +69,7 @@ model Comment {
   Post    Post     @relation(fields: [postId], references: [id])
   postId  String
   medias  String[]
+  created_at DateTime @default(now())
 }
 
 model Like {
@@ -96,6 +97,7 @@ model Community {
   banner     String?
   Post       Post[]
   Membership Membership[]
+  created_at DateTime @default(now())
 }
 
 model Membership {

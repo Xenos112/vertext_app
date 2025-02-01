@@ -36,6 +36,7 @@ import { IoMdShareAlt } from "react-icons/io";
 import parsePostContent from "@/utils/parse-post-content";
 import copyText from "@/utils/copy-text";
 import Link from "next/link";
+import { formatNumber } from "@/utils/format-number";
 
 type PostProps = APIResponse<ReturnType<typeof GET>>[number];
 
@@ -159,12 +160,12 @@ export default function Post({ ...post }: PostProps) {
     postState.medias.length === 1
       ? "grid-cols-1 grid-rows-1"
       : postState.medias.length === 2
-        ? "grid-cols-2 grid-rows-1"
-        : postState.medias.length === 3
-          ? "grid-cols-3 grid-rows-1"
-          : postState.medias.length === 4
-            ? "grid-cols-4 grid-rows-1"
-            : "grid-cols-5 grid-rows-1";
+      ? "grid-cols-2 grid-rows-1"
+      : postState.medias.length === 3
+      ? "grid-cols-3 grid-rows-1"
+      : postState.medias.length === 4
+      ? "grid-cols-4 grid-rows-1"
+      : "grid-cols-5 grid-rows-1";
 
   return (
     <div className="py-3 border-gray-500 border-b">
@@ -321,29 +322,29 @@ export default function Post({ ...post }: PostProps) {
             {postState.Like.length !== 0 ? (
               <div className="flex gap-1 items-center cursor-pointer text-pink-500">
                 <FaHeart />
-                <p>{postState._count.Like}</p>
+                <p>{formatNumber(postState._count.Like)}</p>
               </div>
             ) : (
               <div className="flex gap-1 items-center cursor-pointer">
                 <FaRegHeart />
-                <p>{postState._count.Like}</p>
+                <p>{formatNumber(postState._count.Like)}</p>
               </div>
             )}
           </button>
           <button className="flex gap-1 items-center">
             <FaRegComment />
-            <p>{postState._count.Comment ?? 0}</p>
+            <p>{formatNumber(postState._count.Comment)}</p>
           </button>
           <button onClick={saveHandler}>
             {postState.Save.length !== 0 ? (
               <div className="flex gap-1 items-center text-yellow-500 cursor-pointer">
                 <IoBookmark />
-                <p>{postState._count.Save}</p>
+                <p>{formatNumber(postState._count.Save)}</p>
               </div>
             ) : (
               <div className="flex gap-1 items-center cursor-pointer">
                 <IoBookmarkOutline />
-                <p>{postState._count.Save}</p>
+                <p>{formatNumber(postState._count.Save)}</p>
               </div>
             )}
           </button>
@@ -354,7 +355,7 @@ export default function Post({ ...post }: PostProps) {
             }
           >
             <IoMdShareAlt />
-            <p>{postState.share_number ?? 0}</p>
+            <p>{formatNumber(postState.share_number)}</p>
           </button>
         </div>
       </div>

@@ -1,152 +1,95 @@
 "use client";
-import { followUser, getUserById, unFollwerUser } from "@/actions/user.actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
-import Link from "next/link";
-import { redirect, useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { IoArrowBackSharp } from "react-icons/io5";
+import {
+  fetchUserJoinedCommunities,
+  getUserPosts,
+} from "@/actions/user.actions";
+import Community from "@/components/shared/Community";
+import Post from "@/components/shared/Post";
 import { Button } from "@/components/ui/button";
-import formatDate from "@/utils/format-date";
-import useUserStore from "@/store/user";
-import { useToast } from "@/hooks/use-toast";
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
-type UserType = Awaited<ReturnType<typeof getUserById>>["user"];
+type UserPosts = Awaited<ReturnType<typeof getUserPosts>>["posts"];
+type ActiveTabs = "posts" | "communities" | "likes";
+type UserJoinedCommunities = Awaited<
+  ReturnType<typeof fetchUserJoinedCommunities>
+>["communities"];
 
 export default function UserPage() {
   const { id } = useParams<{ id: string }>();
-  const [user, setUser] = useState<UserType>();
+  const [userPosts, setUserPosts] = useState<UserPosts>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const currentLoggedUser = useUserStore((state) => state.user);
-  const { toast } = useToast();
-  const [isFollowed, setIsFollwed] = useState(false);
+  const [activeTab, setActiveTab] = useState<ActiveTabs>("communities");
+  const [userJoinedCommunities, setUserJoinedCommunities] =
+    useState<UserJoinedCommunities>([]);
 
+  // fetching all the user posts
   useEffect(() => {
-    getUserById(id)
+    getUserPosts(id)
       .then((data) => {
-        if ("status" in data!) {
-          setError("No User Found ");
-        } else if ("error" in data!) {
-          setError("Failed To Fetch the User");
+        if (data.error) {
+          setError("Failed To fetch posts");
         } else {
-          setUser(data.user);
-          setIsFollwed(data.user?.followers.length === 0 ? false : true);
+          setUserPosts(data.posts);
         }
       })
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleFollowClick = async () => {
-    if (!currentLoggedUser?.id) {
-      toast({
-        title: "UnAuhtorized",
-        description: "Please Login to Follow the User",
-        variant: "destructive",
-      });
-      redirect("/register");
-      return;
-    }
+  useEffect(() => {
+    fetchUserJoinedCommunities(id)
+      .then((data) => {
+        if (data.error) {
+          setError("Failed To fetch Communities");
+        } else {
+          setUserJoinedCommunities(data.communities);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
 
-    if (!isFollowed) {
-      const data = await followUser(user!.id);
-      setIsFollwed(true);
-      if (data.error) {
-        console.log(data.error);
-        toast({
-          title: "Error",
-          description: "Error Following the user",
-          variant: "destructive",
-        });
-        return;
-      }
-      toast({
-        title: "Success",
-        description: "user Have been Followed",
-      });
-    } else if (isFollowed) {
-      const data = await unFollwerUser(user!.id);
-      setIsFollwed(false);
-      if (data.error) {
-        console.log(data.error);
-        toast({
-          title: "Error",
-          description: "Error UnFollowing the user",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: "Success",
-        description: "user Have been Followed",
-      });
-    }
-  };
-
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
   return (
-    <div className="border border-gray-400 rounded-xl h-full">
-      <Button className="m-2" variant="ghost">
-        <Link href="/" className="flex gap-3 items-center">
-          <IoArrowBackSharp size={24} />
-          <span>Return </span>
-        </Link>
-      </Button>
-
-      {user?.id ? (
-        <>
-          <div className="relative">
-            <img
-              src={user?.banner_url!}
-              className="h-[200px] w-full object-cover"
-            />
-            <Avatar className="size-[130px] absolute ring-4 ring-offset-transparent ring-white -translate-y-1/2 mx-3">
-              <AvatarImage src={user?.image_url!} />
-              <AvatarFallback>
-                {formatUserNameForImage(user?.user_name!)}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="flex justify-end m-3">
-            {currentLoggedUser?.id === user.id ? (
-              <Button className="">Edit Profile</Button>
-            ) : (
-              <div>
-                {!isFollowed ? (
-                  <Button onClick={handleFollowClick}>Follow</Button>
-                ) : (
-                  <Button onClick={handleFollowClick}>UnFollow</Button>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="mt-[30px] px-3">
-            <h1 className="font-semibold text-xl">{user?.user_name}</h1>
-            <p className="text-muted-foreground">@{user?.tag}</p>
-            <p className="text-muted-foreground mt-2">
-              Joined {formatDate(user!.created_at)}
-            </p>
-            <div className="flex gap-3 mt-4">
-              <p className="space-x-1">
-                <span className="underline text-muted-foreground">
-                  Followers
-                </span>
-                <span>{user?._count.followers}</span>
-              </p>
-              <p>
-                <span className="underline text-muted-foreground">
-                  Following
-                </span>{" "}
-                <span>{user?._count.following}</span>
-              </p>
-            </div>
-          </div>
-        </>
-      ) : loading ? (
-        <div>loading</div>
-      ) : error ? (
-        <div>{error}</div>
-      ) : null}
+    <div className="p-3">
+      <div className="flex justify-evenly items-center border-y border-gray-300 p-3">
+        <Button
+          onClick={() => setActiveTab("posts")}
+          variant={"ghost"}
+          className="text-md w-full font-semibold"
+        >
+          Posts
+        </Button>
+        <Button
+          onClick={() => setActiveTab("communities")}
+          variant={"ghost"}
+          className="text-md font-semibold w-full"
+        >
+          Communities
+        </Button>
+        <Button
+          onClick={() => setActiveTab("likes")}
+          variant={"ghost"}
+          className="text-md w-full font-semibold"
+        >
+          Likes
+        </Button>
+      </div>
+      {activeTab === "posts" &&
+        userPosts?.map((post) => <Post key={post.id} {...post} />)}
+      {activeTab === "communities" && (
+        <div className="my-3">
+          {userJoinedCommunities?.map((community) => (
+            <Community community={community.Community} key={community.communityId} />
+          ))}
+        </div>
+      )}
+      {activeTab === "likes" && (
+        <div>
+          <h1>likes</h1>
+        </div>
+      )}
     </div>
   );
 }

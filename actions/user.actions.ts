@@ -77,3 +77,96 @@ export async function unFollwerUser(userId: string) {
     return { error };
   }
 }
+
+export async function getUserPosts(userId: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+
+    const posts = await prisma.post.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        Author: {
+          omit: {
+            password: true,
+          },
+        },
+        Community: true,
+        Like: {
+          where: {
+            userId: user?.id,
+          },
+          select: {
+            userId: true,
+          },
+        },
+        Save: {
+          where: {
+            userId: user?.id,
+          },
+          select: {
+            userId: true,
+          },
+        },
+        _count: {
+          select: {
+            Like: true,
+            Comment: true,
+            Save: true,
+          },
+        },
+      },
+    });
+
+    return { posts };
+  } catch (error) {
+    return { error };
+  }
+}
+
+export async function getUserCommunities(userId: string) {
+  try {
+    const communities = await prisma.membership.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+    return { communities };
+  } catch (error) {
+    return { error };
+  }
+}
+
+export async function fetchUserJoinedCommunities(userId: string) {
+  try {
+    const communities = await prisma.membership.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        Community: {
+          select: {
+            name: true,
+            created_at: true,
+            id: true,
+            image: true,
+            _count: {
+              select: {
+                Post: true,
+                Membership: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return { communities };
+  } catch (error) {
+    return { error };
+  }
+}
+
