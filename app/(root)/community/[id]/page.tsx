@@ -52,7 +52,7 @@ function CommunityPage() {
           <div className='flex justify-end m-3'>
             <Button className=''>{isJoined ? "Leave" : "Join"}</Button>
           </div>
-          <div className='my-8'>
+          <div className='my-8 m-3'>
             <h1 className='text-md font-semibold'>{community.name}</h1>
             <time className='text-muted-foreground'>Created At {formatDate(community.created_at)}</time>
             {/* The Community Stats*/}
@@ -65,10 +65,12 @@ function CommunityPage() {
               </p>
             </div>
           </div>
-          {/* Community Posts*/}
-          {community.Post?.map(post => (
-            <Post key={post.id} {...post} />
-          ))}
+          <div className='m-3'>
+            {/* Community Posts*/}
+            {community.Post?.map(post => (
+              <Post key={post.id} {...post} />
+            ))}
+          </div>
         </div>
       }
     </div>
