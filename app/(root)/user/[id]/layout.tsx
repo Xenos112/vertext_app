@@ -22,6 +22,7 @@ export default function UserPage({ children }: { children: ReactNode }) {
   const currentLoggedUser = useUserStore((state) => state.user);
   const { toast } = useToast();
   const [isFollowed, setIsFollwed] = useState(false);
+  const [follwersCount, setFollowersCount] = useState(0)
 
   useEffect(() => {
     getUserById(id)
@@ -32,6 +33,7 @@ export default function UserPage({ children }: { children: ReactNode }) {
           setError("Failed To Fetch the User");
         } else {
           setUser(data.user);
+          setFollowersCount(data.user?._count.followers || 0)
           setIsFollwed(data.user?.followers.length === 0 ? false : true);
         }
       })
@@ -52,6 +54,8 @@ export default function UserPage({ children }: { children: ReactNode }) {
     if (!isFollowed) {
       const data = await followUser(user!.id);
       setIsFollwed(true);
+      setFollowersCount(prev => prev + 1)
+
       if (data.error) {
         console.log(data.error);
         toast({
@@ -68,6 +72,8 @@ export default function UserPage({ children }: { children: ReactNode }) {
     } else if (isFollowed) {
       const data = await unFollwerUser(user!.id);
       setIsFollwed(false);
+      setFollowersCount(prev => prev - 1)
+
       if (data.error) {
         console.log(data.error);
         toast({
@@ -132,7 +138,7 @@ export default function UserPage({ children }: { children: ReactNode }) {
                 <span className="underline text-muted-foreground">
                   Followers
                 </span>
-                <span>{formatNumber(user?._count.followers)}</span>
+                <span>{formatNumber(follwersCount)}</span>
               </p>
               <p>
                 <span className="underline text-muted-foreground">
