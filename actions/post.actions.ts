@@ -156,7 +156,8 @@ export const createPost = async (data: CreatePost) => {
   const urls: string[] = [];
   if (files) {
     for (const file of files) {
-      const fileName = uuid();
+      const fileExt = file.name.slice(file.name.lastIndexOf('.'))
+      const fileName = uuid() + fileExt
       const filePath = `./public/uploads/${fileName}`;
       const fileBytes = await file.arrayBuffer();
       fs.writeFileSync(filePath, Buffer.from(fileBytes));
