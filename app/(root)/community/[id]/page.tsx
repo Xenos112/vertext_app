@@ -43,7 +43,7 @@ function CommunityPage() {
         <div>
           <div className='relative'>
             <img src={community.banner!} alt={community.name} className='w-full h-[200px]' />
-            <Avatar className='size-[130px] absolute rounded-xl -translate-y-1/2 mx-4'>
+            <Avatar className='size-[130px] absolute rounded-xl -translate-y-1/2 mx-4 ring-white ring-offset-transparent ring-4'>
               <AvatarImage src={community.image!} />
               <AvatarFallback>{formatUserNameForImage(community.name)}</AvatarFallback>
             </Avatar>
