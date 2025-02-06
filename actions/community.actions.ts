@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import prisma from "@/utils/prisma";
 import validateUser from "@/utils/validate-user";
@@ -7,9 +7,9 @@ import { redirect } from "next/navigation";
 
 export default async function getCommunityDetails(communityId: string) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("auth_token")?.value
-    const user = await validateUser(token)
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
 
     const community = await prisma.community.findUnique({
       where: { id: communityId },
@@ -32,44 +32,71 @@ export default async function getCommunityDetails(communityId: string) {
                 Like: true,
                 Save: true,
                 Comment: true,
-              }
-            }
+              },
+            },
           },
         },
         Membership: {
           where: {
-            userId: user?.id
-          }
-        }
+            userId: user?.id,
+          },
+        },
       },
+    });
 
-    })
-
-    return { community }
+    return { community };
   } catch (error) {
-    return { error }
+    return { error };
   }
 }
 
 export async function joinCommunity(communityId: string) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("auth_token")?.value
-    const user = await validateUser(token)
-    if (!user)
-      redirect('/login')
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) redirect("/login");
 
     await prisma.membership.create({
       data: {
         communityId,
         userId: user.id,
-        role: 'USER'
-      }
-    })
+        role: "USER",
+      },
+    });
 
-    return { message: "You Have Joined The Community Succesfully" }
-
+    return { message: "You Have Joined The Community Succesfully" };
   } catch (error) {
-    return { error }
+    return { error };
+  }
+}
+
+export async function leaveCommunity(communityId: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) redirect("/login");
+    // check if he is joined
+    const isJoined = await prisma.membership.findFirst({
+      where: {
+        AND: [{ communityId }, { userId: user.id }],
+      },
+    });
+
+    if (!isJoined) {
+      return { message: "You Have Already Left" };
+    }
+
+    // remove the membership
+    await prisma.membership.deleteMany({
+      where: {
+        AND: [{ communityId }, { userId: user.id }],
+      },
+    });
+
+    return { message: "You have left the Community" };
+  } catch (error) {
+    return { error };
   }
 }

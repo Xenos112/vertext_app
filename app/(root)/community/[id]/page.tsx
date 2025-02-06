@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import getCommunityDetails from '@/actions/community.actions'
+import getCommunityDetails, { joinCommunity, leaveCommunity } from '@/actions/community.actions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatUserNameForImage } from '@/utils/format-user_name-for-image'
 import { Button } from '@/components/ui/button'
@@ -9,6 +9,7 @@ import formatDate from '@/utils/format-date'
 import Post from '@/components/shared/Post'
 import Link from 'next/link'
 import { IoArrowBackSharp } from 'react-icons/io5'
+import { useToast } from '@/hooks/use-toast'
 
 type CommunityDetails = Awaited<ReturnType<typeof getCommunityDetails>>['community']
 function CommunityPage() {
@@ -16,6 +17,7 @@ function CommunityPage() {
   const [community, setCommunity] = useState<CommunityDetails>()
   const [loading, setLoading] = useState(true)
   const [isJoined, setIsJoined] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     getCommunityDetails(id).then((data) => {
@@ -27,6 +29,44 @@ function CommunityPage() {
       }
     }).finally(() => setLoading(false))
   }, [id])
+
+  const handleLeaveAndJoin = async () => {
+    if (isJoined) {
+      setIsJoined(!isJoined)
+      const data = await leaveCommunity(community!.id)
+      if (data.error) {
+        setIsJoined(!isJoined)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Error While Leaving the Community"
+        })
+      } else {
+
+        toast({
+          title: "Success",
+          description: data.message
+        })
+      }
+    } else {
+      setIsJoined(!isJoined)
+      const data = await joinCommunity(community!.id)
+      if (data.error) {
+        setIsJoined(!isJoined)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Error While Joining the Community"
+        })
+      } else {
+        toast({
+          title: "Success",
+          description: data.message
+        })
+      }
+    }
+
+  }
 
   if (loading)
     return <div>Loading...</div>
@@ -50,7 +90,7 @@ function CommunityPage() {
           </div>
           {/* The Follow User Button*/}
           <div className='flex justify-end m-3'>
-            <Button className=''>{isJoined ? "Leave" : "Join"}</Button>
+            <Button onClick={handleLeaveAndJoin} className=''>{isJoined ? "Leave" : "Join"}</Button>
           </div>
           <div className='my-8 m-3'>
             <h1 className='text-md font-semibold'>{community.name}</h1>
