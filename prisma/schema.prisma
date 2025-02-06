@@ -41,6 +41,7 @@ model User {
   created_at          DateTime     @default(now())
   followers           Follow[]     @relation("following")
   following           Follow[]     @relation("follower")
+  Message             Message[]
 }
 
 model Post {
@@ -98,6 +99,7 @@ model Community {
   Post       Post[]
   Membership Membership[]
   created_at DateTime     @default(now())
+  Message    Message[]
 }
 
 model Membership {
@@ -120,4 +122,13 @@ model Follow {
   following User @relation(fields: [followingId], references: [id], name: "following")
 
   @@id([followerId, followingId])
+}
+
+model Message {
+  id          String    @id @default(uuid())
+  content     String
+  Sender      User      @relation(fields: [senderId], references: [id])
+  senderId    String
+  Community   Community @relation(fields: [communityId], references: [id])
+  communityId String
 }
