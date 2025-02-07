@@ -38,6 +38,8 @@ import parsePostContent from "@/utils/parse-post-content";
 import copyText from "@/utils/copy-text";
 import Link from "next/link";
 import { formatNumber } from "@/utils/format-number";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Share } from "lucide-react";
 
 type PostProps = APIResponse<ReturnType<typeof GET>>[number];
 
@@ -353,15 +355,30 @@ export default function Post({ ...post }: PostProps) {
               </div>
             )}
           </button>
-          <button
-            className="flex gap-1 items-center"
-            onClick={() =>
-              copyText(`${window.location.href}/post/${postState.id}`)
-            }
-          >
-            <IoMdShareAlt />
-            <p>{formatNumber(postState.share_number)}</p>
-          </button>
+          <Dialog>
+            <DialogTrigger asChild className="text-base">
+              <Button variant="ghost" size="sm" onClick={() => { }}>
+                <Share className="" />
+                {postState.share_number}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Share this post</DialogTitle>
+                <DialogDescription>Copy the link below to share this post with others.</DialogDescription>
+              </DialogHeader>
+              <div className="flex items-center space-x-2">
+                <input type="text" readOnly value={'sadasd'} className="flex-1 px-3 py-2 text-sm border rounded-md" />
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText('asdasda')
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
