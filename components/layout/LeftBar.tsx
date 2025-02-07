@@ -1,15 +1,11 @@
 "use client";
 import useUserStore from "@/store/user";
-import { FaRegBell } from "react-icons/fa6";
-import { GoHomeFill } from "react-icons/go";
+import { GoBell, GoHash, GoHome, GoPerson, GoPlus } from "react-icons/go";
+import { SiNeovim } from "react-icons/si";
 import { useEffect } from "react";
-import { FaRegUserCircle } from "react-icons/fa";
 import { Avatar } from "../ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { AiOutlineThunderbolt } from "react-icons/ai";
 import Link from "next/link";
-import { FaHashtag } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa6";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -21,6 +17,7 @@ export default function LeftBar() {
   const fetchUser = useUserStore((state) => state.fetchUser);
   const user = useUserStore((state) => state.user);
 
+  // TODO: add this in a Context
   useEffect(() => {
     fetchUser();
   }, []);
@@ -28,29 +25,29 @@ export default function LeftBar() {
   return (
     <div className="fixed top-0 left-0 h-screen p-6 flex  flex-col justify-between items-center">
       <div>
-        <AiOutlineThunderbolt size={30} />
+        <SiNeovim size={30} />
       </div>
       <div className="flex flex-col justify-center items-center gap-10">
         <button>
-          <FaHashtag size={26} />
+          <GoHash size={22} />
         </button>
         <button>
-          <GoHomeFill size={26} />
+          <GoHome size={22} />
         </button>
         <Dialog>
           <DialogTrigger asChild>
-            <Button size="icon" variant="secondary" className="size-[50px]">
-              <FaPlus />
+            <Button variant="default" size='sm' className="inline">
+              <GoPlus />
             </Button>
           </DialogTrigger>
           <CreatePostModal />
         </Dialog>
         <button>
-          <FaRegBell size={26} />
+          <GoBell size={22} />
         </button>
         {user?.id && (
           <Link href={`/profile/${user.id}`}>
-            <FaRegUserCircle size={26} />
+            <GoPerson size={26} />
           </Link>
         )}
       </div>
@@ -66,7 +63,7 @@ export default function LeftBar() {
           </>
         ) : (
           <Link href="/login">
-            <FaRegUserCircle size={26} />
+            <GoPerson size={26} />
           </Link>
         )}
       </div>

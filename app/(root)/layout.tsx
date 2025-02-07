@@ -5,7 +5,7 @@ export default function layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen">
       <LeftBar />
-      <div className="w-[700px] mx-auto">{children}</div>
+      <div className="w-[550px] mx-auto">{children}</div>
     </div>
   );
 }
