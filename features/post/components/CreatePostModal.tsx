@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FaReact, FaUpload } from "react-icons/fa6";
+import { FaReact, FaUpload, FaUser } from "react-icons/fa6";
 import { useState, useRef, useEffect } from "react";
 import useUserStore from "@/store/user";
 import { Button } from "@/components/ui/button";
@@ -75,7 +75,7 @@ export default function CreatePostModal() {
               <AvatarImage src={user.image_url!} />
             </Avatar>
           ) : (
-            <p>Place</p>
+            <FaUser size={24} />
           )}
           <div className="space-y-2 w-full">
             <Select onValueChange={(e) => setSelectedCommunity(e)}>
