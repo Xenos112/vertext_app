@@ -19,11 +19,17 @@ enum Role {
   USER
 }
 
+enum NotificationType {
+  PostLiked
+  Followed
+  Commented
+}
+
 model User {
-  id                  String       @id @default(uuid())
+  id                  String         @id @default(uuid())
   user_name           String
-  tag                 String       @unique @default(cuid())
-  email               String       @unique
+  tag                 String         @unique @default(cuid())
+  email               String         @unique
   password            String?
   github_id           String?
   discord_id          String?
@@ -36,12 +42,14 @@ model User {
   Like                Like[]
   Save                Save[]
   Membership          Membership[]
-  premium             Boolean      @default(false)
+  premium             Boolean        @default(false)
   SubscriptionEndDate DateTime
-  created_at          DateTime     @default(now())
-  followers           Follow[]     @relation("following")
-  following           Follow[]     @relation("follower")
+  created_at          DateTime       @default(now())
+  followers           Follow[]       @relation("following")
+  following           Follow[]       @relation("follower")
   Message             Message[]
+  Notification        Notification[]
+  Notification        Notification[]
 }
 
 model Post {
@@ -131,4 +139,14 @@ model Message {
   senderId    String
   Community   Community @relation(fields: [communityId], references: [id])
   communityId String
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  content   String
+  type      NotificationType
+  sender    User             @relation(fields: [senderId], references: [id])
+  reciver   User             @relation(fields: [reciverId], references: [id])
+  senderId  String
+  reciverId String
 }
