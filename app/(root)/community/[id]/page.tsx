@@ -72,7 +72,7 @@ function CommunityPage() {
     return <div>Loading...</div>
 
   return (
-    <div className="border border-gray-400 rounded-xl min-h-screen">
+    <div className="border border-muted rounded-xl min-h-screen">
       <Button className="m-2" variant="ghost">
         <Link href="/" className="flex gap-3 items-center">
           <IoArrowBackSharp size={24} />

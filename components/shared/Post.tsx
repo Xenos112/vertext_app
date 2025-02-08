@@ -171,7 +171,7 @@ export default function Post({ ...post }: PostProps) {
             : "grid-cols-5 grid-rows-1";
 
   return (
-    <div className="py-3 border-gray-500 border-b">
+    <div className="p-4 border-muted border-b">
       <div className="flex justify-between items-center">
         <div className="flex gap-3">
           <TooltipProvider>
@@ -245,7 +245,7 @@ export default function Post({ ...post }: PostProps) {
               <BsThreeDotsVertical />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 *:text-base">
+          <DropdownMenuContent className="w-56 text-xs">
             <DropdownMenuItem
               onClick={() =>
                 handleCopyText(`${window.location.href}/post/${postState.id}`)
@@ -368,10 +368,10 @@ export default function Post({ ...post }: PostProps) {
                 <DialogDescription>Copy the link below to share this post with others.</DialogDescription>
               </DialogHeader>
               <div className="flex items-center space-x-2">
-                <input type="text" readOnly value={'sadasd'} className="flex-1 px-3 py-2 text-sm border rounded-md" />
+                <input type="text" readOnly value={`${window.location.href}post/${postState.id}`} className="flex-1 px-3 py-2 text-sm border rounded-md" />
                 <Button
                   onClick={() => {
-                    navigator.clipboard.writeText('asdasda')
+                    handleCopyText(`${window.location.href}/post/${postState.id}`)
                   }}
                 >
                   Copy

@@ -32,11 +32,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4 border border-slate-500 dark:border-slate-200 rounded-lg">
+    <div className="min-h-screen border border-muted rounded-lg">
       {user?.id && (
         <Dialog>
           <DialogTrigger asChild>
-            <div className="flex gap-3 items-center border-b border-primary p-3 pb-8">
+            <div className="flex gap-3 items-center border-b border-muted px-4 p-8">
               <Avatar>
                 <AvatarImage src={user.image_url!} />
                 <AvatarFallback>
@@ -51,7 +51,7 @@ export default function Home() {
         </Dialog>
       )}
       {posts.map((post) => (
-        <div key={post.id} className="mb-6">
+        <div key={post.id} className="">
           <Post {...post} />
         </div>
       ))}
