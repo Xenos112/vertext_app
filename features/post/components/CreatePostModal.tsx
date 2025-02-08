@@ -1,14 +1,14 @@
 'use client';
-
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   DialogContent,
   DialogDescription,
-  DialogFooter,
+  DialogClose,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { FaReact, FaUpload, FaUser } from "react-icons/fa6";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useTransition } from "react";
 import useUserStore from "@/store/user";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,6 +17,8 @@ import { createPost } from "@/actions/post.actions";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { fetchUserJoinedCommunities } from "@/actions/user.actions";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { FaTruckLoading } from "react-icons/fa";
 
 type UserCommunities = Awaited<ReturnType<typeof fetchUserJoinedCommunities>>['communities']
 
@@ -25,14 +27,39 @@ export default function CreatePostModal() {
   const [postContent, setPostContent] = useState<string>("");
   const [files, setFiles] = useState<FileList>();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const closeButton = useRef<HTMLButtonElement | null>(null);
   const [urls, setUrls] = useState<string[]>([]);
   const [communities, setCommunities] = useState<UserCommunities>()
+  const [loading, startTransition] = useTransition()
   const [selectedCommunity, setSelectedCommunity] = useState<string | null>(null)
+  const { toast } = useToast()
 
 
-  const handleCreatePost = async () => {
-    const res = await createPost({ files, content: postContent, communityId: selectedCommunity });
-    console.log(res);
+  const handleCreatePost = () => {
+    startTransition(async () => {
+
+      const res = await createPost({ files, content: postContent, communityId: selectedCommunity });
+      if (res.error) {
+        toast({
+          variant: 'destructive',
+          title: "Error",
+          description: res.error as string
+        })
+      } else {
+        toast({
+          title: "Success",
+          description: "Post Have Been Created"
+        })
+
+        // reset the state
+        setPostContent('')
+        setFiles(undefined)
+        setUrls([])
+
+        // close the modal
+        closeButton.current?.click()
+      }
+    })
   };
 
   const handleFilesChange = (files: FileList | undefined) => {
@@ -117,8 +144,11 @@ export default function CreatePostModal() {
           <FaReact />
         </div>
         <input ref={fileInputRef} type="file" multiple onChange={(e) => setFiles(e.target.files!)} className='hidden opacity-0 pointer-events-none' />
-        <Button type="button" onClick={handleCreatePost} size='sm'>Post</Button>
+        <Button disabled={loading} type="button" onClick={handleCreatePost} size='sm'>{loading && <AiOutlineLoading3Quarters className="animate-spin duration-300" />} Post</Button>
       </div>
+      <DialogClose asChild ref={closeButton}>
+        <button className="sr-only">close</button>
+      </DialogClose>
     </DialogContent>
   )
 }
