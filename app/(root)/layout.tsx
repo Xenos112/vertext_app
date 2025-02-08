@@ -1,4 +1,5 @@
 import LeftBar from "@/components/layout/LeftBar";
+import RightFloatMenu from "@/components/layout/RightFloatMenu";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CreatePostModal from "@/features/post/components/CreatePostModal";
@@ -19,6 +20,7 @@ export default function layout({ children }: { children: ReactNode }) {
         </DialogTrigger>
         <CreatePostModal />
       </Dialog>
+      <RightFloatMenu />
     </div>
   );
 }
