@@ -1,11 +1,12 @@
 'use client'
-import { getRecommendedUsers } from '@/actions/user.actions'
+import { followUser, getRecommendedUsers } from '@/actions/user.actions'
 import { useToast } from '@/hooks/use-toast'
-import React from 'react'
+import React, { useTransition } from 'react'
 import { useState, useEffect } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { formatUserNameForImage } from '@/utils/format-user_name-for-image'
 import { Button } from '../ui/button'
+import { FiLoader } from 'react-icons/fi'
 
 type SuggestedUsersType = Awaited<ReturnType<typeof getRecommendedUsers>>['users']
 
@@ -13,6 +14,7 @@ type SuggestedUsersType = Awaited<ReturnType<typeof getRecommendedUsers>>['users
 export default function RightFloatMenu() {
   const [users, setUsers] = useState<SuggestedUsersType>()
   const { toast } = useToast()
+  const [loading, startTransition] = useTransition()
 
   useEffect(() => {
     getRecommendedUsers().then(data => {
@@ -24,14 +26,37 @@ export default function RightFloatMenu() {
         })
       } else {
         setUsers(data.users)
+      }
+    })
+  }, [])
+
+  const handleFollowClick = async (userId: string) => {
+    startTransition(async () => {
+      const data = await followUser(userId)
+      if (data.error) {
         toast({
           variant: "destructive",
           title: 'Error',
           description: data.error as string
         })
+      } else {
+        const poppedUser = users?.filter(u => u.id !== userId);
+        if (!poppedUser || poppedUser.length === users?.length) {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: "User not found or already removed",
+          });
+          return;
+        }
+        setUsers(poppedUser);
+        toast({
+          title: 'Success',
+          description: `You have followed ${poppedUser[0].user_name}`,
+        });
       }
     })
-  }, [])
+  }
 
   return (
     <div className='space-y-5 absolute top-12 right-12'>
@@ -46,7 +71,7 @@ export default function RightFloatMenu() {
               </Avatar>
               <p>{user.user_name}</p>
             </div>
-            <Button size='sm'>Follow</Button>
+            <Button onClick={() => handleFollowClick(user.id)} disabled={loading} size='sm'>{loading && <FiLoader />} Follow</Button>
           </div>
         ))}
       </div>
