@@ -18,6 +18,8 @@ import { fetchUserJoinedCommunities } from "@/actions/user.actions";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { GoPerson, GoUpload } from "react-icons/go";
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
 
 type UserCommunities = Awaited<ReturnType<typeof fetchUserJoinedCommunities>>['communities']
 
@@ -32,6 +34,7 @@ export default function CreatePostModal() {
   const [loading, startTransition] = useTransition()
   const [selectedCommunity, setSelectedCommunity] = useState<string | null>(null)
   const { toast } = useToast()
+  const [isPickerShown, setIsPickerShown] = useState(false)
 
 
   const handleCreatePost = () => {
@@ -86,11 +89,15 @@ export default function CreatePostModal() {
     }
   }, [user?.id])
 
+  const addEmoji = (emoji: any) => {
+    setPostContent((prev) => prev + emoji.native);
+    setIsPickerShown(false); // Close picker after selection
+  };
 
   return (
-    <DialogContent>
+    <DialogContent className="">
       <DialogTitle className="mb-3">Create New Post</DialogTitle>
-      <DialogHeader>
+      < DialogHeader >
         <div className="flex gap-2">
           {user ? (
             <Avatar>
@@ -133,11 +140,16 @@ export default function CreatePostModal() {
             />
           </div>
         </div>
-      </DialogHeader>
+      </DialogHeader >
       <div className="flex w-full items-center justify-between pt-10">
         <div className="flex gap-3 mt-10">
           <GoUpload onClick={() => fileInputRef.current!.click()} />
-          <BsEmojiGrin />
+          <BsEmojiGrin onClick={() => setIsPickerShown(!isPickerShown)} />
+          {isPickerShown && (
+            <div className="absolute top-10 left-0 z-10">
+              <Picker data={data} onEmojiSelect={addEmoji} />
+            </div>
+          )}
         </div>
         <input ref={fileInputRef} type="file" multiple onChange={(e) => setFiles(e.target.files!)} className='hidden opacity-0 pointer-events-none' />
         <Button disabled={loading} type="button" onClick={handleCreatePost} size='sm'>{loading && <AiOutlineLoading3Quarters className="animate-spin duration-300" />} Post</Button>
@@ -145,7 +157,7 @@ export default function CreatePostModal() {
       <DialogClose asChild ref={closeButton}>
         <button className="sr-only">close</button>
       </DialogClose>
-    </DialogContent>
+    </DialogContent >
   )
 }
 
