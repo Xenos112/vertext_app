@@ -199,11 +199,11 @@ export default function Post({ ...post }: PostProps) {
                       <div className="flex gap-1 items-center">
                         <p>{postState.Author.user_name}</p>
                         {postState.Author.premium && <MdVerified />}
-                        <p className="text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                           @{postState.Author.tag}
                         </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {formatDate(postState.Author.created_at)}
                       </p>
                     </div>
@@ -227,13 +227,13 @@ export default function Post({ ...post }: PostProps) {
               )}
               <Link
                 href={`/user/${postState.Author.id}`}
-                className="text-muted-foreground"
+                className="text-muted-foreground text-xs"
               >
                 @{postState.Author.tag}
               </Link>
             </div>
             <div className="flex gap-2 items-center">
-              <time className="text-sm text-muted-foreground">
+              <time className="text-muted-foreground text-xs">
                 {formatDate(postState.created_at.toString())}
               </time>
             </div>
@@ -299,7 +299,7 @@ export default function Post({ ...post }: PostProps) {
       <div className="mt-3 ml-[50px]">
         {postState.content && (
           <p
-            className="text-lg"
+            className="text-[15px]"
             dangerouslySetInnerHTML={{
               __html: parsePostContent(postState.content)!,
             }}
