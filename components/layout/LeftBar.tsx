@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import CreatePostModal from "@/features/post/components/CreatePostModal";
+import ThemeSwitcher from "../shared/ThemeSwitcher";
 
 export default function LeftBar() {
   const fetchUser = useUserStore((state) => state.fetchUser);
@@ -49,7 +50,8 @@ export default function LeftBar() {
           <GoBookmark size={26} />
         </Link>
       </div>
-      <div>
+      <div className="flex items-center flex-col gap-2">
+        <ThemeSwitcher />
         {user?.id ? (
           <>
             <Avatar>

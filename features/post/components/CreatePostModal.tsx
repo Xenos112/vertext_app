@@ -105,28 +105,28 @@ export default function CreatePostModal() {
             <FaUser size={24} />
           )}
           <div className="space-y-2 w-full">
-            <Select onValueChange={(e) => setSelectedCommunity(e)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Everyone" />
-              </SelectTrigger>
-              <SelectContent >
-                <SelectGroup>
-                  <SelectLabel>
-                    {selectedCommunity}
-                  </SelectLabel>
-                  {communities && (
-                    communities.map((community) => (
+            {communities && (
+              <Select onValueChange={(e) => setSelectedCommunity(e)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Everyone" />
+                </SelectTrigger>
+                <SelectContent >
+                  <SelectGroup>
+                    <SelectLabel>
+                      {selectedCommunity}
+                    </SelectLabel>
+                    {communities.map((community) => (
                       <SelectItem
                         value={community.Community.id}
                         key={community!.Community.id}
                       >
                         {community.Community.name}
                       </SelectItem>
-                    ))
-                  )}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
             <Textarea
               cols={30}
               rows={3}
