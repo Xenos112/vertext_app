@@ -1,6 +1,6 @@
 "use client";
 import useUserStore from "@/store/user";
-import { GoBell, GoHash, GoHome, GoPerson, GoPlus } from "react-icons/go";
+import { GoBell, GoHash, GoHome, GoPerson, GoPlus, GoSearch } from "react-icons/go";
 import { SiNeovim } from "react-icons/si";
 import { useEffect } from "react";
 import { Avatar } from "../ui/avatar";
@@ -28,12 +28,12 @@ export default function LeftBar() {
         <SiNeovim size={30} />
       </div>
       <div className="flex flex-col justify-center items-center gap-10">
-        <button>
+        <Link href='/'>
           <GoHash size={22} />
-        </button>
-        <button>
-          <GoHome size={22} />
-        </button>
+        </Link>
+        <Link href='/search'>
+          <GoSearch size={22} />
+        </Link>
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="default" size='sm' className="inline">
@@ -42,9 +42,9 @@ export default function LeftBar() {
           </DialogTrigger>
           <CreatePostModal />
         </Dialog>
-        <button>
+        <Link href='/notifications'>
           <GoBell size={22} />
-        </button>
+        </Link>
         {user?.id && (
           <Link href={`/profile/${user.id}`}>
             <GoPerson size={26} />
