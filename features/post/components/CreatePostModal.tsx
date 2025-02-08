@@ -127,7 +127,7 @@ export default function CreatePostModal() {
             <Textarea
               cols={30}
               rows={3}
-              className="resize-none w-full ouline-none border-0"
+              className="resize-none w-full ouline-none border-0 focus-visible:ring-0"
               placeholder="I'm Thinging of..."
               value={postContent}
               onChange={(e) => setPostContent(e.target.value)}
