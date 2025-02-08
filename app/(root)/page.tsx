@@ -6,7 +6,6 @@ import Post from "@/components/shared/Post";
 import { APIResponse } from "@/types/api";
 import useUserStore from "@/store/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogTrigger,
@@ -37,15 +36,15 @@ export default function Home() {
       {user?.id && (
         <Dialog>
           <DialogTrigger asChild>
-            <div className="flex gap-3 my-10">
+            <div className="flex gap-3 items-center border-b border-primary p-3 pb-8">
               <Avatar>
                 <AvatarImage src={user.image_url!} />
                 <AvatarFallback>
                   {formatUserNameForImage(user?.user_name)}
                 </AvatarFallback>
               </Avatar>
-              <Input placeholder='I Guess this is...' />
-              <Button>Post</Button>
+              <input className="outline-none border-none w-full bg-transparent px-3" placeholder='I Guess this is...' />
+              <Button size='sm'>Post</Button>
             </div>
           </DialogTrigger>
           <CreatePostModal />
