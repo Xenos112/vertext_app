@@ -2,12 +2,11 @@
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   DialogContent,
-  DialogDescription,
   DialogClose,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FaReact, FaUpload, FaUser } from "react-icons/fa6";
+import { BsEmojiGrin } from "react-icons/bs";
 import { useState, useRef, useEffect, useTransition } from "react";
 import useUserStore from "@/store/user";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,7 @@ import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { fetchUserJoinedCommunities } from "@/actions/user.actions";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { FaTruckLoading } from "react-icons/fa";
+import { GoPerson, GoUpload } from "react-icons/go";
 
 type UserCommunities = Awaited<ReturnType<typeof fetchUserJoinedCommunities>>['communities']
 
@@ -99,7 +98,7 @@ export default function CreatePostModal() {
               <AvatarImage src={user.image_url!} />
             </Avatar>
           ) : (
-            <FaUser size={24} />
+            <GoPerson size={24} />
           )}
           <div className="space-y-2 w-full">
             {communities && communities?.length > 0 && (
@@ -137,8 +136,8 @@ export default function CreatePostModal() {
       </DialogHeader>
       <div className="flex w-full items-center justify-between pt-10">
         <div className="flex gap-3 mt-10">
-          <FaUpload onClick={() => fileInputRef.current!.click()} />
-          <FaReact />
+          <GoUpload onClick={() => fileInputRef.current!.click()} />
+          <BsEmojiGrin />
         </div>
         <input ref={fileInputRef} type="file" multiple onChange={(e) => setFiles(e.target.files!)} className='hidden opacity-0 pointer-events-none' />
         <Button disabled={loading} type="button" onClick={handleCreatePost} size='sm'>{loading && <AiOutlineLoading3Quarters className="animate-spin duration-300" />} Post</Button>
