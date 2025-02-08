@@ -1,6 +1,6 @@
 "use client";
 import useUserStore from "@/store/user";
-import { GoBell, GoHash, GoHome, GoPerson, GoPlus, GoSearch } from "react-icons/go";
+import { GoBell, GoBookmark, GoHash, GoHome, GoPerson, GoPlus, GoSearch } from "react-icons/go";
 import { SiNeovim } from "react-icons/si";
 import { useEffect } from "react";
 import { Avatar } from "../ui/avatar";
@@ -45,11 +45,9 @@ export default function LeftBar() {
         <Link href='/notifications'>
           <GoBell size={22} />
         </Link>
-        {user?.id && (
-          <Link href={`/profile/${user.id}`}>
-            <GoPerson size={26} />
-          </Link>
-        )}
+        <Link href='/saves'>
+          <GoBookmark size={26} />
+        </Link>
       </div>
       <div>
         {user?.id ? (
