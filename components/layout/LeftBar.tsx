@@ -13,6 +13,7 @@ import {
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import CreatePostModal from "@/features/post/components/CreatePostModal";
 import ThemeSwitcher from "../shared/ThemeSwitcher";
+import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 
 export default function LeftBar() {
   const fetchUser = useUserStore((state) => state.fetchUser);
@@ -54,10 +55,10 @@ export default function LeftBar() {
         <ThemeSwitcher />
         {user?.id ? (
           <>
-            <Avatar>
+            <Avatar className="flex items-center justify-center">
               <AvatarImage src={user.image_url!} />
               <AvatarFallback>
-                {user?.user_name.slice(0, 2).toUpperCase()}
+                {formatUserNameForImage(user.user_name)}
               </AvatarFallback>
             </Avatar>
           </>
