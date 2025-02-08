@@ -26,30 +26,30 @@ enum NotificationType {
 }
 
 model User {
-  id                  String         @id @default(uuid())
-  user_name           String
-  tag                 String         @unique @default(cuid())
-  email               String         @unique
-  password            String?
-  github_id           String?
-  discord_id          String?
-  google_id           String?
-  image_url           String?
-  banner_url          String?
-  bio                 String?
-  Post                Post[]
-  Comment             Comment[]
-  Like                Like[]
-  Save                Save[]
-  Membership          Membership[]
-  premium             Boolean        @default(false)
-  SubscriptionEndDate DateTime
-  created_at          DateTime       @default(now())
-  followers           Follow[]       @relation("following")
-  following           Follow[]       @relation("follower")
-  Message             Message[]
-  Notification        Notification[]
-  Notification        Notification[]
+  id                   String         @id @default(uuid())
+  user_name            String
+  tag                  String         @unique @default(cuid())
+  email                String         @unique
+  password             String?
+  github_id            String?
+  discord_id           String?
+  google_id            String?
+  image_url            String?
+  banner_url           String?
+  bio                  String?
+  Post                 Post[]
+  Comment              Comment[]
+  Like                 Like[]
+  Save                 Save[]
+  Membership           Membership[]
+  premium              Boolean        @default(false)
+  SubscriptionEndDate  DateTime
+  created_at           DateTime       @default(now())
+  followers            Follow[]       @relation("following")
+  following            Follow[]       @relation("follower")
+  Message              Message[]
+  NotificationSent     Notification[] @relation("sent")
+  NotificationRecieved Notification[] @relation("recived")
 }
 
 model Post {
@@ -145,8 +145,8 @@ model Notification {
   id        String           @id @default(uuid())
   content   String
   type      NotificationType
-  sender    User             @relation(fields: [senderId], references: [id])
-  reciver   User             @relation(fields: [reciverId], references: [id])
+  sender    User             @relation(name: "sent", fields: [senderId], references: [id])
+  reciver   User             @relation(name: "recived", fields: [reciverId], references: [id])
   senderId  String
   reciverId String
 }
