@@ -90,10 +90,7 @@ export default function CreatePostModal() {
 
   return (
     <DialogContent>
-      <DialogTitle>Create New Post</DialogTitle>
-      <DialogDescription>
-        create and share knowlege with the others
-      </DialogDescription>
+      <DialogTitle className="mb-3">Create New Post</DialogTitle>
       <DialogHeader>
         <div className="flex gap-2">
           {user ? (
@@ -105,7 +102,7 @@ export default function CreatePostModal() {
             <FaUser size={24} />
           )}
           <div className="space-y-2 w-full">
-            {communities && (
+            {communities && communities?.length > 0 && (
               <Select onValueChange={(e) => setSelectedCommunity(e)}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Everyone" />
