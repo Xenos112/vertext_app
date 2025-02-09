@@ -198,3 +198,31 @@ export async function getRecommendedUsers() {
     return { error: "Could Not Fetch the Users" };
   }
 }
+
+export async function getRecommendedCommunities() {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) return { error: ERRORS.NOT_AUTHENTICATED };
+
+    const communities = await prisma.community.findMany({
+      take: 4,
+      where: {
+        NOT: {
+          Membership: {
+            some: {
+              userId: user.id,
+            },
+          },
+        },
+      },
+    });
+    if (!communities) return { error: "No Communities Found" };
+
+    return { communities: communities || [] };
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went Wrong" };
+  }
+}
