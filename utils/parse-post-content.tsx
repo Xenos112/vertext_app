@@ -1,7 +1,7 @@
 const parsePostContent = (text: string | undefined) => {
   if (!text) return null;
   const userTagRegex = /@\w+/g;
-  const urlRegex = /(https?:\/\/|http?:\/\/|www\.)\S+\.\S+/g;
+  const urlRegex = /(?:https?:\/\/)?(?:www\.)?([\w-]+\.[a-z]{2,6}\S*)/gi;
   const tags = text.match(userTagRegex);
   if (!tags) return text;
   const replacedText = text.replace(userTagRegex, (tag) => {
