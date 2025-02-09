@@ -74,7 +74,6 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 required
-                className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
               />
               <Input
                 type="password"
@@ -82,7 +81,6 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 required
-                className="dark:bg-gray-700 border-gray-200 dark:border-gray-600"
               />
             </div>
             <Button
@@ -101,7 +99,7 @@ export default function LoginPage() {
                 <span className="w-full border-t border-gray-300 dark:border-gray-600" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="px-2 bg-white text-muted-foreground dark:bg-black">
+                <span className="px-2 bg-background text-muted-foreground">
                   Or continue with
                 </span>
               </div>
