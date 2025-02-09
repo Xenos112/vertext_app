@@ -11,7 +11,7 @@ import { redirect } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6";
 
-export default function page() {
+export default function RegisterPage() {
   const fetchUser = useUserStore((state) => state.fetchUser);
   const [userData, setUserData] = useState({
     email: "",
@@ -62,7 +62,8 @@ export default function page() {
               <Input
                 type="text"
                 onChange={(e) => setUserData(prev => ({ ...prev, userName: e.target.value }))}
-                placeholder="Username" required
+                placeholder="Username"
+                required
               />
               <Input
                 type="email"
