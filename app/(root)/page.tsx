@@ -26,7 +26,7 @@ export default function Home() {
     const fetchPosts = async () => {
       const data = await ky.get<FeedResponse>("/api/feed");
       const res = await data.json();
-      setPosts(res as []);
+      setPosts(res);
     };
     fetchPosts();
   }, []);
