@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import CreatePostModal from "@/features/post/components/CreatePostModal";
+import Link from "next/link";
 
 type FeedResponse = APIResponse<ReturnType<typeof GET>>;
 
@@ -33,6 +34,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen border border-muted rounded-lg">
+      {user?.id && (
+        <div className="flex items-center justify-center p-3">
+          <Link className="flex-1 text-center" href={`/?t=feed`}>Feed</Link>
+          <Link className="flex-1 text-center" href={`/?t=communities`}>Communities</Link>
+        </div>
+      )}
       {user?.id && (
         <Dialog>
           <DialogTrigger asChild>
