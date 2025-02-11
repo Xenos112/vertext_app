@@ -35,7 +35,7 @@ export default function Home() {
   return (
     <div className="min-h-screen border border-muted rounded-lg">
       {user?.id && (
-        <div className="flex items-center justify-center p-3">
+        <div className="flex items-center justify-center *:p-3 border-b border-muted divide-x-2 divide-muted">
           <Link className="flex-1 text-center" href={`/?t=feed`}>Feed</Link>
           <Link className="flex-1 text-center" href={`/?t=communities`}>Communities</Link>
         </div>
