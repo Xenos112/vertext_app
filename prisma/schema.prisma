@@ -31,9 +31,9 @@ model User {
   tag                  String         @unique @default(cuid())
   email                String         @unique
   password             String?
-  github_id            String?
-  discord_id           String?
-  google_id            String?
+  github_id            String?        @unique
+  discord_id           String?        @unique
+  google_id            String?        @unique
   image_url            String?
   banner_url           String?
   bio                  String?
@@ -43,7 +43,7 @@ model User {
   Save                 Save[]
   Membership           Membership[]
   premium              Boolean        @default(false)
-  SubscriptionEndDate  DateTime
+  SubscriptionEndDate  DateTime?
   created_at           DateTime       @default(now())
   followers            Follow[]       @relation("following")
   following            Follow[]       @relation("follower")
