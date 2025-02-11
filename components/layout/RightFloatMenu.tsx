@@ -105,40 +105,44 @@ export default function RightFloatMenu() {
 
   return (
     <div className='absolute top-12 right-12'>
-      <div className='space-y-5'>
-        <h1 className='text-xl font-semibold'>Who To Follow</h1>
-        <div className='w-72 space-y-4'>
-          {users?.map(user => (
-            <div key={user.id} className='flex items-center justify-between'>
-              <div className='flex items-center gap-3'>
-                <Avatar className='size-[30px]'>
-                  <AvatarImage src={user.image_url!} />
-                  <AvatarFallback className='text-xs'>{formatUserNameForImage(user.user_name)}</AvatarFallback>
-                </Avatar>
-                <p>{user.user_name}</p>
+      {users && users?.length > 0 && (
+        <div className='space-y-5'>
+          <h1 className='text-xl font-semibold'>Who To Follow</h1>
+          <div className='w-72 space-y-4'>
+            {users.map(user => (
+              <div key={user.id} className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <Avatar className='size-[30px]'>
+                    <AvatarImage src={user.image_url!} />
+                    <AvatarFallback className='text-xs'>{formatUserNameForImage(user.user_name)}</AvatarFallback>
+                  </Avatar>
+                  <p>{user.user_name}</p>
+                </div>
+                <Button onClick={() => handleFollowClick(user.id)} disabled={loading} size='sm'>{loading && <FiLoader />} Follow</Button>
               </div>
-              <Button onClick={() => handleFollowClick(user.id)} disabled={loading} size='sm'>{loading && <FiLoader />} Follow</Button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-      <div className='space-y-5'>
-        <h1 className='text-xl font-semibold'>Communities to Join</h1>
-        <div className='w-72 space-y-4'>
-          {communities?.map(community => (
-            <div key={community.id} className='flex items-center justify-between'>
-              <div className='flex items-center gap-3'>
-                <Avatar className='size-[30px]'>
-                  <AvatarImage src={community.image!} />
-                  <AvatarFallback className='text-xs'>{formatUserNameForImage(community.name)}</AvatarFallback>
-                </Avatar>
-                <p>{community.name}</p>
+      )}
+      {communities && communities.length > 0 && (
+        <div className='space-y-5'>
+          <h1 className='text-xl font-semibold'>Communities to Join</h1>
+          <div className='w-72 space-y-4'>
+            {communities.map(community => (
+              <div key={community.id} className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <Avatar className='size-[30px]'>
+                    <AvatarImage src={community.image!} />
+                    <AvatarFallback className='text-xs'>{formatUserNameForImage(community.name)}</AvatarFallback>
+                  </Avatar>
+                  <p>{community.name}</p>
+                </div>
+                <Button onClick={() => handleFollowClick(community.id)} disabled={loading} size='sm'>{loading && <FiLoader />} Join</Button>
               </div>
-              <Button onClick={() => handleFollowClick(community.id)} disabled={loading} size='sm'>{loading && <FiLoader />} Join</Button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
