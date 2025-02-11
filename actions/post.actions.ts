@@ -13,9 +13,9 @@ export const like = async (postId: string) => {
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
     const user = await validateUser(token);
-    if (!user) return ERRORS.NOT_AUTHENTICATED;
+    if (!user) return { error: ERRORS.NOT_AUTHENTICATED };
     const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (!post) return ERRORS.POST_NOT_FOUND;
+    if (!post) return { error: ERRORS.POST_NOT_FOUND };
     const isLiked = await prisma.like.findFirst({
       where: { postId: postId, userId: user.id },
     });
@@ -177,7 +177,7 @@ export const createPost = async (data: CreatePost) => {
   }
 };
 
-const sharePostHandler = async (postId: string) => {
+export const sharePostHandler = async (postId: string) => {
   const post = await prisma.post.findUnique({
     where: { id: postId },
   });
@@ -188,3 +188,56 @@ const sharePostHandler = async (postId: string) => {
   });
   return updatedPost;
 };
+
+export async function getPostById(id: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    const post = await prisma.post.findUnique({
+      where: { id },
+      include: {
+        Community: true,
+        Comment: {
+          include: {
+            Author: true,
+          },
+        },
+        Author: {
+          omit: {
+            password: true,
+          },
+        },
+        _count: {
+          select: {
+            Like: true,
+            Save: true,
+            Comment: true,
+          },
+        },
+        Like: {
+          where: {
+            userId: user?.id,
+          },
+          select: {
+            userId: true,
+          },
+        },
+        Save: {
+          where: {
+            userId: user?.id,
+          },
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    if (!post) return { error: ERRORS.POST_NOT_FOUND };
+
+    return { post };
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went wrong" };
+  }
+}

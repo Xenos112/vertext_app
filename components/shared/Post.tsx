@@ -65,7 +65,7 @@ export default function Post({ ...post }: PostProps) {
       } else {
         toast({
           title: "Success",
-          description: `You Have ${data.message} the Post`,
+          description: `You Have ${data.error} the Post`,
         });
       }
     } else {
