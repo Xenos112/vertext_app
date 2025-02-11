@@ -15,7 +15,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { BsThreeDotsVertical } from "react-icons/bs"
 import { FaHeart } from "react-icons/fa6"
-import { GoArrowLeft } from "react-icons/go"
+import { GoArrowLeft, GoComment } from "react-icons/go"
 import { IoMdShareAlt } from "react-icons/io"
 import { IoBookmark, IoCopy } from "react-icons/io5"
 import { MdVerified } from "react-icons/md"
@@ -43,7 +43,7 @@ export default function PostPage() {
         setPost(data.post)
       }
     }).finally(() => setLoading(false))
-  }, [])
+  }, [id, toast])
 
   return (
     <div className="border h-screen border-muted rounded-xl">
@@ -67,6 +67,12 @@ export default function PostPage() {
           </Link>
         </div>
       )}
+      <div>
+        <h1 className="p-4 border-b border-muted flex items-center gap-3">
+          <GoComment />
+          Comments
+        </h1>
+      </div>
       {post && post?.Comment.length > 0 && (
         <div>
           {post.Comment.map(comment => (
