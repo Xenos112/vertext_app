@@ -340,10 +340,12 @@ export default function Post({ ...post }: PostProps) {
               </div>
             )}
           </button>
-          <button className="flex gap-1 items-center">
-            <FaRegComment />
-            <p>{formatNumber(postState._count.Comment)}</p>
-          </button>
+          <Link href={`/post/${postState.id}`}>
+            <button className="flex gap-1 items-center">
+              <FaRegComment />
+              <p>{formatNumber(postState._count.Comment)}</p>
+            </button>
+          </Link>
           <button onClick={saveHandler}>
             {postState.Save.length !== 0 ? (
               <div className="flex gap-1 items-center text-yellow-500 cursor-pointer">
