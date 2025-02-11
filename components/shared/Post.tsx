@@ -307,19 +307,21 @@ export default function Post({ ...post }: PostProps) {
         )}
         {postState.medias.length !== 0 && (
           <div className={`${className} rounded-md overflow-hidden grid gap-1 mt-3`}>
-            {postState.medias.map((media, index) => (
-              <AspectRatio key={index} ratio={16 / 9}>
-                {isImage.test(media) ? (
-                  <img
-                    src={media}
-                    alt="Post"
-                    className="object-cover size-full"
-                  />)
-                  : (
-                    <video src={media} />
-                  )}
-              </AspectRatio>
-            ))}
+            <Link href={`/post/${postState.id}`}>
+              {postState.medias.map((media, index) => (
+                <AspectRatio key={index} ratio={16 / 9}>
+                  {isImage.test(media) ? (
+                    <img
+                      src={media}
+                      alt="Post"
+                      className="object-cover size-full"
+                    />)
+                    : (
+                      <video src={media} />
+                    )}
+                </AspectRatio>
+              ))}
+            </Link>
           </div>
         )}
       </div>
@@ -381,6 +383,6 @@ export default function Post({ ...post }: PostProps) {
           </Dialog>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
