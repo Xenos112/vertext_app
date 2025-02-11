@@ -107,7 +107,7 @@ export default function UserPage({ children }: { children: ReactNode }) {
               src={user?.banner_url!}
               className="h-[200px] w-full object-cover"
             />
-            <Avatar className="size-[130px] absolute ring-4 ring-offset-transparent ring-white -translate-y-1/2 mx-3">
+            <Avatar className="size-[130px] absolute ring-4 ring-offset-transparent ring-background -translate-y-1/2 mx-3">
               <AvatarImage src={user?.image_url!} />
               <AvatarFallback>
                 {formatUserNameForImage(user?.user_name!)}
