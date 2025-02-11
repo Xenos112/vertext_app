@@ -1,6 +1,5 @@
 'use client'
-
-import { deletePost, getPostById } from "@/actions/post.actions"
+import { getPostById } from "@/actions/post.actions"
 import Post from "@/components/shared/Post"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -9,7 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { isImage } from "@/constants"
 import { useToast } from "@/hooks/use-toast"
-import copyText from "@/utils/copy-text"
 import formatDate from "@/utils/format-date"
 import parsePostContent from "@/utils/parse-post-content"
 import Link from "next/link"
@@ -20,7 +18,7 @@ import { FaHeart } from "react-icons/fa6"
 import { GoArrowLeft } from "react-icons/go"
 import { IoMdShareAlt } from "react-icons/io"
 import { IoBookmark, IoCopy } from "react-icons/io5"
-import { MdOutlineDeleteOutline, MdVerified } from "react-icons/md"
+import { MdVerified } from "react-icons/md"
 
 
 type PostWithComments = Awaited<ReturnType<typeof getPostById>>['post']
@@ -57,6 +55,18 @@ export default function PostPage() {
       </div>
       {loading && <div>Loading...</div>}
       {post && <Post {...post} />}
+      {error && (
+        <div className="flex items-center justify-center h-screen flex-col gap-4">
+          <h1 className="text-2xl leading-none font-semibold">{error}</h1>
+          <p className="text-muted-foreground leading-none">Post Maybe Hidden or Have Deleted</p>
+          <Link href='/'>
+            <Button>
+              <GoArrowLeft />
+              Return To Home Page
+            </Button>
+          </Link>
+        </div>
+      )}
       {post && post?.Comment.length > 0 && (
         <div>
           {post.Comment.map(comment => (
