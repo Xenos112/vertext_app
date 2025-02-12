@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ThemeProvider } from 'next-themes'
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { poppins } from "@/fonts";
+import { poppins } from "@/assets/fonts";
 import AuthUserProvider from "@/providers/AuthUserProvider";
 import ReactQuery from "@/providers/ReactQuery";
 
