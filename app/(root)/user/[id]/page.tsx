@@ -53,7 +53,7 @@ export default function UserPage() {
   if (error) return <div>{error}</div>;
   return (
     <div className="p-3">
-      <div className="flex justify-evenly items-center border-y border-gray-300 p-3">
+      <div className="flex justify-evenly items-center border-y border-muted p-3">
         <Button
           onClick={() => setActiveTab("posts")}
           variant={"ghost"}

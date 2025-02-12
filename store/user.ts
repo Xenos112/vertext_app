@@ -13,7 +13,7 @@ type UserStore = {
 const useUserStore = create<UserStore>()((set) => ({
   user: null,
   error: "",
-  loading: false,
+  loading: true,
   setUser: (user) => set({ user }),
   async fetchUser() {
     const data = await ky.get<UserType | null>("http://localhost:3000/api/me", {
@@ -21,10 +21,10 @@ const useUserStore = create<UserStore>()((set) => ({
       throwHttpErrors: false,
     });
     if (data.status !== 200) {
-      set({ user: null, error: "You Must Be Authenticated" });
+      set({ user: null, loading: false, error: "You Must Be Authenticated" });
     }
     const user = await data.json();
-    set({ user: user });
+    set({ user: user, loading: false });
   },
 }));
 

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from 'next-themes'
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { poppins } from "@/fonts";
+import AuthUserProvider from "@/providers/AuthUserProvider";
+import ReactQuery from "@/providers/ReactQuery";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,10 +17,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.className} antialiased`}>
-        {children}
-        <Toaster />
+        <ThemeProvider>
+          <ReactQuery>
+            <AuthUserProvider>
+              {children}
+              <Toaster />
+            </AuthUserProvider>
+          </ReactQuery>
+        </ThemeProvider>
       </body>
     </html>
   );

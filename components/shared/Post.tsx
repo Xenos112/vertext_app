@@ -38,6 +38,8 @@ import parsePostContent from "@/utils/parse-post-content";
 import copyText from "@/utils/copy-text";
 import Link from "next/link";
 import { formatNumber } from "@/utils/format-number";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Share } from "lucide-react";
 
 type PostProps = APIResponse<ReturnType<typeof GET>>[number];
 
@@ -63,7 +65,7 @@ export default function Post({ ...post }: PostProps) {
       } else {
         toast({
           title: "Success",
-          description: `You Have ${data.message} the Post`,
+          description: `You Have ${data.error} the Post`,
         });
       }
     } else {
@@ -169,7 +171,7 @@ export default function Post({ ...post }: PostProps) {
             : "grid-cols-5 grid-rows-1";
 
   return (
-    <div className="py-3 border-gray-500 border-b">
+    <div className="p-4 border-muted border-b">
       <div className="flex justify-between items-center">
         <div className="flex gap-3">
           <TooltipProvider>
@@ -197,11 +199,11 @@ export default function Post({ ...post }: PostProps) {
                       <div className="flex gap-1 items-center">
                         <p>{postState.Author.user_name}</p>
                         {postState.Author.premium && <MdVerified />}
-                        <p className="text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                           @{postState.Author.tag}
                         </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {formatDate(postState.Author.created_at)}
                       </p>
                     </div>
@@ -225,13 +227,13 @@ export default function Post({ ...post }: PostProps) {
               )}
               <Link
                 href={`/user/${postState.Author.id}`}
-                className="text-muted-foreground"
+                className="text-muted-foreground text-xs"
               >
                 @{postState.Author.tag}
               </Link>
             </div>
             <div className="flex gap-2 items-center">
-              <time className="text-sm text-muted-foreground">
+              <time className="text-muted-foreground text-xs">
                 {formatDate(postState.created_at.toString())}
               </time>
             </div>
@@ -243,7 +245,7 @@ export default function Post({ ...post }: PostProps) {
               <BsThreeDotsVertical />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 *:text-base">
+          <DropdownMenuContent className="w-56 text-xs">
             <DropdownMenuItem
               onClick={() =>
                 handleCopyText(`${window.location.href}/post/${postState.id}`)
@@ -297,7 +299,7 @@ export default function Post({ ...post }: PostProps) {
       <div className="mt-3 ml-[50px]">
         {postState.content && (
           <p
-            className="text-lg"
+            className="text-[15px]"
             dangerouslySetInnerHTML={{
               __html: parsePostContent(postState.content)!,
             }}
@@ -305,19 +307,21 @@ export default function Post({ ...post }: PostProps) {
         )}
         {postState.medias.length !== 0 && (
           <div className={`${className} rounded-md overflow-hidden grid gap-1 mt-3`}>
-            {postState.medias.map((media, index) => (
-              <AspectRatio key={index} ratio={16 / 9}>
-                {isImage.test(media) ? (
-                  <img
-                    src={media}
-                    alt="Post"
-                    className="object-cover size-full"
-                  />)
-                  : (
-                    <video src={media} />
-                  )}
-              </AspectRatio>
-            ))}
+            <Link href={`/post/${postState.id}`}>
+              {postState.medias.map((media, index) => (
+                <AspectRatio key={index} ratio={16 / 9}>
+                  {isImage.test(media) ? (
+                    <img
+                      src={media}
+                      alt="Post"
+                      className="object-cover size-full"
+                    />)
+                    : (
+                      <video src={media} />
+                    )}
+                </AspectRatio>
+              ))}
+            </Link>
           </div>
         )}
       </div>
@@ -336,10 +340,12 @@ export default function Post({ ...post }: PostProps) {
               </div>
             )}
           </button>
-          <button className="flex gap-1 items-center">
-            <FaRegComment />
-            <p>{formatNumber(postState._count.Comment)}</p>
-          </button>
+          <Link href={`/post/${postState.id}`}>
+            <button className="flex gap-1 items-center">
+              <FaRegComment />
+              <p>{formatNumber(postState._count.Comment)}</p>
+            </button>
+          </Link>
           <button onClick={saveHandler}>
             {postState.Save.length !== 0 ? (
               <div className="flex gap-1 items-center text-yellow-500 cursor-pointer">
@@ -353,17 +359,32 @@ export default function Post({ ...post }: PostProps) {
               </div>
             )}
           </button>
-          <button
-            className="flex gap-1 items-center"
-            onClick={() =>
-              copyText(`${window.location.href}/post/${postState.id}`)
-            }
-          >
-            <IoMdShareAlt />
-            <p>{formatNumber(postState.share_number)}</p>
-          </button>
+          <Dialog>
+            <DialogTrigger asChild className="text-base">
+              <Button variant="ghost" size="sm" onClick={() => { }}>
+                <Share className="" />
+                {postState.share_number}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Share this post</DialogTitle>
+                <DialogDescription>Copy the link below to share this post with others.</DialogDescription>
+              </DialogHeader>
+              <div className="flex items-center space-x-2">
+                <input type="text" readOnly value={`${window.location.href}post/${postState.id}`} className="flex-1 px-3 py-2 text-sm border rounded-md" />
+                <Button
+                  onClick={() => {
+                    handleCopyText(`${window.location.href}/post/${postState.id}`)
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
