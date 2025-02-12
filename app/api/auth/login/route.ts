@@ -37,7 +37,10 @@ export const POST = async (req: NextRequest) => {
     // if the user dont have password associated with his account
     if (!user.password) {
       return NextResponse.json(
-        { error: "User Is Linked With A Social Platform" },
+        {
+          error:
+            "User Is Linked With A Social Platform, Try Logging using one of the provided Ones",
+        },
         { status: STATUS_CODES.UNAUTHORIZED },
       );
     }
