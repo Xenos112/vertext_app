@@ -104,6 +104,7 @@ model Community {
   name       String
   image      String?
   banner     String?
+  bio        String?
   Post       Post[]
   Membership Membership[]
   created_at DateTime     @default(now())
