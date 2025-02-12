@@ -6,11 +6,16 @@ type RegisterMutationFunctionProps = {
   password: string;
   user_name: string;
 };
+
+// TODO: make a client side data parsing
 export async function registerFunction({
   email,
   password,
   user_name,
 }: RegisterMutationFunctionProps) {
+  if (!password || !email || !user_name) {
+    throw new Error("Please Fill all the inputs");
+  }
   const result = await ky.post<RegisterApiResponse>("/api/auth/register", {
     json: {
       email,

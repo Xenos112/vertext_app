@@ -5,10 +5,15 @@ type LoginMutationFunctionProps = {
   email: string;
   password: string;
 };
+
+// TODO: make a client side data parsing
 export async function loginFunction({
   email,
   password,
 }: LoginMutationFunctionProps) {
+  if (!password || !email) {
+    throw new Error("Please Fill all the inputs");
+  }
   const result = await ky.post<LoginAPIResponse>("/api/auth/login", {
     json: {
       email,
