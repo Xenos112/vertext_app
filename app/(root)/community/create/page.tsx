@@ -99,7 +99,7 @@ export default function CreateCommunityForm() {
               )}
             </div>
             <div className="flex items-center space-x-4">
-              <div className="relative w-24 h-24 rounded-xl ml-2 overflow-hidden bg-gray-200 -mt-12 border-4 border-white">
+              <div className="relative w-24 h-24 rounded-xl ml-2 overflow-hidden bg-gray-200 -mt-12 ring-background ring-offset-transparent ring-4">
                 {profileImage ? (
                   <Image
                     src={profileImage || "/placeholder.svg"}
@@ -111,10 +111,10 @@ export default function CreateCommunityForm() {
                   <div className="flex items-center justify-center h-full text-gray-400">Profile</div>
                 )}
               </div>
-              <div>
+              <div className="space-y-1">
                 <h3 className="text-xl font-bold">{name || "Community Name"}</h3>
-                <p className="text-gray-600">{description || "Community description will appear here"}</p>
-                <p className="text-gray-600">Date Created {(new Date()).toLocaleDateString()}</p>
+                <p className="text-gray-600 text-xs">{description || "Community description will appear here"}</p>
+                <p className="text-gray-600 text-xs">Date Created {(new Date()).toLocaleDateString()}</p>
               </div>
             </div>
           </div>
