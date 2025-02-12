@@ -53,15 +53,15 @@ export default function RegisterPage() {
           <form className="space-y-4">
             <div className="space-y-2">
               <Input
+                type="email"
+                onChange={(e) => setUserData(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="Email" required
+              />
+              <Input
                 type="text"
                 onChange={(e) => setUserData(prev => ({ ...prev, userName: e.target.value }))}
                 placeholder="Username"
                 required
-              />
-              <Input
-                type="email"
-                onChange={(e) => setUserData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="Email" required
               />
               <Input
                 type="password"
