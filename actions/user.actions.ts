@@ -1,5 +1,6 @@
 "use server";
 
+import { ERRORS } from "@/constants";
 import prisma from "@/utils/prisma";
 import validateUser from "@/utils/validate-user";
 import { cookies } from "next/headers";
@@ -170,3 +171,58 @@ export async function fetchUserJoinedCommunities(userId: string) {
   }
 }
 
+export async function getRecommendedUsers() {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) return { error: ERRORS.NOT_AUTHENTICATED };
+
+    const users = await prisma.user.findMany({
+      take: 4,
+      where: {
+        NOT: {
+          followers: {
+            some: {
+              followerId: user.id,
+            },
+          },
+        },
+      },
+    });
+    if (!users) return { error: "No Users Found" };
+
+    return { users: users || [] };
+  } catch (error) {
+    console.log(error);
+    return { error: "Could Not Fetch the Users" };
+  }
+}
+
+export async function getRecommendedCommunities() {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) return { error: ERRORS.NOT_AUTHENTICATED };
+
+    const communities = await prisma.community.findMany({
+      take: 4,
+      where: {
+        NOT: {
+          Membership: {
+            some: {
+              userId: user.id,
+            },
+          },
+        },
+      },
+    });
+    if (!communities) return { error: "No Communities Found" };
+
+    return { communities: communities || [] };
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went Wrong" };
+  }
+}

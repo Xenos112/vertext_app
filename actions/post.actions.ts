@@ -13,9 +13,9 @@ export const like = async (postId: string) => {
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
     const user = await validateUser(token);
-    if (!user) return ERRORS.NOT_AUTHENTICATED;
+    if (!user) return { error: ERRORS.NOT_AUTHENTICATED };
     const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (!post) return ERRORS.POST_NOT_FOUND;
+    if (!post) return { error: ERRORS.POST_NOT_FOUND };
     const isLiked = await prisma.like.findFirst({
       where: { postId: postId, userId: user.id },
     });
@@ -141,41 +141,43 @@ export const deletePost = async (postId: string) => {
 };
 
 export const createPost = async (data: CreatePost) => {
-  const {
-    success,
-    error,
-    data: parsed,
-  } = createPostSchemaValidator.safeParse(data);
-  if (!success) return { message: error };
-  const { content, files } = parsed;
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-  const user = await validateUser(token);
-  if (!user) return ERRORS.NOT_AUTHENTICATED;
+  try {
+    const { success, data: parsed } = createPostSchemaValidator.safeParse(data);
+    if (!success) return { error: "TODO:parse the error object" };
+    const { content, files } = parsed;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    if (!user) return { error: ERRORS.NOT_AUTHENTICATED };
 
-  const urls: string[] = [];
-  if (files) {
-    for (const file of files) {
-      const fileExt = file.name.slice(file.name.lastIndexOf('.'))
-      const fileName = uuid() + fileExt
-      const filePath = `./public/uploads/${fileName}`;
-      const fileBytes = await file.arrayBuffer();
-      fs.writeFileSync(filePath, Buffer.from(fileBytes));
-      const url = `http://localhost:3000/uploads/${fileName}`;
-      urls.push(url);
+    const urls: string[] = [];
+    if (files) {
+      for (const file of files) {
+        const fileExt = file.name.slice(file.name.lastIndexOf("."));
+        const fileName = uuid() + fileExt;
+        const filePath = `./public/uploads/${fileName}`;
+        const fileBytes = await file.arrayBuffer();
+        fs.writeFileSync(filePath, Buffer.from(fileBytes));
+        const url = `http://localhost:3000/uploads/${fileName}`;
+        urls.push(url);
+      }
     }
+    const post = await prisma.post.create({
+      data: {
+        content,
+        userId: user.id,
+        medias: urls,
+        communityId: data.communityId,
+      },
+    });
+    return { post };
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went wrong" };
   }
-  const post = await prisma.post.create({
-    data: {
-      content,
-      userId: user.id,
-      medias: urls,
-    },
-  });
-  return post;
 };
 
-const sharePostHandler = async (postId: string) => {
+export const sharePostHandler = async (postId: string) => {
   const post = await prisma.post.findUnique({
     where: { id: postId },
   });
@@ -186,3 +188,56 @@ const sharePostHandler = async (postId: string) => {
   });
   return updatedPost;
 };
+
+export async function getPostById(id: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const user = await validateUser(token);
+    const post = await prisma.post.findUnique({
+      where: { id },
+      include: {
+        Community: true,
+        Comment: {
+          include: {
+            Author: true,
+          },
+        },
+        Author: {
+          omit: {
+            password: true,
+          },
+        },
+        _count: {
+          select: {
+            Like: true,
+            Save: true,
+            Comment: true,
+          },
+        },
+        Like: {
+          where: {
+            userId: user?.id,
+          },
+          select: {
+            userId: true,
+          },
+        },
+        Save: {
+          where: {
+            userId: user?.id,
+          },
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    if (!post) return { error: ERRORS.POST_NOT_FOUND };
+
+    return { post };
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went wrong" };
+  }
+}
