@@ -1,5 +1,7 @@
 import ky from "ky";
 import { RegisterApiResponse } from "@/app/api";
+import formatZodErrors from "@/utils/format-zod-errors";
+import { REGISTER_VALIDATOR } from "../validators/register";
 
 type RegisterMutationFunctionProps = {
   email: string;
@@ -16,12 +18,20 @@ export async function registerFunction({
   if (!password || !email || !user_name) {
     throw new Error("Please Fill all the inputs");
   }
+
+  const {
+    error,
+    data: parsedData,
+    success,
+  } = REGISTER_VALIDATOR.safeParse({ email, password, user_name });
+
+  if (!success) {
+    const errors = formatZodErrors(error);
+    throw new Error(errors[0]);
+  }
+
   const result = await ky.post<RegisterApiResponse>("/api/auth/register", {
-    json: {
-      email,
-      password,
-      user_name,
-    },
+    json: parsedData,
     throwHttpErrors: false,
   });
 

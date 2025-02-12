@@ -1,12 +1,13 @@
 import ky from "ky";
 import { LoginAPIResponse } from "@/app/api";
+import formatZodErrors from "@/utils/format-zod-errors";
+import { LOGIN_VALIDATOR } from "../validators/login";
 
 type LoginMutationFunctionProps = {
   email: string;
   password: string;
 };
 
-// TODO: make a client side data parsing
 export async function loginFunction({
   email,
   password,
@@ -14,11 +15,20 @@ export async function loginFunction({
   if (!password || !email) {
     throw new Error("Please Fill all the inputs");
   }
+
+  const {
+    error,
+    data: parsedData,
+    success,
+  } = LOGIN_VALIDATOR.safeParse({ email, password });
+
+  if (!success) {
+    const errors = formatZodErrors(error);
+    throw new Error(errors[0]);
+  }
+
   const result = await ky.post<LoginAPIResponse>("/api/auth/login", {
-    json: {
-      email,
-      password,
-    },
+    json: parsedData,
     throwHttpErrors: false,
   });
 

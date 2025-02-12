@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import useUserStore from "@/store/user";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { useState } from "react";
 import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6";
 import { FiLoader } from "react-icons/fi";

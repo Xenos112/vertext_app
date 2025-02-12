@@ -4,20 +4,9 @@ import bcrypt from "bcrypt";
 import generateToken from "@/utils/generate-token";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { APIResponse } from "@/types/api";
 import { STATUS_CODES } from "@/constants";
-
-const LOGIN_VALIDATOR = z.object({
-  email: z
-    .string({ message: "Email is Not Provided" })
-    .email({ message: "Email Schema is Not Valid" })
-    .trim(),
-  password: z
-    .string({ message: "Password is Not Provided" })
-    .min(8, { message: "Passowrd Length is lesst then 8" })
-    .trim(),
-});
+import { LOGIN_VALIDATOR } from "@/features/auth/validators/login";
 
 export const POST = async (req: NextRequest) => {
   try {
