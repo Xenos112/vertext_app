@@ -2,57 +2,43 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { FormEvent, useState } from 'react'
-import { z } from "zod"
+import { useState } from 'react'
 import { useToast } from "@/hooks/use-toast"
-import login from "@/actions/login"
 import useUserStore from "@/store/user"
 import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6"
 import Link from "next/link"
-import { redirect } from "next/navigation"
-
-const LoginValidator = z.object({
-  email: z.string({ message: "Email Is Required" }).email({ message: "This is Not a Valid Email" }),
-  password: z.string({ message: "Email Is Required" }).min(8, { message: "Password Must by at Least 8 Chars" })
-})
+import { useMutation } from "@tanstack/react-query"
+import { loginFunction } from "@/features/auth/api/login"
+import { FiLoader } from "react-icons/fi"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { toast } = useToast()
+  const router = useRouter()
   const fetchUser = useUserStore(state => state.fetchUser)
 
-  const handleLogin = async (e: FormEvent) => {
-    e.preventDefault()
-    const data = LoginValidator.safeParse({ email, password })
-    if (!data.success) {
-      data.error.errors.forEach(err => {
-        toast({
-          variant: 'destructive',
-          title: "Error",
-          description: err.message
-        })
-      })
-      return
-    }
-
-    const loginResponse = await login({ password: data.data.password, email: data.data.email })
-    if (loginResponse.error) {
+  const { mutate: login, isPending } = useMutation({
+    mutationKey: ['login'],
+    mutationFn: () => loginFunction({ email, password }),
+    onError(error) {
       toast({
         variant: 'destructive',
         title: "Error",
-        description: loginResponse.error
+        description: error.message
       })
-    } else {
+    },
+    async onSuccess() {
       toast({
         title: "Success",
         description: "You Have Logged In"
       })
 
       await fetchUser();
-      redirect("/");
+      router.push('/')
     }
-  }
+  })
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -66,7 +52,7 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form className="space-y-4">
             <div className="space-y-2">
               <Input
                 type="email"
@@ -84,9 +70,12 @@ export default function LoginPage() {
               />
             </div>
             <Button
-              type="submit"
+              type="button"
+              onClick={() => login()}
+              disabled={isPending}
               className="w-full font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
             >
+              {isPending && <FiLoader />}
               Sign In
             </Button>
           </form>

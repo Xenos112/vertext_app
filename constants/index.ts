@@ -4,3 +4,12 @@ export const ERRORS = {
 };
 
 export const isImage = /\.*(.png|.jpg|.jpeg|.webp)/i;
+
+export const STATUS_CODES = {
+  NOT_FOUND: 404,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  CREATED: 201,
+  SUCCESS: 200,
+  SERVER_ISSUE: 500,
+};
