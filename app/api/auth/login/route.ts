@@ -45,10 +45,10 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    const isPasswordRight = bcrypt.compareSync(data.password, user.password!);
+    const isPasswordCorrect = bcrypt.compareSync(data.password, user.password);
 
     // if password is wrong
-    if (!isPasswordRight) {
+    if (!isPasswordCorrect) {
       return NextResponse.json(
         { error: "Wrong Password Provided" },
         { status: STATUS_CODES.UNAUTHORIZED },
