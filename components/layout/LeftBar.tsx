@@ -1,15 +1,21 @@
 "use client";
 import useUserStore from "@/store/user";
-import { GoBell, GoBookmark, GoHash, GoHome, GoPerson, GoPlus, GoSearch } from "react-icons/go";
+import {
+  GoBell,
+  GoBookmark,
+  GoHash,
+  GoHome,
+  GoPerson,
+  GoPlus,
+  GoSearch,
+} from "react-icons/go";
 import { SiNeovim } from "react-icons/si";
 import { useEffect } from "react";
 import { Avatar } from "../ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-} from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import CreatePostModal from "@/features/post/components/CreatePostModal";
 import ThemeSwitcher from "../shared/ThemeSwitcher";
@@ -30,24 +36,24 @@ export default function LeftBar() {
         <SiNeovim size={30} />
       </div>
       <div className="flex flex-col justify-center items-center gap-10">
-        <Link href='/'>
+        <Link href="/">
           <GoHash size={22} />
         </Link>
-        <Link href='/search'>
+        <Link href="/search">
           <GoSearch size={22} />
         </Link>
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="default" size='sm' className="inline">
+            <Button variant="default" size="sm" className="inline">
               <GoPlus />
             </Button>
           </DialogTrigger>
           <CreatePostModal />
         </Dialog>
-        <Link href='/notifications'>
+        <Link href="/notifications">
           <GoBell size={22} />
         </Link>
-        <Link href='/saves'>
+        <Link href="/saves">
           <GoBookmark size={26} />
         </Link>
       </div>
