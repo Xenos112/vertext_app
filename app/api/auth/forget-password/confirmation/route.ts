@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import formatZodErrors from "@/utils/format-zod-errors";
 import prisma from "@/utils/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { APIResponse } from "@/types/api";
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -48,3 +49,7 @@ export const POST = async (req: NextRequest) => {
     );
   }
 };
+
+export type ForgetPasswordConfirmationApiResponse = APIResponse<
+  ReturnType<typeof POST>
+>;
