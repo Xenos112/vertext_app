@@ -61,11 +61,12 @@ export default function Post({ ...post }: PostProps) {
         toast({
           title: "Error",
           variant: "destructive",
+          description: `${data.error}`
         });
       } else {
         toast({
           title: "Success",
-          description: `You Have ${data.error} the Post`,
+          description: `You Have ${data.message} the Post`,
         });
       }
     } else {
@@ -78,6 +79,8 @@ export default function Post({ ...post }: PostProps) {
       if ("error" in data)
         toast({
           title: "Error",
+          variant: 'destructive',
+          description: data.error
         });
       else
         toast({
