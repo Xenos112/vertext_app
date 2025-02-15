@@ -40,9 +40,9 @@ export const dislike = async (postId: string) => {
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
     const user = await validateUser(token);
-    if (!user) return ERRORS.NOT_AUTHENTICATED;
+    if (!user) return { error: ERRORS.NOT_AUTHENTICATED };
     const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (!post) return ERRORS.POST_NOT_FOUND;
+    if (!post) return { error: ERRORS.POST_NOT_FOUND };
     const isLiked = await prisma.like.findFirst({
       where: { postId: postId, userId: user.id },
     });
@@ -56,7 +56,8 @@ export const dislike = async (postId: string) => {
     }
     return { message: "Already disliked" };
   } catch (error) {
-    return { error };
+    console.log("ERROR:" + error);
+    return { error: "Something went wrong" };
   }
 };
 
@@ -65,9 +66,9 @@ export const save = async (postId: string) => {
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
     const user = await validateUser(token);
-    if (!user) return ERRORS.POST_NOT_FOUND;
+    if (!user) return { error: ERRORS.POST_NOT_FOUND };
     const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (!post) return ERRORS.POST_NOT_FOUND;
+    if (!post) return { error: ERRORS.POST_NOT_FOUND };
     const isSaved = await prisma.save.findFirst({
       where: { postId: postId, userId: user.id },
     });
@@ -82,7 +83,8 @@ export const save = async (postId: string) => {
     });
     return { message: "Saved" };
   } catch (error) {
-    return { error };
+    console.log("ERROR:" + error);
+    return { error: "Something went wrong" };
   }
 };
 
@@ -91,9 +93,9 @@ export const unsave = async (postId: string) => {
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
     const user = await validateUser(token);
-    if (!user) return ERRORS.POST_NOT_FOUND;
+    if (!user) return { error: ERRORS.POST_NOT_FOUND };
     const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (!post) return ERRORS.POST_NOT_FOUND;
+    if (!post) return { error: ERRORS.POST_NOT_FOUND };
     const isSaved = await prisma.save.findFirst({
       where: { postId: postId, userId: user.id },
     });
@@ -107,7 +109,8 @@ export const unsave = async (postId: string) => {
     });
     return { message: "UnSaved" };
   } catch (error) {
-    return { error };
+    console.log("ERROR:" + error);
+    return { error: "Something went wrong" };
   }
 };
 
