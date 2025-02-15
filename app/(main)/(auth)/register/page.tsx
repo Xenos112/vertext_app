@@ -1,15 +1,16 @@
 "use client";
-import { register } from "@/actions/register";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ToastAction } from "@/components/ui/toast";
+import { registerFunction } from "@/features/auth/api/register";
 import { useToast } from "@/hooks/use-toast";
 import useUserStore from "@/store/user";
+import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6";
+import { FiLoader } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const fetchUser = useUserStore((state) => state.fetchUser);
@@ -19,35 +20,27 @@ export default function RegisterPage() {
     password: "",
   });
   const { toast } = useToast();
+  const router = useRouter()
 
-  const registerHandler = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!userData.email || !userData.userName || !userData.password) {
+  const { isPending, mutate: register } = useMutation({
+    mutationKey: ['register'],
+    mutationFn: () => registerFunction({ email: userData.email, password: userData.password, user_name: userData.userName }),
+    onError(error) {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "Please fill all the fields.",
+        description: error.message,
       });
-      return;
-    }
-    const res = await register(userData);
-    if (!res?.user?.id) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: res.message,
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-      });
-      return;
-    } else {
+    },
+    async onSuccess() {
       toast({
         title: "Success",
         description: "User created successfully.",
       });
       await fetchUser();
-      redirect("/");
+      router.push("/");
     }
-  };
+  })
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -57,18 +50,18 @@ export default function RegisterPage() {
           <CardDescription className="text-center">Enter your details to register</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form onSubmit={registerHandler} className="space-y-4">
+          <form className="space-y-4">
             <div className="space-y-2">
+              <Input
+                type="email"
+                onChange={(e) => setUserData(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="Email" required
+              />
               <Input
                 type="text"
                 onChange={(e) => setUserData(prev => ({ ...prev, userName: e.target.value }))}
                 placeholder="Username"
                 required
-              />
-              <Input
-                type="email"
-                onChange={(e) => setUserData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="Email" required
               />
               <Input
                 type="password"
@@ -77,7 +70,8 @@ export default function RegisterPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="button" onClick={() => register()} disabled={isPending} className="w-full">
+              {isPending && <FiLoader />}
               Register
             </Button>
           </form>
