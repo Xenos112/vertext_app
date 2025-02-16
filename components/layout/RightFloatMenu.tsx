@@ -104,7 +104,7 @@ export default function RightFloatMenu() {
   }
 
   return (
-    <div className='absolute top-12 right-12'>
+    <div className='absolute top-12 right-12 space-y-6'>
       {users && users?.length > 0 && (
         <div className='space-y-5'>
           <h1 className='text-xl font-semibold'>Who To Follow</h1>
