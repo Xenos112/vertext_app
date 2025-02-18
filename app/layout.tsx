@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,14 +20,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.className} antialiased`}>
-        <ThemeProvider>
-          <ReactQuery>
-            <AuthUserProvider>
-              {children}
-              <Toaster />
-            </AuthUserProvider>
-          </ReactQuery>
-        </ThemeProvider>
+        <NuqsAdapter>
+          <ThemeProvider>
+            <ReactQuery>
+              <AuthUserProvider>
+                {children}
+                <Toaster />
+              </AuthUserProvider>
+            </ReactQuery>
+          </ThemeProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );
