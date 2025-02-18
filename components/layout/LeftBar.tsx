@@ -32,9 +32,9 @@ export default function LeftBar() {
 
   return (
     <div className="fixed top-0 left-0 h-screen p-6 flex  flex-col justify-between items-center">
-      <div>
+      <Link href="/">
         <SiNeovim size={30} />
-      </div>
+      </Link>
       <div className="flex flex-col justify-center items-center gap-10">
         <Link href="/">
           <GoHash size={22} />
