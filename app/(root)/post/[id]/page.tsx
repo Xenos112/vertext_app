@@ -1,6 +1,6 @@
 "use client";
 import { createComment, getPostById } from "@/actions/post.actions";
-import Post from "@/components/shared/Post";
+import Post from "@/features/post/components/Post";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -103,7 +103,7 @@ export default function PostPage() {
         </Link>
       </div>
       {loading && <div>Loading...</div>}
-      {post && <Post {...post} />}
+      {post && <Post post={post} />}
       {error && (
         <div className="flex items-center justify-center h-screen flex-col gap-4">
           <h1 className="text-2xl leading-none font-semibold">{error}</h1>

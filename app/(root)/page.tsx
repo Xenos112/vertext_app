@@ -2,14 +2,11 @@
 import { GET } from "@/app/api/feed/route";
 import { useEffect, useState } from "react";
 import ky from "ky";
-import Post from "@/components/shared/Post";
+import Post from "@/features/post/components/Post";
 import { APIResponse } from "@/types/api";
 import useUserStore from "@/store/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import CreatePostModal from "@/features/post/components/CreatePostModal";
@@ -36,8 +33,12 @@ export default function Home() {
     <div className="min-h-screen border border-muted rounded-lg">
       {user?.id && (
         <div className="flex items-center justify-center *:p-3 border-b border-muted divide-x-[1px] divide-muted">
-          <Link className="flex-1 text-center" href={`/?t=feed`}>Feed</Link>
-          <Link className="flex-1 text-center" href={`/?t=communities`}>Communities</Link>
+          <Link className="flex-1 text-center" href={`/?t=feed`}>
+            Feed
+          </Link>
+          <Link className="flex-1 text-center" href={`/?t=communities`}>
+            Communities
+          </Link>
         </div>
       )}
       {user?.id && (
@@ -50,8 +51,11 @@ export default function Home() {
                   {formatUserNameForImage(user?.user_name)}
                 </AvatarFallback>
               </Avatar>
-              <input className="outline-none border-none w-full bg-transparent px-3" placeholder='I Guess this is...' />
-              <Button size='sm'>Post</Button>
+              <input
+                className="outline-none border-none w-full bg-transparent px-3"
+                placeholder="I Guess this is..."
+              />
+              <Button size="sm">Post</Button>
             </div>
           </DialogTrigger>
           <CreatePostModal />
@@ -59,7 +63,7 @@ export default function Home() {
       )}
       {posts.map((post) => (
         <div key={post.id} className="">
-          <Post {...post} />
+          <Post post={post} />
         </div>
       ))}
     </div>
