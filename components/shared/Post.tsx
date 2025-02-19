@@ -306,7 +306,7 @@ export default function Post({ ...post }: PostProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="mt-3 ml-[50px]">
+      <Link href={`post/${postState.id}`} className="mt-3 block ml-[50px]">
         {postState.content && (
           <p
             className="text-[15px]"
@@ -336,7 +336,7 @@ export default function Post({ ...post }: PostProps) {
             </Link>
           </div>
         )}
-      </div>
+      </Link>
       <div className="flex justify-between ml-[50px] mt-3">
         <div className="flex items-center gap-4 w-full cursor-pointer">
           <button onClick={likeHandler}>
