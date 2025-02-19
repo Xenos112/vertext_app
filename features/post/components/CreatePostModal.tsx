@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   DialogContent,
@@ -15,13 +15,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { createPost } from "@/actions/post.actions";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { fetchUserJoinedCommunities } from "@/actions/user.actions";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { GoPerson, GoUpload } from "react-icons/go";
-import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
-type UserCommunities = Awaited<ReturnType<typeof fetchUserJoinedCommunities>>['communities']
+type UserCommunities = Awaited<
+  ReturnType<typeof fetchUserJoinedCommunities>
+>["communities"];
 
 export default function CreatePostModal() {
   const user = useUserStore((state) => state.user);
@@ -30,38 +40,42 @@ export default function CreatePostModal() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const closeButton = useRef<HTMLButtonElement | null>(null);
   const [urls, setUrls] = useState<string[]>([]);
-  const [communities, setCommunities] = useState<UserCommunities>()
-  const [loading, startTransition] = useTransition()
-  const [selectedCommunity, setSelectedCommunity] = useState<string | null>(null)
-  const { toast } = useToast()
-  const [isPickerShown, setIsPickerShown] = useState(false)
-
+  const [communities, setCommunities] = useState<UserCommunities>();
+  const [loading, startTransition] = useTransition();
+  const [selectedCommunity, setSelectedCommunity] = useState<string | null>(
+    null,
+  );
+  const { toast } = useToast();
+  const [isPickerShown, setIsPickerShown] = useState(false);
 
   const handleCreatePost = () => {
     startTransition(async () => {
-
-      const res = await createPost({ files, content: postContent, communityId: selectedCommunity });
+      const res = await createPost({
+        files,
+        content: postContent,
+        communityId: selectedCommunity,
+      });
       if (res.error) {
         toast({
-          variant: 'destructive',
+          variant: "destructive",
           title: "Error",
-          description: res.error as string
-        })
+          description: res.error as string,
+        });
       } else {
         toast({
           title: "Success",
-          description: "Post Have Been Created"
-        })
+          description: "Post Have Been Created",
+        });
 
         // reset the state
-        setPostContent('')
-        setFiles(undefined)
-        setUrls([])
+        setPostContent("");
+        setFiles(undefined);
+        setUrls([]);
 
         // close the modal
-        closeButton.current?.click()
+        closeButton.current?.click();
       }
-    })
+    });
   };
 
   const handleFilesChange = (files: FileList | undefined) => {
@@ -83,11 +97,11 @@ export default function CreatePostModal() {
   useEffect(() => {
     if (user) {
       fetchUserJoinedCommunities(user.id).then((data) => {
-        console.dir(data)
-        setCommunities(data.communities || [])
-      })
+        console.dir(data);
+        setCommunities(data.communities || []);
+      });
     }
-  }, [user?.id])
+  }, [user?.id]);
 
   const addEmoji = (emoji: any) => {
     setPostContent((prev) => prev + emoji.native);
@@ -97,11 +111,13 @@ export default function CreatePostModal() {
   return (
     <DialogContent className="">
       <DialogTitle className="mb-3">Create New Post</DialogTitle>
-      < DialogHeader >
+      <DialogHeader>
         <div className="flex gap-2">
           {user ? (
             <Avatar>
-              <AvatarFallback>{formatUserNameForImage(user.user_name)}</AvatarFallback>
+              <AvatarFallback>
+                {formatUserNameForImage(user.user_name)}
+              </AvatarFallback>
               <AvatarImage src={user.image_url!} />
             </Avatar>
           ) : (
@@ -113,11 +129,9 @@ export default function CreatePostModal() {
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Everyone" />
                 </SelectTrigger>
-                <SelectContent >
+                <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>
-                      {selectedCommunity}
-                    </SelectLabel>
+                    <SelectLabel>{selectedCommunity}</SelectLabel>
                     {communities.map((community) => (
                       <SelectItem
                         value={community.Community.id}
@@ -140,7 +154,7 @@ export default function CreatePostModal() {
             />
           </div>
         </div>
-      </DialogHeader >
+      </DialogHeader>
       <div className="flex w-full items-center justify-between pt-10">
         <div className="flex gap-3 mt-10">
           <GoUpload onClick={() => fileInputRef.current!.click()} />
@@ -151,13 +165,28 @@ export default function CreatePostModal() {
             </div>
           )}
         </div>
-        <input ref={fileInputRef} type="file" multiple onChange={(e) => setFiles(e.target.files!)} className='hidden opacity-0 pointer-events-none' />
-        <Button disabled={loading} type="button" onClick={handleCreatePost} size='sm'>{loading && <AiOutlineLoading3Quarters className="animate-spin duration-300" />} Post</Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          onChange={(e) => setFiles(e.target.files!)}
+          className="hidden opacity-0 pointer-events-none"
+        />
+        <Button
+          disabled={loading}
+          type="button"
+          onClick={handleCreatePost}
+          size="sm"
+        >
+          {loading && (
+            <AiOutlineLoading3Quarters className="animate-spin duration-300" />
+          )}{" "}
+          Post
+        </Button>
       </div>
       <DialogClose asChild ref={closeButton}>
         <button className="sr-only">close</button>
       </DialogClose>
-    </DialogContent >
-  )
+    </DialogContent>
+  );
 }
-

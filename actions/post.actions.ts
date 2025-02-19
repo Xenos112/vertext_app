@@ -244,3 +244,28 @@ export async function getPostById(id: string) {
     return { error: "Something went wrong" };
   }
 }
+
+export async function createComment({
+  content,
+  postId,
+  authorId,
+}: {
+  content: string;
+  postId: string;
+  authorId: string;
+}) {
+  try {
+    const comment = await prisma.comment.create({
+      data: {
+        content,
+        postId: postId,
+        userId: authorId,
+      },
+    });
+
+    return { comment };
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went wrong" };
+  }
+}
