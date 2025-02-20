@@ -1,67 +1,96 @@
 import { useToast } from "@/hooks/use-toast";
 import { formatNumber } from "@/utils/format-number";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
-import { use } from "react";
+import { use, useState } from "react";
 import { PostContext } from ".";
 import useUserStore from "@/store/user";
-import { unsave, save } from "@/actions/post.actions";
+import saveMutationFunction from "../../api/save";
+import { useMutation } from "@tanstack/react-query";
+import unsaveMutationFunction from "../../api/unsave";
 
 export default function Save() {
-  const [postState, setPostState] = use(PostContext);
+  const [post, setPost] = use(PostContext);
   const user = useUserStore((state) => state.user);
+  const [isSaved, setIsSaved] = useState(post!.Save.length !== 0);
   const { toast } = useToast();
 
-  const saveHandler = async () => {
-    if (postState!.Save.length === 0) {
-      setPostState((prev) => ({
+  if (!post) throw new Error("Post not found");
+
+  const { mutate: savePost } = useMutation({
+    mutationFn: () => saveMutationFunction(post.id),
+    mutationKey: ["savePost", post.id],
+    onMutate() {
+      setIsSaved(true);
+      setPost((prev) => ({
         ...prev!,
         _count: { ...prev!._count, Save: prev!._count.Save + 1 },
         Save: [...prev!.Save, { userId: user!.id }],
       }));
-
-      const data = await save(postState!.id);
-      if ("error" in data)
-        toast({
-          title: "Error",
-          variant: "destructive",
-        });
-      else
-        toast({
-          title: "Success",
-          description: `The Post is ${data.message}`,
-        });
-    } else {
-      setPostState((prev) => ({
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data,
+      });
+    },
+    onError: (error) => {
+      setIsSaved(false);
+      setPost((prev) => ({
         ...prev!,
         _count: { ...prev!._count, Save: prev!._count.Save - 1 },
-        Save: [],
+        Save: [...prev!.Save, { userId: user!.id }],
       }));
-      const data = await unsave(postState!.id);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
 
-      if ("error" in data)
-        toast({
-          title: "Error",
-          variant: "destructive",
-        });
-      else
-        toast({
-          title: "Success",
-          description: `The Post is ${data.message}`,
-        });
-    }
-  };
+  const { mutate: unsavePost } = useMutation({
+    mutationFn: () => unsaveMutationFunction(post.id),
+    mutationKey: ["unsavePost", post.id],
+    onMutate() {
+      setIsSaved(false);
+      setPost((prev) => ({
+        ...prev!,
+        _count: { ...prev!._count, Save: prev!._count.Save - 1 },
+        Save: [...prev!.Save, { userId: user!.id }],
+      }));
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data,
+      });
+    },
+    onError: (error) => {
+      setIsSaved(true);
+      setPost((prev) => ({
+        ...prev!,
+        _count: { ...prev!._count, Save: prev!._count.Save + 1 },
+        Save: [...prev!.Save, { userId: user!.id }],
+      }));
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
 
   return (
-    <button onClick={saveHandler}>
-      {postState!.Save.length !== 0 ? (
+    <button onClick={() => (isSaved ? unsavePost() : savePost())}>
+      {isSaved ? (
         <div className="flex gap-1 items-center text-yellow-500 cursor-pointer">
           <IoBookmark />
-          <p>{formatNumber(postState!._count.Save)}</p>
+          <p>{formatNumber(post._count.Save)}</p>
         </div>
       ) : (
         <div className="flex gap-1 items-center cursor-pointer">
           <IoBookmarkOutline />
-          <p>{formatNumber(postState!._count.Save)}</p>
+          <p>{formatNumber(post._count.Save)}</p>
         </div>
       )}
     </button>
