@@ -103,7 +103,7 @@ export default function CreatePostModal() {
     }
   }, [user?.id]);
 
-  const addEmoji = (emoji: any) => {
+  const addEmoji = (emoji: { native: string }) => {
     setPostContent((prev) => prev + emoji.native);
     setIsPickerShown(false); // Close picker after selection
   };
