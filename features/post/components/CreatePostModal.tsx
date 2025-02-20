@@ -39,7 +39,7 @@ export default function CreatePostModal() {
   const [files, setFiles] = useState<FileList>();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const closeButton = useRef<HTMLButtonElement | null>(null);
-  const [urls, setUrls] = useState<string[]>([]);
+  const [, setUrls] = useState<string[]>([]);
   const [communities, setCommunities] = useState<UserCommunities>();
   const [loading, startTransition] = useTransition();
   const [selectedCommunity, setSelectedCommunity] = useState<string | null>(
@@ -67,12 +67,10 @@ export default function CreatePostModal() {
           description: "Post Have Been Created",
         });
 
-        // reset the state
         setPostContent("");
         setFiles(undefined);
         setUrls([]);
 
-        // close the modal
         closeButton.current?.click();
       }
     });
@@ -101,11 +99,11 @@ export default function CreatePostModal() {
         setCommunities(data.communities || []);
       });
     }
-  }, [user?.id]);
+  }, [user!.id]);
 
   const addEmoji = (emoji: { native: string }) => {
     setPostContent((prev) => prev + emoji.native);
-    setIsPickerShown(false); // Close picker after selection
+    setIsPickerShown(false);
   };
 
   return (
