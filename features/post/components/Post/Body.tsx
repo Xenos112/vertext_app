@@ -33,7 +33,7 @@ export default function Body() {
         <div
           className={`${className} rounded-md overflow-hidden grid gap-1 mt-3`}
         >
-          <Link href={`/post/${postState!.id}`}>
+          <div>
             {postState!.medias.map((media, index) => (
               <AspectRatio key={index} ratio={16 / 9}>
                 {isImage.test(media) ? (
@@ -47,7 +47,7 @@ export default function Body() {
                 )}
               </AspectRatio>
             ))}
-          </Link>
+          </div>
         </div>
       )}
     </Link>
