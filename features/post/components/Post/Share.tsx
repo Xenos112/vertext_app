@@ -12,34 +12,43 @@ import { Button } from "@/components/ui/button";
 import { Share as ShareIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import copyText from "@/utils/copy-text";
+import { formatNumber } from "@/utils/format-number";
+import { useMutation } from "@tanstack/react-query";
+import shareMutationFunction from "../../api/share";
+import { FiLoader } from "react-icons/fi";
 
 export default function Share() {
-  const [postState] = use(PostContext);
+  const [post] = use(PostContext);
   const { toast } = useToast();
 
-  const handleCopyText = (text: string) => {
-    const data = copyText(text);
-    if ("error" in data) {
+  if (!post) throw new Error("Post not found");
+
+  const { mutate: share, isPending } = useMutation({
+    mutationFn: () => shareMutationFunction(post.id),
+    mutationKey: ["share", post.id],
+    onError: (err) => {
       toast({
-        title: "Error",
-        description: "Error while copying the text",
         variant: "destructive",
+        title: "Error",
+        description: err.message,
       });
-    } else {
+    },
+    onSuccess() {
+      copyText(`${window.location.href}post/${post.id}`);
       toast({
         title: "Success",
-        description: "Text have Been Coppied to the ClipBoard",
+        description: "Post shared successfully",
       });
-    }
-  };
+    },
+  });
 
   return (
     <div>
       <Dialog>
         <DialogTrigger asChild className="text-base">
-          <Button variant="ghost" size="sm" onClick={() => {}}>
+          <Button variant="ghost" size="sm">
             <ShareIcon />
-            {postState!.share_number}
+            {formatNumber(post.share_number)}
           </Button>
         </DialogTrigger>
         <DialogContent>
@@ -52,16 +61,12 @@ export default function Share() {
           <div className="flex items-center space-x-2">
             <input
               type="text"
-              readOnly
-              value={`${window.location.href}post/${postState!.id}`}
-              className="flex-1 px-3 py-2 text-sm border rounded-md"
+              disabled
+              value={`${window.location.href}post/${post.id}`}
+              className="flex-1 px-3 py-2 select-none text-sm rounded-md"
             />
-            <Button
-              onClick={() => {
-                handleCopyText(`${window.location.href}/post/${postState!.id}`);
-              }}
-            >
-              Copy
+            <Button onClick={() => share()}>
+              {isPending ? <FiLoader className="animate-spin" /> : "Share"}
             </Button>
           </div>
         </DialogContent>

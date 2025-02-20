@@ -6,6 +6,7 @@ import { LikePostAPIResponse } from './post/like/route'
 import { DislikePostAPIResponse } from './post/dislike/route'
 import { SavePostAPIResponse } from './post/save/route'
 import { UnSavePostAPIResponse } from './post/unsave/route'
+import { type ShareAPIResponse } from './post/share/route'
 
 export {
   type LoginAPIResponse,
@@ -15,5 +16,6 @@ export {
   type LikePostAPIResponse,
   type DislikePostAPIResponse,
   type SavePostAPIResponse,
-  type UnSavePostAPIResponse
+  type UnSavePostAPIResponse,
+  type ShareAPIResponse
 };
