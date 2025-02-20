@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { PostContext } from ".";
 import { use } from "react";
 import parsePostContent from "@/utils/parse-post-content";
@@ -6,40 +7,42 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { isImage } from "@/constants";
 
 export default function Body() {
-  const [postState] = use(PostContext);
+  const [post] = use(PostContext);
+  if (!post) throw new Error("Post not found");
 
   const className =
-    postState!.medias.length === 1
+    post.medias.length === 1
       ? "grid-cols-1 grid-rows-1"
-      : postState!.medias.length === 2
+      : post.medias.length === 2
         ? "grid-cols-2 grid-rows-1"
-        : postState!.medias.length === 3
+        : post.medias.length === 3
           ? "grid-cols-3 grid-rows-1"
-          : postState!.medias.length === 4
+          : post.medias.length === 4
             ? "grid-cols-4 grid-rows-1"
             : "grid-cols-5 grid-rows-1";
 
   return (
-    <Link href={`post/${postState!.id}`} className="mt-3 block ml-[50px]">
-      {postState!.content && (
+    <Link href={`post/${post.id}`} className="mt-3 block ml-[50px]">
+      {post.content && (
         <p
           className="text-[15px]"
           dangerouslySetInnerHTML={{
-            __html: parsePostContent(postState!.content)!,
+            __html: parsePostContent(post.content)!,
           }}
         />
       )}
-      {postState!.medias.length !== 0 && (
+      {post.medias.length !== 0 && (
         <div
           className={`${className} rounded-md overflow-hidden grid gap-1 mt-3`}
         >
           <div>
-            {postState!.medias.map((media, index) => (
+            {post.medias.map((media, index) => (
               <AspectRatio key={index} ratio={16 / 9}>
                 {isImage.test(media) ? (
-                  <img
+                  <Image
                     src={media}
                     alt="Post"
+                    fill
                     className="object-cover size-full"
                   />
                 ) : (
