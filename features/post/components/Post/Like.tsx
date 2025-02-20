@@ -16,7 +16,7 @@ export default function Like() {
 
   if (!post) throw new Error("Post not Found");
 
-  const { mutate: likePost } = useMutation({
+  const { mutate: likePost, isPending: isLiking } = useMutation({
     mutationFn: () => likeMutationFunction(post.id),
     mutationKey: ["likePost", post.id],
     onMutate() {
@@ -48,7 +48,7 @@ export default function Like() {
     },
   });
 
-  const { mutate: dislikePost } = useMutation({
+  const { mutate: dislikePost, isPending: isDisliking } = useMutation({
     mutationFn: () => dislikeMutationFunction(post.id),
     mutationKey: ["dislikePost", post.id],
     onMutate() {
@@ -81,7 +81,10 @@ export default function Like() {
   });
 
   return (
-    <button onClick={() => (isLiked ? dislikePost() : likePost())}>
+    <button
+      onClick={() => (isLiked ? dislikePost() : likePost())}
+      disabled={isLiking || isDisliking}
+    >
       {isLiked ? (
         <div className="flex gap-1 items-center cursor-pointer text-pink-500">
           <FaHeart className="text-pink-500" />

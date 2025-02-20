@@ -16,7 +16,7 @@ export default function Save() {
 
   if (!post) throw new Error("Post not found");
 
-  const { mutate: savePost } = useMutation({
+  const { mutate: savePost, isPending: isSaving } = useMutation({
     mutationFn: () => saveMutationFunction(post.id),
     mutationKey: ["savePost", post.id],
     onMutate() {
@@ -48,7 +48,7 @@ export default function Save() {
     },
   });
 
-  const { mutate: unsavePost } = useMutation({
+  const { mutate: unsavePost, isPending: isUnsaving } = useMutation({
     mutationFn: () => unsaveMutationFunction(post.id),
     mutationKey: ["unsavePost", post.id],
     onMutate() {
@@ -81,7 +81,10 @@ export default function Save() {
   });
 
   return (
-    <button onClick={() => (isSaved ? unsavePost() : savePost())}>
+    <button
+      onClick={() => (isSaved ? unsavePost() : savePost())}
+      disabled={isSaving || isUnsaving}
+    >
       {isSaved ? (
         <div className="flex gap-1 items-center text-yellow-500 cursor-pointer">
           <IoBookmark />
