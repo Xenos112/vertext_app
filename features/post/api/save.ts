@@ -1,7 +1,7 @@
 import { SavePostAPIResponse } from "@/app/api";
 import ky from "ky";
 
-export default async function likeMutationFunction(postId: string) {
+export default async function saveMutationFunction(postId: string) {
   const res = await ky<SavePostAPIResponse>("/api/post/save", {
     method: "post",
     json: {
