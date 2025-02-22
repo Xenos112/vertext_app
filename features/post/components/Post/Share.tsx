@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Share as ShareIcon } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import copyText from "@/utils/copy-text";
 import { formatNumber } from "@/utils/format-number";
 import { useMutation } from "@tanstack/react-query";
@@ -19,7 +18,6 @@ import { FiLoader } from "react-icons/fi";
 
 export default function Share() {
   const [post, setPost] = use(PostContext);
-  const { toast } = useToast();
 
   if (!post) throw new Error("Post not found");
 
@@ -27,19 +25,26 @@ export default function Share() {
     mutationFn: () => shareMutationFunction(post.id),
     mutationKey: ["share", post.id],
     onError: (err) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: err.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Error",
+            description: err.message,
+          },
+        }),
+      );
     },
     onSuccess() {
       copyText(`${window.location.href}post/${post.id}`);
       setPost((prev) => ({ ...prev!, share_number: prev!.share_number + 1 }));
-      toast({
-        title: "Success",
-        description: "Post shared successfully",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "Post has been shared successfully",
+          },
+        }),
+      );
     },
   });
 

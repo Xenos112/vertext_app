@@ -1,4 +1,3 @@
-import { useToast } from "@/hooks/use-toast";
 import { formatNumber } from "@/utils/format-number";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import { use, useState } from "react";
@@ -12,7 +11,6 @@ export default function Save() {
   const [post, setPost] = use(PostContext);
   const user = useUserStore((state) => state.user);
   const [isSaved, setIsSaved] = useState(post!.Save.length !== 0);
-  const { toast } = useToast();
 
   if (!post) throw new Error("Post not found");
 
@@ -28,10 +26,15 @@ export default function Save() {
       }));
     },
     onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: data,
+            title: "Success",
+            variant: "default",
+          },
+        }),
+      );
     },
     onError: (error) => {
       setIsSaved(false);
@@ -40,11 +43,15 @@ export default function Save() {
         _count: { ...prev!._count, Save: prev!._count.Save - 1 },
         Save: [...prev!.Save, { userId: user!.id }],
       }));
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: error.message,
+            title: "Error",
+            variant: "destructive",
+          },
+        }),
+      );
     },
   });
 
@@ -60,10 +67,15 @@ export default function Save() {
       }));
     },
     onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: data,
+            title: "Success",
+            variant: "default",
+          },
+        }),
+      );
     },
     onError: (error) => {
       setIsSaved(true);
@@ -72,11 +84,15 @@ export default function Save() {
         _count: { ...prev!._count, Save: prev!._count.Save + 1 },
         Save: [...prev!.Save, { userId: user!.id }],
       }));
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: error.message,
+            title: "Error",
+            variant: "destructive",
+          },
+        }),
+      );
     },
   });
 

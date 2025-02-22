@@ -3,7 +3,6 @@ import { FaHeart, FaRegHeart } from "react-icons/fa6";
 import { PostContext } from ".";
 import { use, useState } from "react";
 import useUserStore from "@/store/user";
-import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import likeMutationFunction from "@/features/post/api/like";
 import dislikeMutationFunction from "../../api/dislike";
@@ -12,7 +11,6 @@ export default function Like() {
   const [post, setPost] = use(PostContext);
   const user = useUserStore((state) => state.user);
   const [isLiked, setIsLiked] = useState(post!.Like.length !== 0);
-  const { toast } = useToast();
 
   if (!post) throw new Error("Post not Found");
 
@@ -28,10 +26,9 @@ export default function Like() {
       }));
     },
     onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", { detail: { description: data } }),
+      );
     },
     onError: (error) => {
       setIsLiked(false);
@@ -40,11 +37,15 @@ export default function Like() {
         _count: { ...prev!._count, Like: prev!._count.Like - 1 },
         Like: [...prev!.Like, { userId: user!.id }],
       }));
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: error.message,
+            title: "Error",
+            variant: "destructive",
+          },
+        }),
+      );
     },
   });
 
@@ -60,10 +61,9 @@ export default function Like() {
       }));
     },
     onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", { detail: { description: data } }),
+      );
     },
     onError: (error) => {
       setIsLiked(true);
@@ -72,11 +72,15 @@ export default function Like() {
         _count: { ...prev!._count, Like: prev!._count.Like + 1 },
         Like: [...prev!.Like, { userId: user!.id }],
       }));
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: error.message,
+            title: "Error",
+            variant: "destructive",
+          },
+        }),
+      );
     },
   });
 

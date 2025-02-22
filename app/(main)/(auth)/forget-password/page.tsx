@@ -5,29 +5,35 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import forgetPasswordFunction from "@/features/auth/api/forget-password";
-import { useToast } from "@/hooks/use-toast";
 import { FiLoader } from "react-icons/fi";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const router = useRouter();
-  const { toast } = useToast();
 
   const { mutate: handleSubmit, isPending } = useMutation({
     mutationKey: ["forget-password"],
     mutationFn: () => forgetPasswordFunction({ email }),
     onError(error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            variant: "destructive",
+            title: "Error",
+            description: error.message,
+          },
+        }),
+      );
     },
     onSuccess(data) {
-      toast({
-        title: "Success",
-        description: data,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: data,
+          },
+        }),
+      );
       router.push("/forget-password/confirmation");
     },
   });

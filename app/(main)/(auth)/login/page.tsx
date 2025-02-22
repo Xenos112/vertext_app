@@ -1,44 +1,57 @@
-'use client'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useState } from 'react'
-import { useToast } from "@/hooks/use-toast"
-import useUserStore from "@/store/user"
-import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6"
-import Link from "next/link"
-import { useMutation } from "@tanstack/react-query"
-import { loginFunction } from "@/features/auth/api/login"
-import { FiLoader } from "react-icons/fi"
-import { useRouter } from "next/navigation"
+"use client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useState } from "react";
+import useUserStore from "@/store/user";
+import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6";
+import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
+import { loginFunction } from "@/features/auth/api/login";
+import { FiLoader } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const { toast } = useToast()
-  const router = useRouter()
-  const fetchUser = useUserStore(state => state.fetchUser)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const fetchUser = useUserStore((state) => state.fetchUser);
 
   const { mutate: login, isPending } = useMutation({
-    mutationKey: ['login'],
+    mutationKey: ["login"],
     mutationFn: () => loginFunction({ email, password }),
     onError(error) {
-      toast({
-        variant: 'destructive',
-        title: "Error",
-        description: error.message
-      })
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          },
+        }),
+      );
     },
     async onSuccess() {
-      toast({
-        title: "Success",
-        description: "You Have Logged In"
-      })
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "You have successfully logged in",
+          },
+        }),
+      );
 
       await fetchUser();
-      router.push('/')
-    }
-  })
+      router.push("/");
+    },
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -80,7 +93,10 @@ export default function LoginPage() {
             </Button>
           </form>
           <div className="mt-6 text-center">
-            <Link href="/forgot-password" className="text-primary mb-4 block text-sm text-center hover:underline">
+            <Link
+              href="/forgot-password"
+              className="text-primary mb-4 block text-sm text-center hover:underline"
+            >
               Forgot password?
             </Link>
             <div className="relative">
@@ -94,13 +110,13 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="mt-4 flex justify-center space-x-4">
-              <Button variant='outline' size='lg'>
+              <Button variant="outline" size="lg">
                 <FaGithub size={50} />
               </Button>
-              <Button variant='outline' size='lg'>
+              <Button variant="outline" size="lg">
                 <FaDiscord />
               </Button>
-              <Button variant='outline' size='lg'>
+              <Button variant="outline" size="lg">
                 <FaGoogle />
               </Button>
             </div>
@@ -116,6 +132,5 @@ export default function LoginPage() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
-

@@ -7,7 +7,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from "@/hooks/use-toast";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoMdShareAlt } from "react-icons/io";
 import { IoCopy } from "react-icons/io5";
@@ -21,37 +20,52 @@ import { deletePost } from "@/actions/post.actions";
 export default function PostActions() {
   const [postState] = use(PostContext);
   const user = useUserStore((state) => state.user);
-  const { toast } = useToast();
 
   const handleCopyText = (text: string) => {
     const data = copyText(text);
     if ("error" in data) {
-      toast({
-        title: "Error",
-        description: "Error while copying the text",
-        variant: "destructive",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Error",
+            description: data.error,
+            variant: "destructive",
+          },
+        }),
+      );
     } else {
-      toast({
-        title: "Success",
-        description: "Text have Been Coppied to the ClipBoard",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "Text has been copied",
+          },
+        }),
+      );
     }
   };
 
   const deleteHandler = async () => {
     const res = await deletePost(postState!.id);
     if (res.message === "deleted") {
-      toast({
-        title: "Success",
-        description: "Post Deleted Successfully",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "Post has been deleted",
+          },
+        }),
+      );
     } else {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: res.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Error",
+            description: "Error while deleting the post",
+            variant: "destructive",
+          },
+        }),
+      );
     }
   };
 

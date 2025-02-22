@@ -52,24 +52,27 @@ export default function PostPage() {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState("");
   const user = useUserStore((state) => state.user);
-  const { toast } = useToast();
 
   useEffect(() => {
     getPostById(id)
       .then((data) => {
         if (data.error) {
           setError(data.error);
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: data.error,
-          });
+          document.dispatchEvent(
+            new CustomEvent("toast", {
+              detail: {
+                title: "Error",
+                description: data.error,
+                variant: "destructive",
+              },
+            }),
+          );
         } else {
           setPost(data.post);
         }
       })
       .finally(() => setLoading(false));
-  }, [id, toast]);
+  }, [id]);
 
   const handleCreateComment = async () => {
     if (!comment) return;
@@ -81,16 +84,26 @@ export default function PostPage() {
       content: comment,
     });
     if (data.error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: data.error,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Error",
+            description: data.error,
+            variant: "destructive",
+          },
+        }),
+      );
     } else {
-      toast({
-        title: "Success",
-        description: "Comment Created",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "Comment Created",
+            variant: "default",
+          },
+        }),
+      );
+    }
     }
   };
 

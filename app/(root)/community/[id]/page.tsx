@@ -12,7 +12,6 @@ import formatDate from "@/utils/format-date";
 import Post from "@/features/post/components/Post";
 import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
-import { useToast } from "@/hooks/use-toast";
 
 type CommunityDetails = Awaited<
   ReturnType<typeof getCommunityDetails>
@@ -22,7 +21,6 @@ function CommunityPage() {
   const [community, setCommunity] = useState<CommunityDetails>();
   const [loading, setLoading] = useState(true);
   const [isJoined, setIsJoined] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     getCommunityDetails(id)
@@ -43,32 +41,46 @@ function CommunityPage() {
       const data = await leaveCommunity(community!.id);
       if (data.error) {
         setIsJoined(!isJoined);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Error While Leaving the Community",
-        });
+        document.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: {
+              title: "Error",
+              description: data.error,
+            },
+          }),
+        );
       } else {
-        toast({
-          title: "Success",
-          description: data.message,
-        });
+        document.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: {
+              title: "Success",
+              description: "You have been successfully left the community",
+            },
+          }),
+        );
       }
     } else {
       setIsJoined(!isJoined);
       const data = await joinCommunity(community!.id);
       if (data.error) {
         setIsJoined(!isJoined);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Error While Joining the Community",
-        });
+        document.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: {
+              title: "Error",
+              description: data.error,
+            },
+          }),
+        );
       } else {
-        toast({
-          title: "Success",
-          description: data.message,
-        });
+        document.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: {
+              title: "Success",
+              description: data.message,
+            },
+          }),
+        );
       }
     }
   };
