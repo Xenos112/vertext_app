@@ -61,10 +61,10 @@ model Post {
   saves_number    Int        @default(0)
   share_number    Int        @default(0)
   comments_number Int        @default(0)
-  Author          User       @relation(fields: [userId], references: [id])
+  Author          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String
   Comment         Comment[]
-  Community       Community? @relation(fields: [communityId], references: [id])
+  Community       Community? @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId     String?
   created_at      DateTime   @default(now())
   Like            Like[]
@@ -92,8 +92,8 @@ model Like {
 }
 
 model Save {
-  Post   Post   @relation(fields: [postId], references: [id])
-  User   User   @relation(fields: [userId], references: [id])
+  Post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction)
+  User   User   @relation(fields: [userId], references: [id], onDelete: NoAction)
   postId String
   userId String
 
