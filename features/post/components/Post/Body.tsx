@@ -5,6 +5,7 @@ import { use } from "react";
 import parsePostContent from "@/utils/parse-post-content";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { isImage } from "@/constants";
+import Video from "./Video";
 
 export default function Body() {
   const [post] = use(PostContext);
@@ -45,7 +46,7 @@ export default function Body() {
                     className="object-cover size-full"
                   />
                 ) : (
-                  <video src={media} controls />
+                  <Video src={media} type="mp4" autoPlay controls />
                 )}
               </AspectRatio>
             ))}
