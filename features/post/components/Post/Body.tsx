@@ -16,10 +16,10 @@ export default function Body() {
       : post.medias.length === 2
         ? "grid-cols-2 grid-rows-1"
         : post.medias.length === 3
-          ? "grid-cols-3 grid-rows-1"
+          ? "grid-cols-1 grid-rows-3"
           : post.medias.length === 4
-            ? "grid-cols-4 grid-rows-1"
-            : "grid-cols-5 grid-rows-1";
+            ? "grid-cols-2 grid-rows-2"
+            : "grid-cols-3 grid-rows-2";
 
   return (
     <Link href={`post/${post.id}`} className="mt-3 block ml-[50px]">
@@ -31,11 +31,10 @@ export default function Body() {
           }}
         />
       )}
+
       {post.medias.length !== 0 && (
-        <div
-          className={`${className} rounded-md overflow-hidden grid gap-1 mt-3`}
-        >
-          <div>
+        <div className={`rounded-md overflow-hidden grid gap-1 mt-3`}>
+          <div className={`${className} gap-1 grid`}>
             {post.medias.map((media, index) => (
               <AspectRatio key={index} ratio={16 / 9}>
                 {isImage.test(media) ? (
@@ -46,7 +45,7 @@ export default function Body() {
                     className="object-cover size-full"
                   />
                 ) : (
-                  <video src={media} />
+                  <video src={media} controls />
                 )}
               </AspectRatio>
             ))}
