@@ -4,7 +4,6 @@ import {
   GoBell,
   GoBookmark,
   GoHash,
-  GoHome,
   GoPerson,
   GoPlus,
   GoSearch,
@@ -17,7 +16,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import CreatePostModal from "@/features/post/components/CreatePostModal";
+import CreatePostModal from "@/features/post/components/CreatePostModel/index";
 import ThemeSwitcher from "../shared/ThemeSwitcher";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 

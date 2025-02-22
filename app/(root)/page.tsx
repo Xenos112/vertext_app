@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
-import CreatePostModal from "@/features/post/components/CreatePostModal";
+import CreatePostModal from "@/features/post/components/CreatePostModel/index";
 import Link from "next/link";
 
 type FeedResponse = APIResponse<ReturnType<typeof GET>>;
