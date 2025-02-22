@@ -18,7 +18,7 @@ import shareMutationFunction from "../../api/share";
 import { FiLoader } from "react-icons/fi";
 
 export default function Share() {
-  const [post] = use(PostContext);
+  const [post, setPost] = use(PostContext);
   const { toast } = useToast();
 
   if (!post) throw new Error("Post not found");
@@ -35,6 +35,7 @@ export default function Share() {
     },
     onSuccess() {
       copyText(`${window.location.href}post/${post.id}`);
+      setPost((prev) => ({ ...prev!, share_number: prev!.share_number + 1 }));
       toast({
         title: "Success",
         description: "Post shared successfully",
