@@ -6,8 +6,6 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import useUserStore from "@/store/user";
-import { useRouter } from "next/navigation";
 import Author from "./Author";
 import Body from "./Body";
 import Footer from "./Footer";
@@ -24,10 +22,6 @@ type CreatePostState = {
 
 export default function CreatePostModel() {
   const [post, setPost] = useState<CreatePostState>({});
-  const user = useUserStore((state) => state.user);
-  const router = useRouter();
-
-  //if (!user) router.push("/login");
 
   return (
     <CreatePostContext value={[post, setPost]}>
