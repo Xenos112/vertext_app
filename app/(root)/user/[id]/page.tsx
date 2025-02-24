@@ -4,7 +4,7 @@ import {
   getUserPosts,
 } from "@/actions/user.actions";
 import Community from "@/components/shared/Community";
-import Post from "@/components/shared/Post";
+import Post from "@/features/post/components/Post";
 import { Button } from "@/components/ui/button";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -77,11 +77,14 @@ export default function UserPage() {
         </Button>
       </div>
       {activeTab === "posts" &&
-        userPosts?.map((post) => <Post key={post.id} {...post} />)}
+        userPosts?.map((post) => <Post key={post.id} post={post} />)}
       {activeTab === "communities" && (
         <div className="my-3">
           {userJoinedCommunities?.map((community) => (
-            <Community community={community.Community} key={community.communityId} />
+            <Community
+              community={community.Community}
+              key={community.communityId}
+            />
           ))}
         </div>
       )}

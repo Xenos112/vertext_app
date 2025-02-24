@@ -10,7 +10,7 @@ import Link from "next/link";
 import { GoArrowLeft } from "react-icons/go";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
-import Post from "@/components/shared/Post";
+import Post from "@/features/post/components/Post";
 
 type PostQeuryResult = Awaited<ReturnType<typeof postSearch>>["posts"];
 type UserQueryResult = Awaited<ReturnType<typeof usersSearch>>["users"];
@@ -80,7 +80,7 @@ export default function SearchPage() {
       {type === "post" && posts && posts.length > 0 && (
         <div className="px-4 py-2">
           <h2 className="text-xl font-bold">Posts</h2>
-          {posts?.map((post) => <Post key={post.id} {...post} />)}
+          {posts?.map((post) => <Post key={post.id} post={post} />)}
         </div>
       )}
       {type === "user" && users && users.length > 0 && (
