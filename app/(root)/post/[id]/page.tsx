@@ -20,7 +20,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { isImage } from "@/constants";
-import { useToast } from "@/hooks/use-toast";
 import formatDate from "@/utils/format-date";
 import parsePostContent from "@/utils/parse-post-content";
 import Link from "next/link";
@@ -103,7 +102,6 @@ export default function PostPage() {
           },
         }),
       );
-    }
     }
   };
 
