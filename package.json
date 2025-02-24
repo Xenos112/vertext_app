@@ -31,6 +31,8 @@
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dashjs": "^5.0.0",
+    "hls.js": "^1.5.20",
     "jsonwebtoken": "^9.0.2",
     "ky": "^1.7.5",
     "lucide-react": "^0.475.0",

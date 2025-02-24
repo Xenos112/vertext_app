@@ -1,6 +1,6 @@
 "use client";
 import { createComment, getPostById } from "@/actions/post.actions";
-import Post from "@/components/shared/Post";
+import Post from "@/features/post/components/Post";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { isImage } from "@/constants";
-import { useToast } from "@/hooks/use-toast";
 import formatDate from "@/utils/format-date";
 import parsePostContent from "@/utils/parse-post-content";
 import Link from "next/link";
@@ -52,24 +51,27 @@ export default function PostPage() {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState("");
   const user = useUserStore((state) => state.user);
-  const { toast } = useToast();
 
   useEffect(() => {
     getPostById(id)
       .then((data) => {
         if (data.error) {
           setError(data.error);
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: data.error,
-          });
+          document.dispatchEvent(
+            new CustomEvent("toast", {
+              detail: {
+                title: "Error",
+                description: data.error,
+                variant: "destructive",
+              },
+            }),
+          );
         } else {
           setPost(data.post);
         }
       })
       .finally(() => setLoading(false));
-  }, [id, toast]);
+  }, [id]);
 
   const handleCreateComment = async () => {
     if (!comment) return;
@@ -81,16 +83,25 @@ export default function PostPage() {
       content: comment,
     });
     if (data.error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: data.error,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Error",
+            description: data.error,
+            variant: "destructive",
+          },
+        }),
+      );
     } else {
-      toast({
-        title: "Success",
-        description: "Comment Created",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "Comment Created",
+            variant: "default",
+          },
+        }),
+      );
     }
   };
 
@@ -103,7 +114,7 @@ export default function PostPage() {
         </Link>
       </div>
       {loading && <div>Loading...</div>}
-      {post && <Post {...post} />}
+      {post && <Post post={post} />}
       {error && (
         <div className="flex items-center justify-center h-screen flex-col gap-4">
           <h1 className="text-2xl leading-none font-semibold">{error}</h1>
