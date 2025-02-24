@@ -19,5 +19,5 @@ export default function ToasterProvider() {
     document.addEventListener("toast", handleToast as EventListener);
   }, [toast]);
 
-  return <div>ToasterProvider</div>;
+  return <div></div>;
 }
