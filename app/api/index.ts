@@ -7,6 +7,7 @@ import { DislikePostAPIResponse } from './post/dislike/route'
 import { SavePostAPIResponse } from './post/save/route'
 import { UnSavePostAPIResponse } from './post/unsave/route'
 import { type ShareAPIResponse } from './post/share/route'
+import { type DeletePostAPIResponse } from './post/delete/route'
 
 export {
   type LoginAPIResponse,
@@ -17,5 +18,6 @@ export {
   type DislikePostAPIResponse,
   type SavePostAPIResponse,
   type UnSavePostAPIResponse,
-  type ShareAPIResponse
+  type ShareAPIResponse,
+  type DeletePostAPIResponse,
 };

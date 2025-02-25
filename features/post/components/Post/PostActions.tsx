@@ -15,7 +15,8 @@ import { PostContext } from ".";
 import { use } from "react";
 import useUserStore from "@/store/user";
 import copyText from "@/utils/copy-text";
-import { deletePost } from "@/actions/post.actions";
+import { useMutation } from "@tanstack/react-query";
+import deletePostAPI from "../../api/delete";
 
 export default function PostActions() {
   const [postState] = use(PostContext);
@@ -45,9 +46,22 @@ export default function PostActions() {
     }
   };
 
-  const deleteHandler = async () => {
-    const res = await deletePost(postState!.id);
-    if (res.message === "deleted") {
+  const { mutate: deletePost } = useMutation({
+    mutationFn: () => deletePostAPI(postState!.id),
+    mutationKey: ["deletePost", postState!.id],
+    onError(error) {
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          },
+        }),
+      );
+    },
+
+    onSuccess() {
       document.dispatchEvent(
         new CustomEvent("toast", {
           detail: {
@@ -56,18 +70,8 @@ export default function PostActions() {
           },
         }),
       );
-    } else {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Error",
-            description: "Error while deleting the post",
-            variant: "destructive",
-          },
-        }),
-      );
-    }
-  };
+    },
+  });
 
   return (
     <DropdownMenu>
@@ -98,7 +102,10 @@ export default function PostActions() {
         {postState!.Author.id === user?.id && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600" onClick={deleteHandler}>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={() => deletePost()}
+            >
               Delete
               <DropdownMenuShortcut>
                 <MdOutlineDeleteOutline size={20} />
