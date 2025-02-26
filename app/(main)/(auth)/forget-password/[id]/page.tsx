@@ -1,9 +1,7 @@
 "use client";
-
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,10 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useMutation } from "@tanstack/react-query";
 import { resetPasswordFunction } from "@/features/auth/api/forget-password";
-import { useToast } from "@/hooks/use-toast";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -25,24 +21,31 @@ export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { id } = useParams() as { id: string };
   const router = useRouter();
-  const { toast } = useToast();
 
   const { mutate: resetPassword, isPending } = useMutation({
     mutationKey: ["reset-password", id],
     mutationFn: () => resetPasswordFunction({ id, confirmPassword, password }),
     onSuccess() {
-      toast({
-        title: "Success",
-        description: "You Password have Been reset",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: "You Password have Been reset",
+            title: "Success",
+          },
+        }),
+      );
       router.push("/login");
     },
     onError(err) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: err.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: err.message,
+            title: "Error",
+            variant: "destructive",
+          },
+        }),
+      );
     },
   });
 

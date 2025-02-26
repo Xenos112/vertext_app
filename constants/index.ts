@@ -12,4 +12,4 @@ export const STATUS_CODES = {
   CREATED: 201,
   SUCCESS: 200,
   SERVER_ISSUE: 500,
-};
+} as const

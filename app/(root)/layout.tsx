@@ -1,8 +1,7 @@
 import LeftBar from "@/components/layout/LeftBar";
 import RightFloatMenu from "@/components/layout/RightFloatMenu";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import CreatePostModal from "@/features/post/components/CreatePostModal";
+import CreatePostModal from "@/features/post/components/CreatePostModel/index";
 import { type ReactNode } from "react";
 import { GoPlus } from "react-icons/go";
 

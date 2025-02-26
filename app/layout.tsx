@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { poppins } from "@/assets/fonts/index";
 import AuthUserProvider from "@/providers/AuthUserProvider";
 import ReactQuery from "@/providers/ReactQuery";
+import ToasterProvider from "@/providers/ToasterProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,6 +27,7 @@ export default function RootLayout({
               <AuthUserProvider>
                 {children}
                 <Toaster />
+                <ToasterProvider />
               </AuthUserProvider>
             </ReactQuery>
           </ThemeProvider>

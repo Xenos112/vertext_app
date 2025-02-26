@@ -9,7 +9,6 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import formatDate from "@/utils/format-date";
 import useUserStore from "@/store/user";
-import { useToast } from "@/hooks/use-toast";
 import { formatNumber } from "@/utils/format-number";
 
 type UserType = Awaited<ReturnType<typeof getUserById>>["user"];
@@ -20,9 +19,8 @@ export default function UserPage({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const currentLoggedUser = useUserStore((state) => state.user);
-  const { toast } = useToast();
   const [isFollowed, setIsFollwed] = useState(false);
-  const [follwersCount, setFollowersCount] = useState(0)
+  const [follwersCount, setFollowersCount] = useState(0);
 
   useEffect(() => {
     getUserById(id)
@@ -33,7 +31,7 @@ export default function UserPage({ children }: { children: ReactNode }) {
           setError("Failed To Fetch the User");
         } else {
           setUser(data.user);
-          setFollowersCount(data.user?._count.followers || 0)
+          setFollowersCount(data.user?._count.followers || 0);
           setIsFollwed(data.user?.followers.length === 0 ? false : true);
         }
       })
@@ -42,52 +40,73 @@ export default function UserPage({ children }: { children: ReactNode }) {
 
   const handleFollowClick = async () => {
     if (!currentLoggedUser?.id) {
-      toast({
-        title: "UnAuhtorized",
-        description: "Please Login to Follow the User",
-        variant: "destructive",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: "Please Login to Follow the User",
+            title: "UnAuhtorized",
+            variant: "destructive",
+          },
+        }),
+      );
       redirect("/register");
-      return;
     }
 
     if (!isFollowed) {
       const data = await followUser(user!.id);
       setIsFollwed(true);
-      setFollowersCount(prev => prev + 1)
+      setFollowersCount((prev) => prev + 1);
 
       if (data.error) {
         console.log(data.error);
-        toast({
-          title: "Error",
-          description: "Error Following the user",
-          variant: "destructive",
-        });
+        document.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: {
+              description: "Error Following the user",
+              title: "Error",
+              variant: "destructive",
+            },
+          }),
+        );
         return;
       }
-      toast({
-        title: "Success",
-        description: "user Have been Followed",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: "You have been followed",
+            title: "Success",
+            variant: "default",
+          },
+        }),
+      );
     } else if (isFollowed) {
       const data = await unFollwerUser(user!.id);
       setIsFollwed(false);
-      setFollowersCount(prev => prev - 1)
+      setFollowersCount((prev) => prev - 1);
 
       if (data.error) {
         console.log(data.error);
-        toast({
-          title: "Error",
-          description: "Error UnFollowing the user",
-          variant: "destructive",
-        });
+        document.dispatchEvent(
+          new CustomEvent("toast", {
+            detail: {
+              description: "Error UnFollowing the user",
+              title: "Error",
+              variant: "destructive",
+            },
+          }),
+        );
         return;
       }
 
-      toast({
-        title: "Success",
-        description: "user Have been UnFollowed",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            description: "You have been unfollowed",
+            title: "Success",
+            variant: "default",
+          },
+        }),
+      );
     }
   };
 
@@ -104,13 +123,13 @@ export default function UserPage({ children }: { children: ReactNode }) {
         <>
           <div className="relative">
             <img
-              src={user?.banner_url!}
+              src={user.banner_url!}
               className="h-[200px] w-full object-cover"
             />
             <Avatar className="size-[130px] absolute ring-4 ring-offset-transparent ring-background -translate-y-1/2 mx-3">
-              <AvatarImage src={user?.image_url!} />
+              <AvatarImage src={user.image_url!} />
               <AvatarFallback>
-                {formatUserNameForImage(user?.user_name!)}
+                {formatUserNameForImage(user.user_name!)}
               </AvatarFallback>
             </Avatar>
           </div>
