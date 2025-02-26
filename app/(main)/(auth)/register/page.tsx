@@ -1,9 +1,15 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { registerFunction } from "@/features/auth/api/register";
-import { useToast } from "@/hooks/use-toast";
 import useUserStore from "@/store/user";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
@@ -19,58 +25,86 @@ export default function RegisterPage() {
     userName: "",
     password: "",
   });
-  const { toast } = useToast();
-  const router = useRouter()
+  const router = useRouter();
 
   const { isPending, mutate: register } = useMutation({
-    mutationKey: ['register'],
-    mutationFn: () => registerFunction({ email: userData.email, password: userData.password, user_name: userData.userName }),
+    mutationKey: ["register"],
+    mutationFn: () =>
+      registerFunction({
+        email: userData.email,
+        password: userData.password,
+        user_name: userData.userName,
+      }),
     onError(error) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: error.message,
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          },
+        }),
+      );
     },
     async onSuccess() {
-      toast({
-        title: "Success",
-        description: "User created successfully.",
-      });
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "You have successfully registered",
+          },
+        }),
+      );
       await fetchUser();
       router.push("/");
-    }
-  })
+    },
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-bold text-center">Create an account</CardTitle>
-          <CardDescription className="text-center">Enter your details to register</CardDescription>
+          <CardTitle className="text-3xl font-bold text-center">
+            Create an account
+          </CardTitle>
+          <CardDescription className="text-center">
+            Enter your details to register
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <form className="space-y-4">
             <div className="space-y-2">
               <Input
                 type="email"
-                onChange={(e) => setUserData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="Email" required
+                onChange={(e) =>
+                  setUserData((prev) => ({ ...prev, email: e.target.value }))
+                }
+                placeholder="Email"
+                required
               />
               <Input
                 type="text"
-                onChange={(e) => setUserData(prev => ({ ...prev, userName: e.target.value }))}
+                onChange={(e) =>
+                  setUserData((prev) => ({ ...prev, userName: e.target.value }))
+                }
                 placeholder="Username"
                 required
               />
               <Input
                 type="password"
                 placeholder="Password"
-                onChange={(e) => setUserData(prev => ({ ...prev, password: e.target.value }))}
+                onChange={(e) =>
+                  setUserData((prev) => ({ ...prev, password: e.target.value }))
+                }
                 required
               />
             </div>
-            <Button type="button" onClick={() => register()} disabled={isPending} className="w-full">
+            <Button
+              type="button"
+              onClick={() => register()}
+              disabled={isPending}
+              className="w-full"
+            >
               {isPending && <FiLoader />}
               Register
             </Button>
@@ -80,17 +114,19 @@ export default function RegisterPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
             </div>
           </div>
           <div className="flex justify-center space-x-4">
-            <Button variant='outline' size='lg'>
+            <Button variant="outline" size="lg">
               <FaGithub size={50} />
             </Button>
-            <Button variant='outline' size='lg'>
+            <Button variant="outline" size="lg">
               <FaDiscord />
             </Button>
-            <Button variant='outline' size='lg'>
+            <Button variant="outline" size="lg">
               <FaGoogle />
             </Button>
           </div>
