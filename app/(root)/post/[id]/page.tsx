@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { GoArrowLeft, GoComment } from "react-icons/go";
 import { IoMdAdd } from "react-icons/io";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogPortal,
@@ -27,6 +28,7 @@ export default function PostPage() {
   const [error, setError] = useState("");
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const { data: comments, isLoading: isLoadingComments } = useQuery({
     queryKey: ["comments", id],
@@ -63,6 +65,7 @@ export default function PostPage() {
           ...(oldComments as Comment[]),
         ],
       );
+      closeButtonRef.current?.click();
       document.dispatchEvent(
         new CustomEvent("toast", {
           detail: {
@@ -121,6 +124,7 @@ export default function PostPage() {
         <DialogPortal>
           <DialogTitle>Add Comment</DialogTitle>
           <DialogContent>
+            <DialogClose ref={closeButtonRef} />
             <div className="flex flex-col gap-2">
               <Label className="text-muted-foreground">Comment</Label>
               <Input
