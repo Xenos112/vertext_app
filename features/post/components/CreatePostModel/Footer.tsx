@@ -14,6 +14,7 @@ export default function Footer() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => createPost(post.content, post.urls, post.communityId),
+    // TODO: update the feed once the post is created
     onSuccess: (data) => {
       closeButtonRef.current?.click();
       document.dispatchEvent(
