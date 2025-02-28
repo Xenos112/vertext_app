@@ -11,7 +11,8 @@ import { type DeletePostAPIResponse } from './post/delete/route'
 import { type GetPostCommentsApiResponse } from "./post/comment/route";
 import { type CreatePostApiResponse } from "./post/create/route";
 import { type CreatePostCommentApiResponse } from "./post/comment/create/route";
-import { type GetPostAPIResponse } from './post/route'
+import { type GetPostAPIResponse } from './post/[id]/route'
+import { type FeedApiResponse } from './feed/route'
 
 
 export {
@@ -28,5 +29,6 @@ export {
   type GetPostCommentsApiResponse,
   type CreatePostCommentApiResponse,
   type CreatePostApiResponse,
-  type GetPostAPIResponse
+  type GetPostAPIResponse,
+  type FeedApiResponse
 };

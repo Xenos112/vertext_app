@@ -1,9 +1,5 @@
 "use client";
-import { GET } from "@/app/api/feed/route";
-import { useEffect, useState } from "react";
-import ky from "ky";
 import Post from "@/features/post/components/Post";
-import { APIResponse } from "@/types/api";
 import useUserStore from "@/store/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
@@ -11,23 +7,18 @@ import { Button } from "@/components/ui/button";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import CreatePostModal from "@/features/post/components/CreatePostModel/index";
 import Link from "next/link";
-
-type FeedResponse = APIResponse<ReturnType<typeof GET>>;
+import { useQuery } from "@tanstack/react-query";
+import getFeed from "@/features/post/api/getFeed";
 
 export const dynamic = "force-dynamic";
 
 export default function Home() {
-  const [posts, setPosts] = useState<FeedResponse>([]);
   const user = useUserStore((state) => state.user);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const data = await ky.get<FeedResponse>("/api/feed");
-      const res = await data.json();
-      setPosts(res);
-    };
-    fetchPosts();
-  }, []);
+  // TODO: make use of the type
+  const { data: posts } = useQuery({
+    queryKey: ["feed"],
+    queryFn: () => getFeed("feed"),
+  });
 
   return (
     <div className="min-h-screen border border-muted rounded-lg">
@@ -61,11 +52,12 @@ export default function Home() {
           <CreatePostModal />
         </Dialog>
       )}
-      {posts.map((post) => (
-        <div key={post.id} className="">
-          <Post post={post} />
-        </div>
-      ))}
+      {posts &&
+        posts.map((post) => (
+          <div key={post.id} className="">
+            <Post post={post} />
+          </div>
+        ))}
     </div>
   );
 }
