@@ -7,6 +7,7 @@ import { poppins } from "@/assets/fonts/index";
 import AuthUserProvider from "@/providers/AuthUserProvider";
 import ReactQuery from "@/providers/ReactQuery";
 import ToasterProvider from "@/providers/ToasterProvider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,6 +27,7 @@ export default function RootLayout({
             <ReactQuery>
               <AuthUserProvider>
                 {children}
+                <ReactQueryDevtools />
                 <Toaster />
                 <ToasterProvider />
               </AuthUserProvider>

@@ -8,6 +8,11 @@ import { SavePostAPIResponse } from './post/save/route'
 import { UnSavePostAPIResponse } from './post/unsave/route'
 import { type ShareAPIResponse } from './post/share/route'
 import { type DeletePostAPIResponse } from './post/delete/route'
+import { type GetPostCommentsApiResponse } from "./post/comment/route";
+import { type CreatePostApiResponse } from "./post/create/route";
+import { type CreatePostCommentApiResponse } from "./post/comment/create/route";
+import { type GetPostAPIResponse } from './post/route'
+
 
 export {
   type LoginAPIResponse,
@@ -20,4 +25,8 @@ export {
   type UnSavePostAPIResponse,
   type ShareAPIResponse,
   type DeletePostAPIResponse,
+  type GetPostCommentsApiResponse,
+  type CreatePostCommentApiResponse,
+  type CreatePostApiResponse,
+  type GetPostAPIResponse
 };
