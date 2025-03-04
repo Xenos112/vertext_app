@@ -13,6 +13,7 @@ import { type CreatePostApiResponse } from "./post/create/route";
 import { type CreatePostCommentApiResponse } from "./post/comment/create/route";
 import { type GetPostAPIResponse } from './post/[id]/route'
 import { type FeedApiResponse } from './feed/route'
+import { type SavedPostsApiRespose } from './me/saves/route'
 
 
 export {
@@ -30,5 +31,6 @@ export {
   type CreatePostCommentApiResponse,
   type CreatePostApiResponse,
   type GetPostAPIResponse,
-  type FeedApiResponse
+  type FeedApiResponse,
+  type SavedPostsApiRespose
 };
