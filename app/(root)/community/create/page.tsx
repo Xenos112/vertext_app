@@ -86,9 +86,9 @@ export default function CreateCommunityForm() {
     mutationFn: () =>
       createCommunity({
         name,
-        banner,
+        banner: banner as string | undefined,
         bio: description,
-        image,
+        image: image as string | undefined,
       }),
     onSuccess: () => {
       document.dispatchEvent(
