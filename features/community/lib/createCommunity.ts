@@ -1,13 +1,7 @@
 import prisma from "@/utils/prisma";
+import { CreateCommunityData } from "../types";
 
 
-type CreateCommunityData = {
-  name: string;
-  bio?: string,
-  creatorId: string,
-  image?: string;
-  banner?: string;
-}
 
 
 /**
