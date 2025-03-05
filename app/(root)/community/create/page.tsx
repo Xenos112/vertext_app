@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,56 +9,88 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { GoArrowLeft } from "react-icons/go";
-import { createCommunity } from "@/actions/community.actions";
-import { redirect } from "next/navigation";
+import createCommunity from "@/features/community/api/createCommunity";
 
 export default function CreateCommunityForm() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [bannerImage, setBannerImage] = useState<string | null>(null);
+  const [image, setProfileImage] = useState<string | null>(null);
+  const [banner, setBannerImage] = useState<string | null>(null);
 
-  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBannerImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const data = await createCommunity({
-      name,
-      desc: description,
-      image: profileImage,
-      banner: bannerImage,
+  const uploadFile = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await fetch("http://localhost:8080/upload", {
+      method: "POST",
+      body: formData,
     });
-    if (data.error) {
+    if (!response.ok) throw new Error("File upload failed");
+    return response.json();
+  };
+
+  const profileUploadMutation = useMutation({
+    mutationFn: (file: File) => uploadFile(file),
+    onSuccess: (data) => {
+      setProfileImage(data.url);
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "Profile image uploaded",
+            variant: "default",
+          },
+        }),
+      );
+    },
+    onError: (error: Error) => {
       document.dispatchEvent(
         new CustomEvent("toast", {
           detail: {
             variant: "destructive",
-            title: "Error",
-            description: data.error,
+            title: "Upload Error",
+            description: error.message,
           },
         }),
       );
-    } else {
+    },
+  });
+
+  const bannerUploadMutation = useMutation({
+    mutationFn: (file: File) => uploadFile(file),
+    onSuccess: (data) => {
+      setBannerImage(data.url);
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Success",
+            description: "Banner image uploaded",
+            variant: "default",
+          },
+        }),
+      );
+    },
+    onError: (error: Error) => {
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            variant: "destructive",
+            title: "Upload Error",
+            description: error.message,
+          },
+        }),
+      );
+    },
+  });
+
+  const createCommunityMutation = useMutation({
+    mutationFn: () =>
+      createCommunity({
+        name,
+        banner,
+        bio: description,
+        image,
+      }),
+    onSuccess: () => {
       document.dispatchEvent(
         new CustomEvent("toast", {
           detail: {
@@ -67,8 +100,28 @@ export default function CreateCommunityForm() {
           },
         }),
       );
-      redirect(`/community/${data.community?.id}`);
-    }
+    },
+    onError: (error: Error) => {
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            variant: "destructive",
+            title: "Error",
+            description: error.message,
+          },
+        }),
+      );
+    },
+  });
+
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) profileUploadMutation.mutate(file);
+  };
+
+  const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) bannerUploadMutation.mutate(file);
   };
 
   return (
@@ -80,7 +133,7 @@ export default function CreateCommunityForm() {
         </Link>
       </div>
       <div className="grid gap-6 lg:grid-rows-2">
-        <form onSubmit={handleSubmit} className="space-y-6 p-3">
+        <form className="space-y-6 p-3">
           <div>
             <Label htmlFor="name">Community Name</Label>
             <Input
@@ -106,6 +159,7 @@ export default function CreateCommunityForm() {
               type="file"
               accept="image/*"
               onChange={handleProfileImageChange}
+              disabled={profileUploadMutation.isPending}
             />
           </div>
           <div>
@@ -115,18 +169,27 @@ export default function CreateCommunityForm() {
               type="file"
               accept="image/*"
               onChange={handleBannerImageChange}
+              disabled={bannerUploadMutation.isPending}
             />
           </div>
-          <Button type="submit">Create Community</Button>
+          <Button
+            type="button"
+            onClick={() => createCommunityMutation.mutate()}
+            disabled={createCommunityMutation.isPending}
+          >
+            {createCommunityMutation.isPending
+              ? "Creating..."
+              : "Create Community"}
+          </Button>
         </form>
 
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-4">Community Preview</h2>
           <div className="space-y-4">
             <div className="relative h-32 bg-gray-200 rounded-lg overflow-hidden">
-              {bannerImage ? (
+              {banner ? (
                 <Image
-                  src={bannerImage || "/placeholder.svg"}
+                  src={banner}
                   alt="Community banner"
                   layout="fill"
                   objectFit="cover"
@@ -139,9 +202,9 @@ export default function CreateCommunityForm() {
             </div>
             <div className="flex items-center space-x-4">
               <div className="relative w-24 h-24 rounded-xl ml-2 overflow-hidden bg-gray-200 -mt-12 ring-background ring-offset-transparent ring-4">
-                {profileImage ? (
+                {image ? (
                   <Image
-                    src={profileImage || "/placeholder.svg"}
+                    src={image}
                     alt="Community profile"
                     layout="fill"
                     objectFit="cover"
