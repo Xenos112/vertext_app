@@ -10,7 +10,8 @@ import getMembership from "@/features/community/lib/getMembership"
 
 export const GET = async (req: NextRequest) => {
   try {
-    const { communityId } = await req.json()
+    const searchParams = await req.nextUrl.searchParams
+    const communityId = searchParams.get("communityId")
     if (!communityId)
       return NextResponse.json({ error: "CommunityId not found" }, { status: STATUS_CODES.BAD_REQUEST })
     const cookieStore = await cookies()
