@@ -25,7 +25,7 @@ export const POST = async (req: NextRequest) => {
 
     const existingMembership = await getMembership({ communityId, userId: user.id })
     if (existingMembership)
-      return NextResponse.json({ message: "You have already joined the community" })
+      return NextResponse.json({ message: "You have already joined the community", membership: existingMembership })
 
     const membership = await joinCommunity({ communityId, userId: user.id })
 
