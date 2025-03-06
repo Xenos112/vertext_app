@@ -15,7 +15,7 @@ import { type GetPostAPIResponse } from './post/[id]/route'
 import { type FeedApiResponse } from './feed/route'
 import { type SavedPostsApiRespose } from './me/saves/route'
 import { type NewCommunityApiResponse } from "./communities/route";
-import { type JoinCommunityApiResponse } from "./communities/membership/route";
+import type { GetMembershipApiResponse, JoinCommunityApiResponse } from "./communities/membership/route";
 
 
 export {
@@ -36,5 +36,6 @@ export {
   type FeedApiResponse,
   type SavedPostsApiRespose,
   type NewCommunityApiResponse,
-  type JoinCommunityApiResponse
+  type JoinCommunityApiResponse,
+  type GetMembershipApiResponse
 };
