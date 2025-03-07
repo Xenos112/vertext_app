@@ -12,6 +12,7 @@ import formatDate from "@/utils/format-date";
 import Post from "@/features/post/components/Post";
 import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
+import JoinButton from "@/features/community/components/JoinButton";
 
 type CommunityDetails = Awaited<
   ReturnType<typeof getCommunityDetails>
@@ -112,9 +113,10 @@ function CommunityPage() {
           </div>
           {/* The Follow User Button*/}
           <div className="flex justify-end m-3">
-            <Button onClick={handleLeaveAndJoin} className="">
+            {/*<Button onClick={handleLeaveAndJoin} className="">
               {isJoined ? "Leave" : "Join"}
-            </Button>
+            </Button> */}
+            <JoinButton communityId={community.id} />
           </div>
           <div className="my-8 m-3">
             <h1 className="text-md font-semibold">{community.name}</h1>
