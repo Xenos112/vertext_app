@@ -11,6 +11,7 @@ import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { Button } from "../ui/button";
 import { FiLoader } from "react-icons/fi";
 import { joinCommunity } from "@/actions/community.actions";
+import FollowButton from "@/features/user/components/FollowButton";
 
 type SuggestedUsersType = Awaited<
   ReturnType<typeof getRecommendedUsers>
@@ -159,13 +160,7 @@ export default function RightFloatMenu() {
                   </Avatar>
                   <p>{user.user_name}</p>
                 </div>
-                <Button
-                  onClick={() => handleFollowClick(user.id)}
-                  disabled={loading}
-                  size="sm"
-                >
-                  {loading && <FiLoader />} Follow
-                </Button>
+                <FollowButton userId={user.id}>Follow</FollowButton>
               </div>
             ))}
           </div>
