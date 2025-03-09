@@ -1,15 +1,16 @@
 "use client";
-import { followUser, getUserById, unFollwerUser } from "@/actions/user.actions";
+import { getUserById } from "@/actions/user.actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import Link from "next/link";
-import { redirect, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import formatDate from "@/utils/format-date";
 import useUserStore from "@/store/user";
 import { formatNumber } from "@/utils/format-number";
+import FollowButton from "@/features/user/components/FollowButton";
 
 type UserType = Awaited<ReturnType<typeof getUserById>>["user"];
 
@@ -19,7 +20,6 @@ export default function UserPage({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const currentLoggedUser = useUserStore((state) => state.user);
-  const [isFollowed, setIsFollwed] = useState(false);
   const [follwersCount, setFollowersCount] = useState(0);
 
   useEffect(() => {
@@ -32,83 +32,10 @@ export default function UserPage({ children }: { children: ReactNode }) {
         } else {
           setUser(data.user);
           setFollowersCount(data.user?._count.followers || 0);
-          setIsFollwed(data.user?.followers.length === 0 ? false : true);
         }
       })
       .finally(() => setLoading(false));
   }, [id]);
-
-  const handleFollowClick = async () => {
-    if (!currentLoggedUser?.id) {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: "Please Login to Follow the User",
-            title: "UnAuhtorized",
-            variant: "destructive",
-          },
-        }),
-      );
-      redirect("/register");
-    }
-
-    if (!isFollowed) {
-      const data = await followUser(user!.id);
-      setIsFollwed(true);
-      setFollowersCount((prev) => prev + 1);
-
-      if (data.error) {
-        console.log(data.error);
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              description: "Error Following the user",
-              title: "Error",
-              variant: "destructive",
-            },
-          }),
-        );
-        return;
-      }
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: "You have been followed",
-            title: "Success",
-            variant: "default",
-          },
-        }),
-      );
-    } else if (isFollowed) {
-      const data = await unFollwerUser(user!.id);
-      setIsFollwed(false);
-      setFollowersCount((prev) => prev - 1);
-
-      if (data.error) {
-        console.log(data.error);
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              description: "Error UnFollowing the user",
-              title: "Error",
-              variant: "destructive",
-            },
-          }),
-        );
-        return;
-      }
-
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: "You have been unfollowed",
-            title: "Success",
-            variant: "default",
-          },
-        }),
-      );
-    }
-  };
 
   return (
     <div className="border border-muted rounded-xl min-h-screen">
@@ -138,11 +65,7 @@ export default function UserPage({ children }: { children: ReactNode }) {
               <Button className="">Edit Profile</Button>
             ) : (
               <div>
-                {!isFollowed ? (
-                  <Button onClick={handleFollowClick}>Follow</Button>
-                ) : (
-                  <Button onClick={handleFollowClick}>UnFollow</Button>
-                )}
+                <FollowButton userId={user.id} />
               </div>
             )}
           </div>
