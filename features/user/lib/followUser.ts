@@ -14,7 +14,7 @@ type FollowUserData = {
     *  in the database
 */
 export default async function followUser(data: FollowUserData) {
-  const oldRelation = getRelation(data)
+  const oldRelation = await getRelation(data)
   if (oldRelation)
     return oldRelation
 
