@@ -91,7 +91,7 @@ export default function LeaveCommunityWarningModal({
   return (
     <DialogPortal>
       <DialogContent>
-        <DialogTitle>Leave Community</DialogTitle>
+        <DialogTitle>{membership ? "Leave" : "Join"} Community</DialogTitle>
         <DialogDescription>
           Are you sure you want to {membership ? "leave" : "join"} the
           community?
