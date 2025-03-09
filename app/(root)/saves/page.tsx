@@ -39,10 +39,28 @@ export default function SavesPage() {
           </Button>
         </Link>
       </div>
-      <h1 className="p-4">Saved Posts</h1>
+
+      {posts && posts.length > 0 && (
+        <div className="p-4">
+          {posts.map((post) => (
+            <Post key={post.id} post={post} />
+          ))}
+        </div>
+      )}
       <div>
         {posts && posts.map((post) => <Post key={post.id} post={post} />)}
       </div>
+      {posts?.length === 0 && (
+        <div className="flex flex-col items-center pt-10 justify-center ">
+          <h1 className="text-3xl font-semibold">No Posts Saved</h1>
+          <p className="text-muted-foreground">
+            You haven&apos;t saved any posts yet
+          </p>
+          <Button variant="ghost" className="mt-4">
+            <Link href="/">Return</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
