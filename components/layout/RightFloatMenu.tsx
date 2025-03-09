@@ -1,16 +1,14 @@
 "use client";
 import {
-  followUser,
   getRecommendedCommunities,
   getRecommendedUsers,
 } from "@/actions/user.actions";
-import React, { useTransition } from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
-import { Button } from "../ui/button";
-import { FiLoader } from "react-icons/fi";
-import { joinCommunity } from "@/actions/community.actions";
+import FollowButton from "@/features/user/components/FollowButton";
+import JoinCommunity from "@/features/community/components/JoinButton";
 
 type SuggestedUsersType = Awaited<
   ReturnType<typeof getRecommendedUsers>
@@ -23,7 +21,6 @@ type SuggestedCommunitiesType = Awaited<
 export default function RightFloatMenu() {
   const [users, setUsers] = useState<SuggestedUsersType>();
   const [communities, setCommunities] = useState<SuggestedCommunitiesType>([]);
-  const [loading, startTransition] = useTransition();
 
   useEffect(() => {
     getRecommendedUsers().then((data) => {
@@ -61,87 +58,6 @@ export default function RightFloatMenu() {
     });
   }, []);
 
-  const handleFollowClick = async (userId: string) => {
-    startTransition(async () => {
-      const data = await followUser(userId);
-      if (data.error) {
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              variant: "destructive",
-              title: "Error",
-              description: data.error as string,
-            },
-          }),
-        );
-      } else {
-        const poppedUser = users?.filter((u) => u.id !== userId);
-        if (!poppedUser || poppedUser.length === users?.length) {
-          document.dispatchEvent(
-            new CustomEvent("toast", {
-              detail: {
-                variant: "destructive",
-                title: "Error",
-                description: "User not found or already removed",
-              },
-            }),
-          );
-          return;
-        }
-        setUsers(poppedUser);
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              title: "Success",
-              description: `You have followed this user`,
-            },
-          }),
-        );
-      }
-    });
-  };
-
-  const handleJoinClick = async (communityId: string) => {
-    startTransition(async () => {
-      const data = await joinCommunity(communityId);
-      if (data.error) {
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              variant: "destructive",
-              title: "Error",
-              description: data.error as string,
-            },
-          }),
-        );
-      } else {
-        const poppedUser = communities?.filter((u) => u.id !== communityId);
-        if (!poppedUser || poppedUser.length === users?.length) {
-          document.dispatchEvent(
-            new CustomEvent("toast", {
-              detail: {
-                variant: "destructive",
-                title: "Error",
-                description: "Community not found or already removed",
-              },
-            }),
-          );
-          return;
-        }
-        setCommunities(poppedUser);
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              variant: "destructive",
-              title: "Error",
-              description: "Community not found or already removed",
-            },
-          }),
-        );
-      }
-    });
-  };
-
   return (
     <div className="absolute top-12 right-12 space-y-6">
       {users && users?.length > 0 && (
@@ -159,13 +75,7 @@ export default function RightFloatMenu() {
                   </Avatar>
                   <p>{user.user_name}</p>
                 </div>
-                <Button
-                  onClick={() => handleFollowClick(user.id)}
-                  disabled={loading}
-                  size="sm"
-                >
-                  {loading && <FiLoader />} Follow
-                </Button>
+                <FollowButton userId={user.id}>Follow</FollowButton>
               </div>
             ))}
           </div>
@@ -189,13 +99,7 @@ export default function RightFloatMenu() {
                   </Avatar>
                   <p>{community.name}</p>
                 </div>
-                <Button
-                  onClick={() => handleFollowClick(community.id)}
-                  disabled={loading}
-                  size="sm"
-                >
-                  {loading && <FiLoader />} Join
-                </Button>
+                <JoinCommunity communityId={community.id} />
               </div>
             ))}
           </div>
