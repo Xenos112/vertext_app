@@ -1,4 +1,5 @@
 import prisma from "@/utils/prisma"
+import getRelation from "./getRelation"
 
 type UnFollowUserData = {
   userId: string
@@ -13,6 +14,9 @@ type UnFollowUserData = {
   * @description a function to delete a relationship between two users
 */
 export default async function unfollowUser(data: UnFollowUserData) {
+  const relation = getRelation({ followedUserId: data.tounfollowUser, userId: data.userId })
+  if (!relation)
+    return
   const relationRecord = await prisma.follow.delete({
     where: {
       followerId_followingId: {
