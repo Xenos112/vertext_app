@@ -18,6 +18,7 @@ import { type NewCommunityApiResponse } from "./communities/route";
 import type { GetMembershipApiResponse, JoinCommunityApiResponse, LeaveCommunityApiResponse } from "./communities/membership/route";
 import type { DeleteRelationResponse, GetRelationResponse, PostRelationResponse } from "./users/relation/route";
 import { type RetrieveChatCommunitiesResponse } from "./chat/get-chat-communities/route";
+import { GetCommunityMessagesResponse } from "./chat/get-community-messages/route";
 
 
 export {
@@ -44,5 +45,6 @@ export {
   type GetRelationResponse,
   type PostRelationResponse,
   type DeleteRelationResponse,
-  type RetrieveChatCommunitiesResponse
+  type RetrieveChatCommunitiesResponse,
+  type GetCommunityMessagesResponse
 }
