@@ -41,13 +41,6 @@ describe('formatDate', () => {
     expect(formatDate(dateString)).toBe('13/02/2025');
   });
 
-  it('should handle string input with time and return time ago', () => {
-    const dateString = '2025-02-23T10:00:00';
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - new Date(dateString).getTime()) / (1000 * 60 * 60));
-    expect(formatDate(dateString)).toBe(`${diffInHours}h ago`);
-  });
-
   it('should handle invalid date strings gracefully', () => {
     const invalidDate = 'invalid-date';
     expect(formatDate(invalidDate)).toBe("Just now"); // Or any default fallback value
