@@ -1,4 +1,3 @@
-// utils/socket.ts
 import prisma from "@/utils/prisma";
 import { Server } from "socket.io";
 
@@ -12,16 +11,17 @@ export const initSocket = (io: Server) => {
     });
 
     socket.on("sendMessage", async ({ room, sender, content }) => {
-      // Save the message to the database using Prisma
       const message = await prisma.message.create({
         data: {
           content,
           senderId: sender,
           communityId: room,
         },
+        include: {
+          Sender: true,
+        }
       });
 
-      // Emit the message to all users in the room
       io.to(room).emit("receiveMessage", message);
     });
 
