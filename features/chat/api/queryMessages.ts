@@ -1,5 +1,5 @@
 import ky from "ky";
-import type { GetCommunityMessagesResponse } from "@/api";
+import type { GetCommunityMessagesResponse } from "@/app/api";
 
 export default async function queryMessages(communityId: string) {
   const res = await ky.get<GetCommunityMessagesResponse>("/api/chat/get-community-messages", {
