@@ -12,5 +12,5 @@ export default async function queryMessages(communityId: string) {
 
   if ("error" in data) throw new Error(data.error);
 
-  return data
+  return data.messages
 }
