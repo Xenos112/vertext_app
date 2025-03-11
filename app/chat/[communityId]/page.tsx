@@ -35,7 +35,7 @@ export default function ChatCommunityPage() {
       return;
     }
 
-    // Initialize Socket.io connection
+    // TODO: make it in /chat and
     socketRef.current = io("http://localhost:3001");
 
     const socket = socketRef.current;
@@ -57,6 +57,7 @@ export default function ChatCommunityPage() {
   const handleSendMessage = () => {
     if (!messageInput.trim() || !user || !socketRef.current) return;
 
+    // FIX: make the user sends photos
     socketRef.current.emit("sendMessage", {
       room: communityId,
       sender: user.id,
