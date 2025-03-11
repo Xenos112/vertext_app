@@ -11,5 +11,6 @@ export default async function queryMessages(communityId: string) {
   const data = await res.json()
 
   if ("error" in data) throw new Error(data.error);
+
   return data
 }
