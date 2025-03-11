@@ -12,7 +12,7 @@ import {
 
 export default function CommunitiesPreview() {
   const { data: communities } = useQuery({
-    queryKey: ["chat/communities"],
+    queryKey: ["chat-communities"],
     queryFn: () => returnCommunity(),
   });
 
