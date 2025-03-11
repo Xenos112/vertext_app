@@ -141,6 +141,7 @@ model Message {
   senderId    String
   Community   Community @relation(fields: [communityId], references: [id])
   communityId String
+  createdAt   DateTime  @default(now())
 }
 
 model Notification {
