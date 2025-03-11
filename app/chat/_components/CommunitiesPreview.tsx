@@ -29,13 +29,13 @@ export default function CommunitiesPreview() {
                 </AvatarFallback>
               </Avatar>
             </HoverCardTrigger>
-            <HoverPreview
-              id={community.id}
-              name={community.name}
-              description={community.bio}
-              image={community.image}
-            />
           </Link>
+          <HoverPreview
+            id={community.id}
+            name={community.name}
+            description={community.bio}
+            image={community.image}
+          />
         </HoverCard>
       ))}
     </div>
