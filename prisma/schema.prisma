@@ -137,6 +137,7 @@ model Follow {
 model Message {
   id          String    @id @default(uuid())
   content     String
+  media       String[]
   Sender      User      @relation(fields: [senderId], references: [id])
   senderId    String
   Community   Community @relation(fields: [communityId], references: [id])
