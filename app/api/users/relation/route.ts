@@ -11,6 +11,7 @@ export const GET = async (req: NextRequest) => {
   try {
     const searchParams = req.nextUrl.searchParams
     const followedUserId = searchParams.get("followedId")
+    console.log(followedUserId)
     if (!followedUserId)
       return NextResponse.json({ error: "provide a user id" }, { status: STATUS_CODES.BAD_REQUEST })
 
@@ -20,7 +21,8 @@ export const GET = async (req: NextRequest) => {
     if (!user)
       return NextResponse.json({ relation: null }, { status: STATUS_CODES.SUCCESS })
 
-    const relation = getRelation({ followedUserId, userId: user.id })
+    const relation = await getRelation({ followedUserId, userId: user.id })
+    console.log(relation)
     return NextResponse.json({ relation }, { status: STATUS_CODES.SUCCESS })
   } catch (error) {
     console.log("ERROR_GET_RELATION " + error)
