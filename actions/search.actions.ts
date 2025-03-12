@@ -32,7 +32,7 @@ export async function postSearch(query: string, limit = 3) {
         },
         Like: {
           where: {
-            userId: user?.id ? user?.id : null,
+            userId: user?.id || ''
           },
           select: {
             userId: true,
