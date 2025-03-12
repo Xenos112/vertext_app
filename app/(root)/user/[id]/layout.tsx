@@ -50,9 +50,9 @@ export default function UserPage({ children }: { children: ReactNode }) {
       {user?.id ? (
         <>
           <div className="relative">
-            <Image
+            <img
               alt="banner"
-              src={(user.banner_url || null) as string}
+              src={user.banner_url || undefined}
               className="h-[200px] bg-blue-400/30 w-full object-cover"
             />
             <Avatar className="size-[130px] absolute ring-4 ring-offset-transparent ring-background -translate-y-1/2 mx-3">
