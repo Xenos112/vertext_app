@@ -25,9 +25,9 @@ export const POST = async (req: NextRequest) => {
     const newCommunity = await createCommunity({
       creatorId: user.id,
       name: data.name,
-      bio: data.bio,
-      image: data.image,
-      banner: data.banner
+      bio: data.bio || '',
+      image: data.image || '',
+      banner: data.banner || ''
     });
     return NextResponse.json({ community: newCommunity }, { status: STATUS_CODES.CREATED })
   } catch (error) {
