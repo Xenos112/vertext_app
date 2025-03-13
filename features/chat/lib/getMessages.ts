@@ -11,6 +11,9 @@ export default async function getMessages(communityId: string) {
     where: {
       communityId
     },
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
       Sender: {
         omit: {
