@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import ChatBubble from "./_components/ChatBubble";
 import { Input } from "@/components/ui/input";
 import { Send, Upload } from "lucide-react";
-import type { Message } from "@prisma/client"; // Assuming you have a Message type
+import type { Message } from "@prisma/client";
 
 export default function ChatCommunityPage() {
   const user = useUserStore((state) => state.user);
@@ -19,7 +19,6 @@ export default function ChatCommunityPage() {
   const [messageInput, setMessageInput] = useState("");
   const [messagesState, setMessagesState] = useState<Message[]>([]);
 
-  // Fetch initial messages
   const { data } = useQuery({
     queryKey: ["messages", communityId],
     queryFn: () => queryMessages(communityId as string),
@@ -49,6 +48,7 @@ export default function ChatCommunityPage() {
       setMessagesState((prev) => [...prev, newMessage]);
     });
 
+    // FIX: the socket sometimes stays connected
     return () => {
       socket.disconnect();
     };
