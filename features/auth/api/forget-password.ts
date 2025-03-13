@@ -36,9 +36,9 @@ export default async function forgetPasswordFunction({
   );
 
   const data = await res.json();
-  if (res.status !== 200) {
-    throw new Error(data.error!);
-  } else return data.message!;
+  if ("error" in data) throw new Error(data.error);
+  if ("errors" in data) throw new Error(data.errors[0]);
+  return data.message;
 }
 
 type ResetPasswordProps = {
@@ -46,6 +46,7 @@ type ResetPasswordProps = {
   password: string;
   confirmPassword: string;
 };
+
 export async function resetPasswordFunction({
   id,
   password,
@@ -75,9 +76,10 @@ export async function resetPasswordFunction({
   const responseData = await res.json();
 
   // FIX: the endpoint shoult only send a error not errors and if that in the case i should format the zod error to have only one error at the time conbined and send back to the client
-  if (res.status !== 200) {
-    throw new Error(responseData!.error!);
+  if ("error" in responseData) {
+    throw new Error(responseData.error);
   }
+  if ("errors" in responseData) throw new Error(responseData.errors[0])
 
   return responseData;
 }
