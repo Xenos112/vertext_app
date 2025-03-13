@@ -41,6 +41,7 @@ export const POST = async (req: NextRequest) => {
         password: passwordHash,
       },
     });
+    return NextResponse.json({ message: "password updated" }, { status: STATUS_CODES.SUCCESS })
   } catch (error) {
     console.log("ERROR: " + error);
     return NextResponse.json(
