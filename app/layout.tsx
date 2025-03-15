@@ -22,8 +22,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.className} antialiased`}>
-        <NuqsAdapter>
-          <ThemeProvider>
+        <ThemeProvider>
+          <NuqsAdapter>
             <ReactQuery>
               <AuthUserProvider>
                 {children}
@@ -32,8 +32,8 @@ export default function RootLayout({
                 <ToasterProvider />
               </AuthUserProvider>
             </ReactQuery>
-          </ThemeProvider>
-        </NuqsAdapter>
+          </NuqsAdapter>
+        </ThemeProvider>
       </body>
     </html>
   );
