@@ -1,10 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import getCommunityDetails, {
-  joinCommunity,
-  leaveCommunity,
-} from "@/actions/community.actions";
+import getCommunityDetails from "@/actions/community.actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { Button } from "@/components/ui/button";
@@ -21,7 +18,6 @@ function CommunityPage() {
   const { id } = useParams() as { id: string };
   const [community, setCommunity] = useState<CommunityDetails>();
   const [loading, setLoading] = useState(true);
-  const [isJoined, setIsJoined] = useState(false);
 
   useEffect(() => {
     getCommunityDetails(id)
@@ -30,61 +26,10 @@ function CommunityPage() {
           console.log("error fetching the community");
         } else {
           setCommunity(data.community);
-          setIsJoined(data.community?.Membership.length === 1);
         }
       })
       .finally(() => setLoading(false));
   }, [id]);
-
-  const handleLeaveAndJoin = async () => {
-    if (isJoined) {
-      setIsJoined(!isJoined);
-      const data = await leaveCommunity(community!.id);
-      if (data.error) {
-        setIsJoined(!isJoined);
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              title: "Error",
-              description: data.error,
-            },
-          }),
-        );
-      } else {
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              title: "Success",
-              description: "You have been successfully left the community",
-            },
-          }),
-        );
-      }
-    } else {
-      setIsJoined(!isJoined);
-      const data = await joinCommunity(community!.id);
-      if (data.error) {
-        setIsJoined(!isJoined);
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              title: "Error",
-              description: data.error,
-            },
-          }),
-        );
-      } else {
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              title: "Success",
-              description: data.message,
-            },
-          }),
-        );
-      }
-    }
-  };
 
   if (loading) return <div>Loading...</div>;
 

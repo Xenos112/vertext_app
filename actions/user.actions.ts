@@ -1,5 +1,4 @@
 "use server";
-
 import { ERRORS } from "@/constants";
 import prisma from "@/utils/prisma";
 import validateUser from "@/utils/validate-user";
@@ -27,53 +26,6 @@ export async function getUserById(id: string) {
       },
     });
     return { user, isFollowedByCurrentUser: user!.followers.length > 0 };
-  } catch (error) {
-    return { error };
-  }
-}
-
-export async function followUser(userId: string) {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("auth_token")?.value;
-    const user = await validateUser(token);
-
-    if (!user) {
-      return { error: "You Are Not Authenticated" };
-    }
-
-    await prisma.follow.create({
-      data: {
-        followerId: user.id,
-        followingId: userId,
-      },
-    });
-
-    return { message: "Success" };
-  } catch (error) {
-    return { error };
-  }
-}
-
-export async function unFollwerUser(userId: string) {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("auth_token")?.value;
-    const user = await validateUser(token);
-
-    if (!user) {
-      return { error: "You Are Not Authenticated" };
-    }
-
-    await prisma.follow.delete({
-      where: {
-        followerId_followingId: {
-          followerId: user.id,
-          followingId: userId,
-        },
-      },
-    });
-    return { message: "Success" };
   } catch (error) {
     return { error };
   }
@@ -123,19 +75,6 @@ export async function getUserPosts(userId: string) {
     });
 
     return { posts };
-  } catch (error) {
-    return { error };
-  }
-}
-
-export async function getUserCommunities(userId: string) {
-  try {
-    const communities = await prisma.membership.findMany({
-      where: {
-        userId: userId,
-      },
-    });
-    return { communities };
   } catch (error) {
     return { error };
   }
