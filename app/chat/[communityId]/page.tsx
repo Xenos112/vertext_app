@@ -11,6 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Send, Upload } from "lucide-react";
 import type { Message } from "@prisma/client";
 
+interface FileStatus {
+  name: string;
+  progress: number;
+  status: "pending" | "uploading" | "completed" | "error";
+}
+
 export default function ChatCommunityPage() {
   const user = useUserStore((state) => state.user);
   const router = useRouter();
@@ -18,6 +24,9 @@ export default function ChatCommunityPage() {
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [messagesState, setMessagesState] = useState<Message[]>([]);
+  const [fileStatus, setFileStatus] = useState<FileStatus[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [urls, setUrls] = useState<string[]>([]);
 
   const { data } = useQuery({
     queryKey: ["messages", communityId],
@@ -55,6 +64,7 @@ export default function ChatCommunityPage() {
   }, [communityId, router, user]);
 
   const handleSendMessage = () => {
+    // FIX: make the user sends the photos even if the input is empty
     if (!messageInput.trim() || !user || !socketRef.current) return;
 
     // FIX: make the user sends photos
@@ -62,9 +72,91 @@ export default function ChatCommunityPage() {
       room: communityId,
       sender: user.id,
       content: messageInput,
+      media: urls,
     });
 
     setMessageInput("");
+    setUrls([]);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
+
+    const newFiles = Array.from(event.target.files);
+
+    // Update state with new files
+    setFileStatus((prevStatuses) => [
+      ...prevStatuses,
+      ...newFiles.map((file) => ({
+        name: file.name,
+        progress: 0,
+        status: "pending" as const,
+      })),
+    ]);
+
+    uploadFiles(newFiles);
+  };
+
+  const uploadFiles = (files: File[]) => {
+    setIsUploading(true);
+
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file)); // Append all files
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("post", "http://localhost:8080/uploads", true);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.total) {
+        const percent = Math.round((event.loaded * 100) / event.total);
+        setFileStatus((prevStatuses) =>
+          prevStatuses.map((fileStatus) =>
+            files.some((f) => f.name === fileStatus.name)
+              ? { ...fileStatus, progress: percent, status: "uploading" }
+              : fileStatus,
+          ),
+        );
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const response = JSON.parse(xhr.responseText);
+        const uploadedUrls: string[] = response.map(
+          (entry: { url: string }) => entry.url,
+        );
+        setUrls((prev) => [...prev, ...uploadedUrls]);
+        setFileStatus((prevStatuses) =>
+          prevStatuses.map((fileStatus) =>
+            files.some((f) => f.name === fileStatus.name)
+              ? { ...fileStatus, progress: 100, status: "completed" }
+              : fileStatus,
+          ),
+        );
+      } else {
+        setFileStatus((prevStatuses) =>
+          prevStatuses.map((fileStatus) =>
+            files.some((f) => f.name === fileStatus.name)
+              ? { ...fileStatus, status: "error" }
+              : fileStatus,
+          ),
+        );
+      }
+      setIsUploading(false);
+    };
+
+    xhr.onerror = () => {
+      setFileStatus((prevStatuses) =>
+        prevStatuses.map((fileStatus) =>
+          files.some((f) => f.name === fileStatus.name)
+            ? { ...fileStatus, status: "error" }
+            : fileStatus,
+        ),
+      );
+      setIsUploading(false);
+    };
+
+    xhr.send(formData);
   };
 
   if (!user) return null;
@@ -88,7 +180,8 @@ export default function ChatCommunityPage() {
           />
         ))}
       </div>
-
+      <pre>{JSON.stringify(urls)}</pre>
+      <pre>{JSON.stringify(fileStatus)}</pre>
       {/* Input Area */}
       <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto flex gap-2 items-center">
@@ -96,8 +189,10 @@ export default function ChatCommunityPage() {
             <input
               type="file"
               id="file-upload"
+              multiple
+              accept="image/*, video/*"
               className="hidden"
-              onChange={(e) => console.log(e.target.files)}
+              onChange={handleFileChange}
             />
             <label htmlFor="file-upload" className="cursor-pointer">
               <Upload className="h-5 w-5" />

@@ -28,10 +28,12 @@ io.on("connection", (socket) => {
       room,
       sender,
       content,
+      media,
     }: {
       room: string;
       sender: string;
       content: string;
+      media: string[];
     }) => {
       try {
         const message = await prisma.message.create({
@@ -39,6 +41,7 @@ io.on("connection", (socket) => {
             content,
             senderId: sender,
             communityId: room,
+            media: media,
           },
           include: {
             Sender: true,
