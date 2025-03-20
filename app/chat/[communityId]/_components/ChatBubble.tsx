@@ -2,7 +2,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils"; // Assuming you have utility classNames helper
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { isImage } from "@/constants";
-import Video from "@/features/post/components/Post/Video";
+import Video from "@/components/shared/Video";
 
 type ChatBubbleProps = {
   senderId: string;
