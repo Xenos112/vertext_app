@@ -5,25 +5,24 @@ import prisma from "@/utils/prisma";
  * @param communityId - the id of the community to get messages from
  * @returns - an array of messages from the community
  * @description a function to get messages from a community
-*/
+ */
 export default async function getMessages(communityId: string) {
   const messages = await prisma.message.findMany({
     where: {
-      communityId
+      communityId,
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: "asc",
     },
     include: {
       Sender: {
         omit: {
-          password: true
-        }
+          password: true,
+        },
       },
     },
     take: 20,
-  })
+  });
 
-  return messages
+  return messages;
 }
-
