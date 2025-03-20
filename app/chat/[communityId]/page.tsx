@@ -181,8 +181,6 @@ export default function ChatCommunityPage() {
           />
         ))}
       </div>
-      <pre>{JSON.stringify(urls)}</pre>
-      <pre>{JSON.stringify(fileStatus)}</pre>
       {/* Input Area */}
       <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto flex gap-2 items-center">
