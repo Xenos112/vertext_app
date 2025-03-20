@@ -25,7 +25,7 @@ export default function ChatCommunityPage() {
   const [messageInput, setMessageInput] = useState("");
   const [messagesState, setMessagesState] = useState<Message[]>([]);
   const [fileStatus, setFileStatus] = useState<FileStatus[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
+  const [, setIsUploading] = useState(false);
   const [urls, setUrls] = useState<string[]>([]);
 
   const { data } = useQuery({
@@ -173,6 +173,7 @@ export default function ChatCommunityPage() {
           <ChatBubble
             senderId={message.senderId}
             message={message.content}
+            media={message.media}
             createdAt={message.createdAt}
             key={message.id}
             isMe={message.senderId === user.id}
