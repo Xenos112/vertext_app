@@ -1,6 +1,8 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils"; // Assuming you have utility classNames helper
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
+import { isImage } from "@/constants";
+import Video from "@/features/post/components/Post/Video";
 
 type ChatBubbleProps = {
   senderId: string;
@@ -8,6 +10,7 @@ type ChatBubbleProps = {
   createdAt: Date;
   isMe: boolean;
   userName: string;
+  media: string[] | null;
 };
 
 export default function ChatBubble({
@@ -16,14 +19,25 @@ export default function ChatBubble({
   senderId,
   isMe = false,
   userName,
+  media,
 }: ChatBubbleProps) {
+  const className =
+    media?.length === 1
+      ? "grid-cols-1 grid-rows-1"
+      : media?.length === 2
+        ? "grid-cols-2 grid-rows-1"
+        : media?.length === 3
+          ? "grid-cols-1 grid-rows-3"
+          : media?.length === 4
+            ? "grid-cols-2 grid-rows-2"
+            : "grid-cols-3 grid-rows-2";
   return (
     <div
       className={cn("flex w-full mt-4", isMe ? "justify-end" : "justify-start")}
     >
       <div
         className={cn(
-          "flex items-start gap-3 max-w-[80%]",
+          "flex flex-col items-start gap-3 max-w-[80%]",
           isMe ? "flex-row-reverse" : "flex-row",
         )}
       >
@@ -48,6 +62,21 @@ export default function ChatBubble({
             <p className="break-words">{message}</p>
           </div>
 
+          {media?.length ? (
+            <div
+              className={`${className} grid max-w-[80%] rounded-xl overflow-hidden items-center justify-center`}
+            >
+              {media.map((m) => (
+                <div key={m}>
+                  {isImage.test(m) ? (
+                    <img src={m || undefined} />
+                  ) : (
+                    <Video src={m} type="mp4" autoPlay controls />
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : null}
           <span className="text-xs text-gray-500">
             {new Date(createdAt).toLocaleTimeString([], {
               hour: "2-digit",
