@@ -64,10 +64,7 @@ export default function ChatCommunityPage() {
   }, [communityId, router, user]);
 
   const handleSendMessage = () => {
-    // FIX: make the user sends the photos even if the input is empty
-    if (!messageInput.trim() || !user || !socketRef.current) return;
-
-    // FIX: make the user sends photos
+    if ((!messageInput.trim() && !urls) || !user || !socketRef.current) return;
     socketRef.current.emit("sendMessage", {
       room: communityId,
       sender: user.id,
@@ -77,6 +74,7 @@ export default function ChatCommunityPage() {
 
     setMessageInput("");
     setUrls([]);
+    // TODO: make it scroll to the bottom
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

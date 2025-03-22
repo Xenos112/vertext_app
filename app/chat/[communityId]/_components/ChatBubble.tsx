@@ -51,17 +51,18 @@ export default function ChatBubble({
             isMe ? "items-end" : "items-start",
           )}
         >
-          <div
-            className={cn(
-              "p-3 rounded-2xl text-sm",
-              isMe
-                ? "bg-blue-500 text-white rounded-br-none"
-                : "bg-gray-100 text-gray-900 rounded-bl-none",
-            )}
-          >
-            <p className="break-words">{message}</p>
-          </div>
-
+          {message && (
+            <div
+              className={cn(
+                "p-3 rounded-2xl text-sm",
+                isMe
+                  ? "bg-blue-500 text-white rounded-br-none"
+                  : "bg-gray-100 text-gray-900 rounded-bl-none",
+              )}
+            >
+              <p className="break-words">{message}</p>
+            </div>
+          )}
           {media?.length ? (
             <div
               className={`${className} grid max-w-[80%] rounded-xl overflow-hidden items-center justify-center`}
