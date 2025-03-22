@@ -72,7 +72,10 @@ export default function ChatBubble({
                   {isImage.test(m) ? (
                     <img src={m || undefined} />
                   ) : (
-                    <Video src={m} type="mp4" autoPlay controls />
+                    <>
+                      {/* @ts-expect-error idk why */}
+                      <Video src={m} type="mp4" autoPlay controls />
+                    </>
                   )}
                 </div>
               ))}
