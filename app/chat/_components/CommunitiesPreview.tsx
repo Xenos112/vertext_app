@@ -51,7 +51,7 @@ type HoverPreviewProps = {
 
 function HoverPreview({ name, description, id, image }: HoverPreviewProps) {
   return (
-    <HoverCardContent>
+    <HoverCardContent className="text-white">
       <div className="flex gap-3">
         <Avatar>
           <AvatarImage src={image || undefined} />
