@@ -5,7 +5,7 @@ import { use } from "react";
 import parsePostContent from "@/utils/parse-post-content";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { isImage } from "@/constants";
-import Video from "./Video";
+import Video from "@/components/shared/Video";
 
 export default function Body() {
   const [post] = use(PostContext);
