@@ -28,9 +28,9 @@ import type {
 import { type RetrieveChatCommunitiesResponse } from "./chat/get-chat-communities/route";
 import { GetCommunityMessagesResponse } from "./chat/get-community-messages/route";
 import type {
-  AcceptMembershipRequests,
-  DeleteMembershipRequests,
+  AcceptMembershipRequest,
   GetMembershipRequests,
+  RefuseMembershipRequest,
 } from "./communities/membership/requests/route";
 
 export {
@@ -60,6 +60,6 @@ export {
   type RetrieveChatCommunitiesResponse,
   type GetCommunityMessagesResponse,
   type GetMembershipRequests,
-  type AcceptMembershipRequests,
-  type DeleteMembershipRequests,
+  type AcceptMembershipRequest,
+  type RefuseMembershipRequest,
 };
