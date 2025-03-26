@@ -105,14 +105,14 @@ const DELETE = async (req: NextRequest) => {
 };
 
 type GetMembershipRequests = APIResponse<ReturnType<typeof GET>>;
-type AcceptMembershipRequests = APIResponse<ReturnType<typeof POST>>;
-type DeleteMembershipRequests = APIResponse<ReturnType<typeof DELETE>>;
+type AcceptMembershipRequest = APIResponse<ReturnType<typeof POST>>;
+type RefuseMembershipRequest = APIResponse<ReturnType<typeof DELETE>>;
 
 export {
   GET,
   POST,
   DELETE,
   type GetMembershipRequests,
-  type AcceptMembershipRequests,
-  type DeleteMembershipRequests,
+  type AcceptMembershipRequest,
+  type RefuseMembershipRequest,
 };
