@@ -2,6 +2,9 @@ import { APIResponse } from "@/types/api";
 import { NextRequest, NextResponse } from "next/server";
 import { STATUS_CODES } from "@/constants";
 import getMembershipRequests from "@/features/community/lib/memberships/getMembershipRequests";
+import getMembershipRequest from "@/features/community/lib/memberships/getMembershipRequest";
+import acceptMembershipRequest from "@/features/community/lib/memberships/acceptMembershipRequest";
+import rejectMembershipRequest from "@/features/community/lib/memberships/rejectMembershipRequest";
 
 const GET = async (req: NextRequest) => {
   try {
@@ -26,8 +29,80 @@ const GET = async (req: NextRequest) => {
     );
   }
 };
-const POST = async (req: NextRequest) => {};
-const DELETE = async (req: NextRequest) => {};
+
+const POST = async (req: NextRequest) => {
+  try {
+    const searchParams = req.nextUrl.searchParams;
+    const communityId = searchParams.get("communityId");
+    const userId = searchParams.get("userId");
+
+    if (!communityId || !userId) {
+      return NextResponse.json(
+        { error: "Community ID and User ID are required" },
+        { status: STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    // here to throw error if the user is already a member or does not exist
+    getMembershipRequest({
+      communityId,
+      userId,
+    });
+
+    const newMembership = await acceptMembershipRequest({
+      communityId,
+      userId,
+    });
+
+    return NextResponse.json(
+      { newMembership },
+      { status: STATUS_CODES.SUCCESS },
+    );
+  } catch (error) {
+    console.log("COMMUNITY_POST: " + error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: STATUS_CODES.SERVER_ISSUE },
+    );
+  }
+};
+
+const DELETE = async (req: NextRequest) => {
+  try {
+    const searchParams = req.nextUrl.searchParams;
+    const communityId = searchParams.get("communityId");
+    const userId = searchParams.get("userId");
+
+    if (!communityId || !userId) {
+      return NextResponse.json(
+        { error: "Community ID and User ID are required" },
+        { status: STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    // here to throw error if the user is already a member or does not exist
+    getMembershipRequest({
+      communityId,
+      userId,
+    });
+
+    const membershipRequest = await rejectMembershipRequest({
+      communityId,
+      userId,
+    });
+
+    return NextResponse.json(
+      { refusedMemberShip: membershipRequest },
+      { status: STATUS_CODES.SUCCESS },
+    );
+  } catch (error) {
+    console.log("COMMUNITY_POST: " + error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: STATUS_CODES.SERVER_ISSUE },
+    );
+  }
+};
 
 type GetMembershipRequests = APIResponse<ReturnType<typeof GET>>;
 type AcceptMembershipRequests = APIResponse<ReturnType<typeof POST>>;
