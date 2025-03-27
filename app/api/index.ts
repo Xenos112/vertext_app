@@ -32,6 +32,7 @@ import type {
   GetMembershipRequests,
   RefuseMembershipRequest,
 } from "./communities/membership/requests/route";
+import { type GetMembershipRequest } from "./communities/membership/requests/[id]/route";
 
 export {
   type LoginAPIResponse,
@@ -62,4 +63,5 @@ export {
   type GetMembershipRequests,
   type AcceptMembershipRequest,
   type RefuseMembershipRequest,
+  type GetMembershipRequest,
 };
