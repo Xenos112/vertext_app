@@ -12,4 +12,7 @@ export const STATUS_CODES = {
   CREATED: 201,
   SUCCESS: 200,
   SERVER_ISSUE: 500,
-} as const
+} as const;
+
+export const IMAGE_PLACEHOLDER =
+  "https://signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png";

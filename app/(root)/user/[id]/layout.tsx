@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { getUserById } from "@/actions/user.actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,7 +12,7 @@ import formatDate from "@/utils/format-date";
 import useUserStore from "@/store/user";
 import { formatNumber } from "@/utils/format-number";
 import FollowButton from "@/features/user/components/FollowButton";
-import Image from "next/image";
+import { IMAGE_PLACEHOLDER } from "@/constants";
 
 type UserType = Awaited<ReturnType<typeof getUserById>>["user"];
 
@@ -52,7 +53,7 @@ export default function UserPage({ children }: { children: ReactNode }) {
           <div className="relative">
             <img
               alt="banner"
-              src={user.banner_url || undefined}
+              src={user.banner_url || IMAGE_PLACEHOLDER}
               className="h-[200px] bg-blue-400/30 w-full object-cover"
             />
             <Avatar className="size-[130px] absolute ring-4 ring-offset-transparent ring-background -translate-y-1/2 mx-3">
