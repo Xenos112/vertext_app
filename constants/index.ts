@@ -12,4 +12,6 @@ export const STATUS_CODES = {
   CREATED: 201,
   SUCCESS: 200,
   SERVER_ISSUE: 500,
-} as const
+} as const;
+
+// TODO: add image placeholder for the banner to let it take the space

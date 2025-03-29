@@ -14,7 +14,10 @@ import { type CreatePostCommentApiResponse } from "./post/comment/create/route";
 import { type GetPostAPIResponse } from "./post/[id]/route";
 import { type FeedApiResponse } from "./feed/route";
 import { type SavedPostsApiRespose } from "./me/saves/route";
-import { type NewCommunityApiResponse } from "./communities/route";
+import type {
+  GetCommunities,
+  NewCommunityApiResponse,
+} from "./communities/route";
 import type {
   GetMembershipApiResponse,
   JoinCommunityApiResponse,
@@ -33,6 +36,7 @@ import type {
   RefuseMembershipRequest,
 } from "./communities/membership/requests/route";
 import { type GetMembershipRequest } from "./communities/membership/requests/[id]/route";
+import { type GetPosts } from "./post/route";
 
 export {
   type LoginAPIResponse,
@@ -64,4 +68,6 @@ export {
   type AcceptMembershipRequest,
   type RefuseMembershipRequest,
   type GetMembershipRequest,
+  type GetPosts,
+  type GetCommunities,
 };

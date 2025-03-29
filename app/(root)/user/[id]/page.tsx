@@ -1,56 +1,36 @@
 "use client";
-import {
-  fetchUserJoinedCommunities,
-  getUserPosts,
-} from "@/actions/user.actions";
+import getUserPosts from "@/features/user/api/getUserPosts";
 import Community from "@/components/shared/Community";
 import Post from "@/features/post/components/Post";
 import { Button } from "@/components/ui/button";
-import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { redirect, useParams } from "next/navigation";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import getUserJoinedCommunities from "@/features/community/api/getUserCommunities";
 
-type UserPosts = Awaited<ReturnType<typeof getUserPosts>>["posts"];
 type ActiveTabs = "posts" | "communities" | "likes";
-type UserJoinedCommunities = Awaited<
-  ReturnType<typeof fetchUserJoinedCommunities>
->["communities"];
 
+// TODO: the tabs should be in the searchParams to be dynamic
 export default function UserPage() {
   const { id } = useParams<{ id: string }>();
-  const [userPosts, setUserPosts] = useState<UserPosts>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<ActiveTabs>("communities");
-  const [userJoinedCommunities, setUserJoinedCommunities] =
-    useState<UserJoinedCommunities>([]);
 
-  // fetching all the user posts
-  useEffect(() => {
-    getUserPosts(id)
-      .then((data) => {
-        if (data.error) {
-          setError("Failed To fetch posts");
-        } else {
-          setUserPosts(data.posts);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+  if (!id) {
+    return redirect("/");
+  }
 
-  useEffect(() => {
-    fetchUserJoinedCommunities(id)
-      .then((data) => {
-        if (data.error) {
-          setError("Failed To fetch Communities");
-        } else {
-          setUserJoinedCommunities(data.communities);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { data: userPosts } = useQuery({
+    queryKey: ["user-posts", id],
+    queryFn: () => getUserPosts(id!),
+  });
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { data: userJoinedCommunities } = useQuery({
+    queryKey: ["user-joined-communities", id],
+    queryFn: () => getUserJoinedCommunities(id!),
+  });
+
   return (
     <div className="p-3">
       <div className="flex justify-evenly items-center border-y border-muted p-3">
@@ -81,10 +61,7 @@ export default function UserPage() {
       {activeTab === "communities" && (
         <div className="my-3">
           {userJoinedCommunities?.map((community) => (
-            <Community
-              community={community.Community}
-              key={community.communityId}
-            />
+            <Community community={community} key={community.id} />
           ))}
         </div>
       )}

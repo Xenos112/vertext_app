@@ -11,7 +11,6 @@ import formatDate from "@/utils/format-date";
 import useUserStore from "@/store/user";
 import { formatNumber } from "@/utils/format-number";
 import FollowButton from "@/features/user/components/FollowButton";
-import Image from "next/image";
 
 type UserType = Awaited<ReturnType<typeof getUserById>>["user"];
 

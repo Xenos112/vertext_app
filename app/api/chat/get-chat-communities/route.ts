@@ -1,5 +1,5 @@
 import { STATUS_CODES } from "@/constants";
-import retreiveChatCommunities from "@/features/chat/lib/retreiveChatCommunities";
+import getCommunities from "@/features/community/lib/getCommunities";
 import { APIResponse } from "@/types/api";
 import validateUser from "@/utils/validate-user";
 import { cookies } from "next/headers";
@@ -11,9 +11,12 @@ export const GET = async () => {
     const token = cookieStore.get("auth_token")?.value;
     const user = await validateUser(token);
     if (!user)
-      return NextResponse.json({ error: "You need to be logged in to do that" }, { status: STATUS_CODES.UNAUTHORIZED });
+      return NextResponse.json(
+        { error: "You need to be logged in to do that" },
+        { status: STATUS_CODES.UNAUTHORIZED },
+      );
 
-    const communities = await retreiveChatCommunities(user.id);
+    const communities = await getCommunities(user.id);
 
     return NextResponse.json({ communities });
   } catch (error) {
@@ -25,4 +28,6 @@ export const GET = async () => {
   }
 };
 
-export type RetrieveChatCommunitiesResponse = APIResponse<ReturnType<typeof GET>>;
+export type RetrieveChatCommunitiesResponse = APIResponse<
+  ReturnType<typeof GET>
+>;
