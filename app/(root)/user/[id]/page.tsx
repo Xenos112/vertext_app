@@ -4,16 +4,16 @@ import Community from "@/components/shared/Community";
 import Post from "@/features/post/components/Post";
 import { Button } from "@/components/ui/button";
 import { redirect, useParams } from "next/navigation";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import getUserJoinedCommunities from "@/features/community/api/getUserCommunities";
+import { useQueryState } from "nuqs";
 
-type ActiveTabs = "posts" | "communities" | "likes";
-
-// TODO: the tabs should be in the searchParams to be dynamic
+// HACK: accpeted values of the activeTabs are "posts" | "communities" | "likes"
 export default function UserPage() {
   const { id } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState<ActiveTabs>("communities");
+  const [activeTab, setActiveTab] = useQueryState("t", {
+    defaultValue: "posts",
+  });
 
   if (!id) {
     return redirect("/");
