@@ -15,6 +15,15 @@ export function useUpload() {
       },
     );
 
+    document.dispatchEvent(
+      new CustomEvent("toast", {
+        detail: {
+          title: "Uploading...",
+          description: "Uploading file...",
+        },
+      }),
+    );
+
     const data = await response.json();
     if (!data || !data.url) {
       document.dispatchEvent(
