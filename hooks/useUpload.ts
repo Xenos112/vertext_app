@@ -36,7 +36,7 @@ export function useUpload() {
         }),
       );
     }
-
+    setUrl(data.url);
     return url;
   }
 
