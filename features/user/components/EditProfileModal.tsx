@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import useUserStore from "@/store/user";
-import getUserById from "../api/getUserById";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +17,8 @@ import { useUpload } from "@/hooks/useUpload";
 import Image from "next/image";
 import updateUserProfile from "../api/updateUserProfile";
 import { UserProfileUpdateSchemaValidatorType } from "../validators";
+import queryFetcherFunction from "@/utils/queryFetcherFunction";
+import { GetUserByIdResponse } from "@/app/api";
 
 // FIX: need a user fetcher in the user page layout
 // FIX: The user banner image is uploaded but not applied in the first try
@@ -26,7 +27,11 @@ export default function EditProfileModal() {
   const userData = useUserStore((state) => state.user);
   const { data: user } = useQuery({
     queryKey: ["user", userData?.id],
-    queryFn: () => getUserById(userData!.id!),
+    // queryFn: () => getUserById(userData!.id!),
+    queryFn: () =>
+      queryFetcherFunction<GetUserByIdResponse>(
+        `/api/users/${userData!.id}`,
+      ).then((data) => data.user),
   });
   const [newUserData, setNewUserData] = useState(user);
   const { url, upload } = useUpload();
