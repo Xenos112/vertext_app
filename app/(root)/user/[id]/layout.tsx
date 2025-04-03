@@ -11,6 +11,8 @@ import formatDate from "@/utils/format-date";
 import useUserStore from "@/store/user";
 import { formatNumber } from "@/utils/format-number";
 import FollowButton from "@/features/user/components/FollowButton";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import EditProfileModal from "@/features/user/components/EditProfileModal";
 
 type UserType = Awaited<ReturnType<typeof getUserById>>["user"];
 
@@ -63,7 +65,12 @@ export default function UserPage({ children }: { children: ReactNode }) {
           </div>
           <div className="flex justify-end m-3">
             {currentLoggedUser?.id === user.id ? (
-              <Button className="">Edit Profile</Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>Edit Profile</Button>
+                </DialogTrigger>
+                <EditProfileModal />
+              </Dialog>
             ) : (
               <div>
                 <FollowButton userId={user.id} />
