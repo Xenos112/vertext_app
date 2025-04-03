@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import useUserStore from "@/store/user";
@@ -107,9 +108,10 @@ export default function EditProfileModal() {
         }
         value={newUserData?.bio || ""}
       />
-      <DialogFooter>
+      <DialogFooter className="flex gap-4">
+        <DialogClose>Cancel</DialogClose>
         <Button onClick={() => updateUser()} disabled={isUpdating}>
-          Update
+          {isUpdating ? "Updating..." : "Update"}
         </Button>
       </DialogFooter>
       <input
