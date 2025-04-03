@@ -35,8 +35,18 @@ export function useUpload() {
           },
         }),
       );
+    } else {
+      document.dispatchEvent(
+        new CustomEvent("toast", {
+          detail: {
+            title: "Upload Success",
+            description: "File uploaded successfully",
+          },
+        }),
+      );
+      console.log(data);
+      setUrl(data.url);
     }
-    setUrl(data.url);
     return url;
   }
 
