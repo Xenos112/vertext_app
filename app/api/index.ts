@@ -37,6 +37,8 @@ import type {
 } from "./communities/membership/requests/route";
 import { type GetMembershipRequest } from "./communities/membership/requests/[id]/route";
 import { type GetPosts } from "./post/route";
+import type { GetUserByIdResponse } from "./users/[id]/route";
+import { UpdateUserByIdResponse } from "./me/route";
 
 export {
   type LoginAPIResponse,
@@ -70,4 +72,6 @@ export {
   type GetMembershipRequest,
   type GetPosts,
   type GetCommunities,
+  type GetUserByIdResponse,
+  type UpdateUserByIdResponse,
 };
