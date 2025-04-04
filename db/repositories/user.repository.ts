@@ -28,6 +28,14 @@ async function createUser(user: Prisma.UserCreateInput) {
 }
 
 async function updateUser(id: string, user: Prisma.UserUpdateInput) {
+  delete user.created_at;
+  delete user.Comment;
+  delete user.MembershipRequest;
+  delete user.premium;
+  delete user.password;
+  delete user.SubscriptionEndDate;
+  delete user.Save;
+  delete user.NotificationRecieved;
   const updatedUser = await prisma.user.update({
     where: { id },
     data: user,
