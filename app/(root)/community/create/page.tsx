@@ -10,7 +10,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { GoArrowLeft } from "react-icons/go";
 import createCommunity from "@/features/community/api/createCommunity";
-import { IMAGE_PLACEHOLDER } from "@/constants";
 
 export default function CreateCommunityForm() {
   const [name, setName] = useState("");
@@ -190,7 +189,7 @@ export default function CreateCommunityForm() {
             <div className="relative h-32 bg-gray-200 rounded-lg overflow-hidden">
               {banner ? (
                 <Image
-                  src={banner || IMAGE_PLACEHOLDER}
+                  src={banner}
                   alt="Community banner"
                   layout="fill"
                   objectFit="cover"

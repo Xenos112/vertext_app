@@ -20,14 +20,14 @@ enum NotificationType {
 }
 
 model User {
-  id                   String          @id @default(uuid())
+  id                   String              @id @default(uuid())
   user_name            String
-  tag                  String          @unique @default(cuid())
-  email                String?         @unique
+  tag                  String              @unique @default(cuid())
+  email                String?             @unique
   password             String?
-  github_id            String?         @unique
-  discord_id           String?         @unique
-  google_id            String?         @unique
+  github_id            String?             @unique
+  discord_id           String?             @unique
+  google_id            String?             @unique
   image_url            String?
   banner_url           String?
   bio                  String?
@@ -36,15 +36,16 @@ model User {
   Like                 Like[]
   Save                 Save[]
   Membership           Membership[]
-  premium              Boolean         @default(false)
+  premium              Boolean             @default(false)
   SubscriptionEndDate  DateTime?
-  created_at           DateTime        @default(now())
-  followers            Follow[]        @relation("following")
-  following            Follow[]        @relation("follower")
+  created_at           DateTime            @default(now())
+  followers            Follow[]            @relation("following")
+  following            Follow[]            @relation("follower")
   Message              Message[]
-  NotificationSent     Notification[]  @relation("sent")
-  NotificationRecieved Notification[]  @relation("recived")
+  NotificationSent     Notification[]      @relation("sent")
+  NotificationRecieved Notification[]      @relation("recived")
   ResetPassword        ResetPassword[]
+  MembershipRequest    MembershipRequest[]
 }
 
 model Post {
@@ -95,15 +96,27 @@ model Save {
 }
 
 model Community {
-  id         String       @id @default(uuid())
-  name       String
-  image      String?
-  banner     String?
-  bio        String?
-  Post       Post[]
-  Membership Membership[]
-  created_at DateTime     @default(now())
-  Message    Message[]
+  id                String              @id @default(uuid())
+  name              String
+  image             String?
+  banner            String?
+  bio               String?
+  Post              Post[]
+  Membership        Membership[]
+  created_at        DateTime            @default(now())
+  Message           Message[]
+  private           Boolean             @default(false)
+  requireAccept     Boolean             @default(false)
+  MembershipRequest MembershipRequest[]
+}
+
+model MembershipRequest {
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  userId      String
+  communityId String
+
+  @@id([userId, communityId])
 }
 
 model Membership {

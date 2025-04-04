@@ -14,5 +14,4 @@ export const STATUS_CODES = {
   SERVER_ISSUE: 500,
 } as const;
 
-export const IMAGE_PLACEHOLDER =
-  "https://signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png";
+// TODO: add image placeholder for the banner to let it take the space

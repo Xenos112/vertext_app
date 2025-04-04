@@ -10,7 +10,6 @@ import Post from "@/features/post/components/Post";
 import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import JoinButton from "@/features/community/components/JoinButton";
-import { IMAGE_PLACEHOLDER } from "@/constants";
 
 type CommunityDetails = Awaited<
   ReturnType<typeof getCommunityDetails>
@@ -46,7 +45,7 @@ function CommunityPage() {
         <div>
           <div className="relative">
             <img
-              src={community.banner || IMAGE_PLACEHOLDER}
+              src={community.banner!}
               alt={community.name}
               className="w-full h-[200px]"
             />

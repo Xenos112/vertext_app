@@ -11,7 +11,10 @@ export const GET = async () => {
     const token = cookieStore.get("auth_token")?.value;
     const user = await validateUser(token);
     if (!user)
-      return NextResponse.json({ error: "You need to be logged in to do that" }, { status: STATUS_CODES.UNAUTHORIZED });
+      return NextResponse.json(
+        { error: "You need to be logged in to do that" },
+        { status: STATUS_CODES.UNAUTHORIZED },
+      );
 
     const communities = await retreiveChatCommunities(user.id);
 
@@ -25,4 +28,6 @@ export const GET = async () => {
   }
 };
 
-export type RetrieveChatCommunitiesResponse = APIResponse<ReturnType<typeof GET>>;
+export type RetrieveChatCommunitiesResponse = APIResponse<
+  ReturnType<typeof GET>
+>;
