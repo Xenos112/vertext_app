@@ -112,11 +112,6 @@ async function updatePost(
   if (!id)
     return NextResponse.json({ error: "Post id is required" }, { status: 400 });
   postData.id = id;
-  delete postData.share_number;
-  delete postData.comments_number;
-  delete postData.likes_number;
-  delete postData.saves_number;
-  delete postData.created_at;
 
   const { data: post, error } = await tryCatch(PostRepository.getPostById(id));
   if (error)
