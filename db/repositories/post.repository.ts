@@ -25,5 +25,20 @@ async function deletePost(id: string) {
   return deletedPost;
 }
 
-const PostRepository = { getPostById, createPost, deletePost };
+async function updatePost(post: Prisma.PostUpdateInput) {
+  delete post.share_number;
+  delete post.comments_number;
+  delete post.likes_number;
+  delete post.saves_number;
+  delete post.created_at;
+  delete post.Author;
+  const updatedPost = await prisma.post.update({
+    where: { id: post.id as string },
+    data: post,
+  });
+
+  return updatedPost;
+}
+
+const PostRepository = { getPostById, createPost, deletePost, updatePost };
 export default PostRepository;
