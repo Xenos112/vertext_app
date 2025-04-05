@@ -1,5 +1,4 @@
 import prisma from "@/utils/prisma";
-import { Prisma } from "@prisma/client";
 
 async function getLike(postId: string, userId?: string | null) {
   if (!userId) return [];
@@ -10,8 +9,8 @@ async function getLike(postId: string, userId?: string | null) {
   return !!like;
 }
 
-async function createLike(like: Prisma.LikeCreateInput) {
-  const newLike = prisma.like.create({ data: like });
+async function createLike(userId: string, postId: string) {
+  const newLike = prisma.like.create({ data: { userId, postId } });
 
   return newLike;
 }

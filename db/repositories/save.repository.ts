@@ -1,5 +1,4 @@
 import prisma from "@/utils/prisma";
-import { Prisma } from "@prisma/client";
 
 async function getSave(postId: string, userId?: string | null) {
   if (!userId) return [];
@@ -10,8 +9,8 @@ async function getSave(postId: string, userId?: string | null) {
   return !!save;
 }
 
-async function createSave(save: Prisma.SaveCreateInput) {
-  const newSave = prisma.save.create({ data: save });
+async function createSave(userId: string, postId: string) {
+  const newSave = prisma.save.create({ data: { userId, postId } });
 
   return newSave;
 }
