@@ -20,6 +20,20 @@ import type {
   DeletePostSaveRequest,
   GetPostSavesRequest,
 } from "./saves/[postId]/route";
+import type {
+  CreateCommunityRequest,
+  GetCommunitiesRequest,
+} from "./communities/route";
+import type {
+  UpdateCommunityRequest,
+  GetCommunityRequest,
+  DeleteCommunityRequest,
+} from "./communities/[id]/route";
+import type {
+  GetMembershipRequest,
+  CreateMembershipRequest,
+  DeleteMembershipRequest,
+} from "./communities/[id]/membership/route";
 
 export {
   type GetUserRequest,
@@ -36,4 +50,12 @@ export {
   type GetPostSavesRequest,
   type CreatePostSaveRequest,
   type DeletePostSaveRequest,
+  type GetCommunitiesRequest,
+  type GetCommunityRequest,
+  type UpdateCommunityRequest,
+  type CreateCommunityRequest,
+  type DeleteCommunityRequest,
+  type GetMembershipRequest,
+  type CreateMembershipRequest,
+  type DeleteMembershipRequest,
 };
