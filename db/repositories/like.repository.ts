@@ -1,12 +1,13 @@
 import prisma from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
 
-async function getLike(userId: string, postId: string) {
+async function getLike(postId: string, userId?: string | null) {
+  if (!userId) return [];
   const like = await prisma.like.findUnique({
     where: { postId_userId: { userId, postId } },
   });
 
-  return like;
+  return !!like;
 }
 
 async function createLike(like: Prisma.LikeCreateInput) {

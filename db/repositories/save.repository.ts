@@ -1,12 +1,13 @@
 import prisma from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
 
-async function getSave(userId: string, postId: string) {
+async function getSave(postId: string, userId?: string | null) {
+  if (!userId) return [];
   const save = await prisma.save.findUnique({
     where: { postId_userId: { userId, postId } },
   });
 
-  return save;
+  return !!save;
 }
 
 async function createSave(save: Prisma.SaveCreateInput) {
