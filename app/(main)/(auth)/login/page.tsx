@@ -60,6 +60,14 @@ export default function LoginPage() {
 
   const { login, isPending } = useLogin(userDetails);
 
+  if (document) {
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        login();
+      }
+    });
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       <Card className="w-full max-w-sm shadow-lg relative z-10 backdrop-blur-sm">

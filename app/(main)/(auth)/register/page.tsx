@@ -57,6 +57,14 @@ export default function RegisterPage() {
 
   const { isPending, register } = useRegister(userData);
 
+  if (document) {
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        register();
+      }
+    });
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
