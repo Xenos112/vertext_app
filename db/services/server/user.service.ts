@@ -5,6 +5,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import generateToken from "@/utils/generate-token";
 import { cookies } from "next/headers";
+import validateAuth from "@/utils/validateAuth";
 
 async function getUser(
   _req: NextRequest,
@@ -144,12 +145,21 @@ async function updateUser(
   return NextResponse.json({ user: updatedUser });
 }
 
+async function getMe(_req: NextRequest) {
+  const { data: authedUser, error: authedUserError } =
+    await tryCatch(validateAuth());
+  if (authedUserError) return NextResponse.json({ me: null });
+
+  return NextResponse.json({ me: authedUser });
+}
+
 const UserService = {
   getUser,
   register,
   deleteUser,
   updateUser,
   login,
+  getMe,
 };
 
 export default UserService;
