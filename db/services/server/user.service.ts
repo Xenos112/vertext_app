@@ -6,6 +6,12 @@ import bcrypt from "bcrypt";
 import generateToken from "@/utils/generate-token";
 import { cookies } from "next/headers";
 import validateAuth from "@/utils/validateAuth";
+import UserValidators from "../validators/user.validator";
+import { type } from "arktype";
+import type {
+  UserLoginData,
+  UserRegisterData,
+} from "@/db/services/validators/user.validator";
 
 async function getUser(
   _req: NextRequest,
@@ -25,12 +31,13 @@ async function getUser(
   return NextResponse.json({ user });
 }
 
-// FIX: need validation
 async function register(req: NextRequest) {
   const cookieStore = await cookies();
-  const userData = (await req.json()) as Prisma.UserCreateInput & {
-    email: string;
-  };
+  const jsonData = (await req.json()) as UserRegisterData;
+  const userData = UserValidators.REGISTER_VALIDATOR(jsonData);
+  if (userData instanceof type.errors)
+    return NextResponse.json({ error: userData.summary }, { status: 400 });
+
   const { data: oldUser, error: oldUserError } = await tryCatch(
     UserRepository.getUserByEmail(userData.email),
   );
@@ -67,10 +74,11 @@ async function register(req: NextRequest) {
 
 async function login(req: NextRequest) {
   const cookieStore = await cookies();
-  const userData = (await req.json()) as {
-    email: string;
-    password: string;
-  };
+  const jsonData = (await req.json()) as UserLoginData;
+
+  const userData = UserValidators.LOGIN_VALIDATOR(jsonData);
+  if (userData instanceof type.errors)
+    return NextResponse.json({ error: userData.summary }, { status: 400 });
 
   const { data: user, error: userFetchError } = await tryCatch(
     UserRepository.getUserByEmail(userData.email, false),

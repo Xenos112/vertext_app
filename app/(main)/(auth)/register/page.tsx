@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { registerFunction } from "@/features/auth/api/register";
 import useUserStore from "@/store/user";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
@@ -17,48 +16,46 @@ import { useState } from "react";
 import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6";
 import { FiLoader } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import { UserRegisterData } from "@/db/services/validators/user.validator";
+import UserClientService from "@/db/services/client/user.service";
+import sendToastEvent from "@/utils/sendToastEvent";
 
-export default function RegisterPage() {
-  const fetchUser = useUserStore((state) => state.fetchUser);
-  const [userData, setUserData] = useState({
-    email: "",
-    userName: "",
-    password: "",
-  });
+const useRegister = (userData: UserRegisterData) => {
   const router = useRouter();
+  const fetchUser = useUserStore((state) => state.fetchUser);
 
   const { isPending, mutate: register } = useMutation({
     mutationKey: ["register"],
-    mutationFn: () =>
-      registerFunction({
-        email: userData.email,
-        password: userData.password,
-        user_name: userData.userName,
-      }),
+    mutationFn: () => UserClientService.register(userData),
     onError(error) {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
     async onSuccess() {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "You have successfully registered",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Success",
+        description: "You have successfully registered",
+      });
+
       await fetchUser();
       router.push("/");
     },
   });
+
+  return { isPending, register };
+};
+
+export default function RegisterPage() {
+  const [userData, setUserData] = useState({
+    email: "",
+    user_name: "",
+    password: "",
+  });
+
+  const { isPending, register } = useRegister(userData);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -85,7 +82,10 @@ export default function RegisterPage() {
               <Input
                 type="text"
                 onChange={(e) =>
-                  setUserData((prev) => ({ ...prev, userName: e.target.value }))
+                  setUserData((prev) => ({
+                    ...prev,
+                    user_name: e.target.value,
+                  }))
                 }
                 placeholder="Username"
                 required
