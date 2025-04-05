@@ -62,7 +62,7 @@ export default function FileUploader() {
         );
         setPost((prevPost) => ({
           ...prevPost,
-          urls: [...(prevPost.urls || []), ...uploadedUrls],
+          medias: [...(prevPost.medias || []), ...uploadedUrls],
         }));
         setFileStatus((prevStatuses) =>
           prevStatuses.map((fileStatus) =>

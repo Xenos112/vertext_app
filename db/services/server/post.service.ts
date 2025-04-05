@@ -3,6 +3,8 @@ import tryCatch from "@/utils/tryCatch";
 import validateAuth from "@/utils/validateAuth";
 import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
+import PostValidators, { PostCreateData } from "../validators/post.validator";
+import { type } from "arktype";
 
 async function getPostById(
   req: NextRequest,
@@ -22,7 +24,6 @@ async function getPostById(
   return NextResponse.json({ post });
 }
 
-// FIX: need validation
 async function createPost(req: NextRequest) {
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
@@ -31,11 +32,13 @@ async function createPost(req: NextRequest) {
       { error: authedUserError.message },
       { status: 400 },
     );
-  const postData = (await req.json()) as Prisma.PostCreateInput & {
-    userId: string;
-    communityId?: string;
-  };
-  // postData.userId = authedUser.id;
+  const jsonData = (await req.json()) as PostCreateData;
+  const postData = PostValidators.CREATE_POST_VALIDATOR(
+    jsonData,
+  ) as PostCreateData & { Author: { connect: { id: string } } };
+  if (jsonData instanceof type.errors)
+    return NextResponse.json({ error: jsonData.summary }, { status: 400 });
+
   postData.Author = {
     connect: {
       id: authedUser.id,
