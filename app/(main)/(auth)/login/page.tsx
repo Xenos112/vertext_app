@@ -14,44 +14,51 @@ import useUserStore from "@/store/user";
 import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
-import { loginFunction } from "@/features/auth/api/login";
 import { FiLoader } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import UserClientService from "@/db/services/client/user.service";
+import sendToastEvent from "@/utils/sendToastEvent";
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+type UserDetails = {
+  email: string;
+  password: string;
+};
+
+function useLogin(userDetails: UserDetails) {
   const router = useRouter();
   const fetchUser = useUserStore((state) => state.fetchUser);
 
   const { mutate: login, isPending } = useMutation({
     mutationKey: ["login"],
-    mutationFn: () => loginFunction({ email, password }),
+    mutationFn: () => UserClientService.login(userDetails),
     onError(error) {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
     async onSuccess() {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "You have successfully logged in",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Success",
+        description: "You have successfully logged in",
+      });
 
       await fetchUser();
       router.push("/");
     },
   });
+
+  return { login, isPending };
+}
+
+export default function LoginPage() {
+  const [userDetails, setUserDetails] = useState<UserDetails>({
+    email: "",
+    password: "",
+  });
+
+  const { login, isPending } = useLogin(userDetails);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -69,15 +76,19 @@ export default function LoginPage() {
             <div className="space-y-2">
               <Input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={userDetails.email}
+                onChange={(e) =>
+                  setUserDetails({ ...userDetails, email: e.target.value })
+                }
                 placeholder="Email"
                 required
               />
               <Input
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={userDetails.password}
+                onChange={(e) =>
+                  setUserDetails({ ...userDetails, password: e.target.value })
+                }
                 placeholder="Password"
                 required
               />

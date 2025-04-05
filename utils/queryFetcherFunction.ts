@@ -5,7 +5,7 @@ export default async function queryFetcherFunction<
   T extends Record<string, any>,
 >(url: string, opts?: Options) {
   type Final = T extends { error: string } | { errors: string[] } ? never : T;
-  const response = await ky.get<T>(url, { throwHttpErrors: false, ...opts });
+  const response = await ky<T>(url, { throwHttpErrors: false, ...opts });
   const data = await response.json();
   console.log(data);
 
