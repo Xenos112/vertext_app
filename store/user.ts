@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import ky from "ky";
 import { User as UserType } from "@prisma/client";
+import UserClientService from "@/db/services/client/user.service";
+import tryCatch from "@/utils/tryCatch";
 
 type UserStore = {
   user: UserType | null;
@@ -16,15 +17,9 @@ const useUserStore = create<UserStore>()((set) => ({
   loading: true,
   setUser: (user) => set({ user }),
   async fetchUser() {
-    const data = await ky.get<UserType | null>("http://localhost:3000/api/me", {
-      credentials: "include",
-      throwHttpErrors: false,
-    });
-    if (data.status !== 200) {
-      set({ user: null, loading: false, error: "You Must Be Authenticated" });
-    }
-    const user = await data.json();
-    set({ user: user, loading: false });
+    const { data: user, error } = await tryCatch(UserClientService.getMe());
+    if (error) return set({ error: error.message, loading: false, user: null });
+    set({ user: user || null, loading: false });
   },
 }));
 

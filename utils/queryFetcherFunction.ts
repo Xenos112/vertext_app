@@ -7,8 +7,9 @@ export default async function queryFetcherFunction<
   type Final = T extends { error: string } | { errors: string[] } ? never : T;
   const response = await ky.get<T>(url, { throwHttpErrors: false, ...opts });
   const data = await response.json();
+  console.log(data);
 
   if ("error" in data) throw new Error(data.error);
   if ("errors" in data) throw new Error(data.errors[0]);
-  return data as Final;
+  return (data || null) as Final;
 }
