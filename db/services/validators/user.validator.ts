@@ -11,8 +11,8 @@ const REGISTER_VALIDATOR = type({
   password: "string >= 8",
 });
 
-type UserLoginData = type.infer<typeof LOGIN_VALIDATOR>;
-type UserRegisterData = type.infer<typeof REGISTER_VALIDATOR>;
+type UserLoginData = typeof LOGIN_VALIDATOR.infer;
+type UserRegisterData = typeof REGISTER_VALIDATOR.infer;
 
 const UserValidators = {
   LOGIN_VALIDATOR,

@@ -19,7 +19,7 @@ const CREATE_POST_VALIDATOR = type({
   });
 });
 
-type PostCreateData = type.infer<typeof CREATE_POST_VALIDATOR>;
+type PostCreateData = typeof CREATE_POST_VALIDATOR.infer;
 
 const PostValidators = {
   CREATE_POST_VALIDATOR,
