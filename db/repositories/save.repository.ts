@@ -23,5 +23,13 @@ async function deleteSave(userId: string, postId: string) {
   return deletedSave;
 }
 
-const SaveRepository = { getSave, createSave, deleteSave };
+async function getSaves(postId: string) {
+  const saves = await prisma.save.count({
+    where: { postId },
+  });
+
+  return saves;
+}
+
+const SaveRepository = { getSave, createSave, deleteSave, getSaves };
 export default SaveRepository;

@@ -23,5 +23,13 @@ async function deleteLike(userId: string, postId: string) {
   return deletedLike;
 }
 
-const LikeRepository = { getLike, createLike, deleteLike };
+async function getLikes(postId: string) {
+  const likes = await prisma.like.count({
+    where: { postId },
+  });
+
+  return likes;
+}
+
+const LikeRepository = { getLike, createLike, deleteLike, getLikes };
 export default LikeRepository;
