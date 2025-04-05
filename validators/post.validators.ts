@@ -12,12 +12,12 @@ export const createPostSchemaValidator = z
           z.instanceof(File).refine((file) => file.type.includes("video"), {
             message: "Must be a video file",
           }),
-        ])
+        ]),
       )
       .optional(),
   })
   .refine(
     (data) =>
       (data.content !== undefined || data.files?.length) &&
-      (data.content || data.files!.length > 0)
+      (data.content || data.files!.length > 0),
   );
