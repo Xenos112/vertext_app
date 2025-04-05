@@ -34,10 +34,16 @@ async function updateCommunity(community: Prisma.CommunityUpdateInput) {
   return updatedCommunity;
 }
 
+async function getCommunities(data: Prisma.CommunityWhereInput) {
+  const communities = await prisma.community.findMany({ where: data });
+
+  return communities;
+}
 const CommunityRepository = {
   getCommunityById,
   createCommunity,
   deleteCommunity,
   updateCommunity,
+  getCommunities,
 };
 export default CommunityRepository;
