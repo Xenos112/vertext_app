@@ -10,6 +10,16 @@ import type {
   GetPostByIdRequest,
   UpdatePostByIdRequest,
 } from "./posts/[id]/route";
+import type {
+  CreatePostLikeRequest,
+  DeletePostLikeRequest,
+  GetPostLikesRequest,
+} from "./likes/[postId]/route";
+import type {
+  CreatePostSaveRequest,
+  DeletePostSaveRequest,
+  GetPostSavesRequest,
+} from "./saves/[postId]/route";
 
 export {
   type GetUserRequest,
@@ -20,4 +30,10 @@ export {
   type GetPostByIdRequest,
   type DeletePostByIdRequest,
   type UpdatePostByIdRequest,
+  type GetPostLikesRequest,
+  type CreatePostLikeRequest,
+  type DeletePostLikeRequest,
+  type GetPostSavesRequest,
+  type CreatePostSaveRequest,
+  type DeletePostSaveRequest,
 };
