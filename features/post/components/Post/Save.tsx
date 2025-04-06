@@ -1,115 +1,110 @@
 import { formatNumber } from "@/utils/format-number";
 import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
-import { use, useState } from "react";
+import { use } from "react";
 import { PostContext } from ".";
 import useUserStore from "@/store/user";
-import saveMutationFunction from "../../api/save";
-import { useMutation } from "@tanstack/react-query";
-import unsaveMutationFunction from "../../api/unsave";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import SavePostClientService from "@/db/services/client/save.service";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
-export default function Save() {
-  const [post, setPost] = use(PostContext);
-  const user = useUserStore((state) => state.user);
-  const [isSaved, setIsSaved] = useState(post!.Save.length !== 0);
+type Save = {
+  saves: number;
+  userSave: boolean;
+};
 
-  if (!post) throw new Error("Post not found");
+const useSaveCount = () => {
+  const post = use(PostContext);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["saves", post!.id],
+    queryFn: () => SavePostClientService.getPostSaves(post!.id),
+  });
+
+  return { data, isLoading };
+};
+
+const useSave = () => {
+  const post = use(PostContext);
+  const queryClient = useQueryClient();
 
   const { mutate: savePost, isPending: isSaving } = useMutation({
-    mutationFn: () => saveMutationFunction(post.id),
-    mutationKey: ["savePost", post.id],
-    onMutate() {
-      setIsSaved(true);
-      setPost((prev) => ({
-        ...prev!,
-        _count: { ...prev!._count, Save: prev!._count.Save + 1 },
-        Save: [...prev!.Save, { userId: user!.id }],
+    mutationFn: () => SavePostClientService.savePost(post!.id),
+    mutationKey: ["savePost", post!.id],
+    onMutate: () => {
+      queryClient.setQueryData<Save>(["saves", post!.id], (oldData) => ({
+        ...oldData,
+        saves: oldData!.saves + 1,
+        userSave: true,
       }));
     },
-    onSuccess: (data) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: data,
-            title: "Success",
-            variant: "default",
-          },
-        }),
-      );
-    },
-    onError: (error) => {
-      setIsSaved(false);
-      setPost((prev) => ({
-        ...prev!,
-        _count: { ...prev!._count, Save: prev!._count.Save - 1 },
-        Save: [...prev!.Save, { userId: user!.id }],
+    onError: () => {
+      queryClient.setQueryData<Save>(["saves", post!.id], (oldData) => ({
+        ...oldData,
+        saves: oldData!.saves - 1,
+        userSave: false,
       }));
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: error.message,
-            title: "Error",
-            variant: "destructive",
-          },
-        }),
-      );
     },
   });
+  return { savePost, isSaving };
+};
 
-  const { mutate: unsavePost, isPending: isUnsaving } = useMutation({
-    mutationFn: () => unsaveMutationFunction(post.id),
-    mutationKey: ["unsavePost", post.id],
-    onMutate() {
-      setIsSaved(false);
-      setPost((prev) => ({
-        ...prev!,
-        _count: { ...prev!._count, Save: prev!._count.Save - 1 },
-        Save: [...prev!.Save, { userId: user!.id }],
+const useUnsave = () => {
+  const post = use(PostContext);
+  const queryClient = useQueryClient();
+
+  const { mutate: unsave, isPending: isUnsaving } = useMutation({
+    mutationFn: () => SavePostClientService.unsavePost(post!.id),
+    mutationKey: ["unsavePost", post!.id],
+    onMutate: () => {
+      queryClient.setQueryData<Save>(["saves", post!.id], (oldData) => ({
+        ...oldData,
+        saves: oldData!.saves - 1,
+        userSave: false,
       }));
     },
-    onSuccess: (data) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: data,
-            title: "Success",
-            variant: "default",
-          },
-        }),
-      );
-    },
-    onError: (error) => {
-      setIsSaved(true);
-      setPost((prev) => ({
-        ...prev!,
-        _count: { ...prev!._count, Save: prev!._count.Save + 1 },
-        Save: [...prev!.Save, { userId: user!.id }],
+    onError: () => {
+      queryClient.setQueryData<Save>(["saves", post!.id], (oldData) => ({
+        ...oldData,
+        saves: oldData!.saves + 1,
+        userSave: true,
       }));
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: error.message,
-            title: "Error",
-            variant: "destructive",
-          },
-        }),
-      );
     },
   });
+  return { unsave, isUnsaving };
+};
+
+export default function Save() {
+  const { data, isLoading } = useSaveCount();
+  const { savePost, isSaving } = useSave();
+  const { unsave, isUnsaving } = useUnsave();
+  const user = useUserStore((state) => state.user);
+  const router = useRouter();
+
+  if (isLoading)
+    return (
+      <div>
+        <Skeleton className="h-6 w-6" />
+      </div>
+    );
+
+  const handleButtonClick = () => {
+    if (!user) return router.push("/login");
+    if (data?.userSave) return unsave();
+    return savePost();
+  };
 
   return (
-    <button
-      onClick={() => (isSaved ? unsavePost() : savePost())}
-      disabled={isSaving || isUnsaving}
-    >
-      {isSaved ? (
+    <button onClick={handleButtonClick} disabled={isSaving || isUnsaving}>
+      {data?.userSave ? (
         <div className="flex gap-1 items-center text-yellow-500 cursor-pointer">
           <IoBookmark />
-          <p>{formatNumber(post._count.Save)}</p>
+          <p>{formatNumber(data?.saves || 0)}</p>
         </div>
       ) : (
         <div className="flex gap-1 items-center cursor-pointer">
           <IoBookmarkOutline />
-          <p>{formatNumber(post._count.Save)}</p>
+          <p>{formatNumber(data?.saves || 0)}</p>
         </div>
       )}
     </button>

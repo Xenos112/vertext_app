@@ -1,12 +1,13 @@
 import SaveService from "@/db/services/server/save.service";
+import { APIResponse } from "@/types/api";
 
 const GET = SaveService.getPostSaves;
 const POST = SaveService.createPostSave;
 const DELETE = SaveService.deletePostSave;
 
-type GetPostSavesRequest = ReturnType<typeof GET>;
-type CreatePostSaveRequest = ReturnType<typeof POST>;
-type DeletePostSaveRequest = ReturnType<typeof DELETE>;
+type GetPostSavesRequest = APIResponse<ReturnType<typeof GET>>;
+type CreatePostSaveRequest = APIResponse<ReturnType<typeof POST>>;
+type DeletePostSaveRequest = APIResponse<ReturnType<typeof DELETE>>;
 
 export {
   GET,

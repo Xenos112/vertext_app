@@ -80,7 +80,7 @@ export default function SearchPage() {
       {type === "post" && posts && posts.length > 0 && (
         <div className="px-4 py-2">
           <h2 className="text-xl font-bold">Posts</h2>
-          {posts?.map((post) => <Post key={post.id} post={post} />)}
+          {posts?.map((post) => <Post key={post.id} id={post.id} />)}
         </div>
       )}
       {type === "user" && users && users.length > 0 && (

@@ -1,103 +1,113 @@
 import { formatNumber } from "@/utils/format-number";
 import { FaHeart, FaRegHeart } from "react-icons/fa6";
 import { PostContext } from ".";
-import { use, useState } from "react";
+import { use } from "react";
 import useUserStore from "@/store/user";
-import { useMutation } from "@tanstack/react-query";
-import likeMutationFunction from "@/features/post/api/like";
-import dislikeMutationFunction from "../../api/dislike";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import LikePostClientService from "@/db/services/client/like.service";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
-export default function Like() {
-  const [post, setPost] = use(PostContext);
-  const user = useUserStore((state) => state.user);
-  const [isLiked, setIsLiked] = useState(post!.Like.length !== 0);
+type Like = {
+  likes: number;
+  userLike: boolean | never[];
+};
 
-  if (!post) throw new Error("Post not Found");
+const useLikesCount = () => {
+  const post = use(PostContext);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["likes", post!.id],
+    queryFn: () => LikePostClientService.getPostLikes(post!.id),
+  });
+
+  return { data, isLoading };
+};
+
+const useLike = () => {
+  const post = use(PostContext);
+  const queryClient = useQueryClient();
 
   const { mutate: likePost, isPending: isLiking } = useMutation({
-    mutationFn: () => likeMutationFunction(post.id),
-    mutationKey: ["likePost", post.id],
-    onMutate() {
-      setIsLiked(true);
-      setPost((prev) => ({
-        ...prev!,
-        _count: { ...prev!._count, Like: prev!._count.Like + 1 },
-        Like: [...prev!.Like, { userId: user!.id }],
+    mutationFn: () => LikePostClientService.likePost(post!.id),
+    mutationKey: ["likePost", post!.id],
+    onMutate: () => {
+      queryClient.setQueryData<Like>(["likes", post!.id], (oldData) => ({
+        ...oldData,
+        likes: oldData!.likes + 1,
+        userLike: true,
       }));
     },
-    onSuccess: (data) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", { detail: { description: data } }),
-      );
-    },
-    onError: (error) => {
-      setIsLiked(false);
-      setPost((prev) => ({
-        ...prev!,
-        _count: { ...prev!._count, Like: prev!._count.Like - 1 },
-        Like: [...prev!.Like, { userId: user!.id }],
+    onError: () => {
+      queryClient.setQueryData<Like>(["likes", post!.id], (oldData) => ({
+        ...oldData,
+        likes: oldData!.likes - 1,
+        userLike: false,
       }));
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: error.message,
-            title: "Error",
-            variant: "destructive",
-          },
-        }),
-      );
     },
   });
+  return { likePost, isLiking };
+};
 
-  const { mutate: dislikePost, isPending: isDisliking } = useMutation({
-    mutationFn: () => dislikeMutationFunction(post.id),
-    mutationKey: ["dislikePost", post.id],
-    onMutate() {
-      setIsLiked(false);
-      setPost((prev) => ({
-        ...prev!,
-        _count: { ...prev!._count, Like: prev!._count.Like - 1 },
-        Like: [...prev!.Like, { userId: user!.id }],
+const useDislike = () => {
+  const post = use(PostContext);
+  const queryClient = useQueryClient();
+
+  const { mutate: disLike, isPending: isDisliking } = useMutation({
+    mutationFn: () => LikePostClientService.DislikePost(post!.id),
+    mutationKey: ["dislikePost", post!.id],
+    onMutate: () => {
+      queryClient.setQueryData<Like>(["likes", post!.id], (oldData) => ({
+        ...oldData,
+        likes: oldData!.likes - 1,
+        userLike: false,
       }));
     },
-    onSuccess: (data) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", { detail: { description: data } }),
-      );
-    },
-    onError: (error) => {
-      setIsLiked(true);
-      setPost((prev) => ({
-        ...prev!,
-        _count: { ...prev!._count, Like: prev!._count.Like + 1 },
-        Like: [...prev!.Like, { userId: user!.id }],
+    onError: () => {
+      queryClient.setQueryData<Like>(["likes", post!.id], (oldData) => ({
+        ...oldData,
+        likes: oldData!.likes + 1,
+        userLike: true,
       }));
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            description: error.message,
-            title: "Error",
-            variant: "destructive",
-          },
-        }),
-      );
     },
   });
+  return { disLike, isDisliking };
+};
+
+export default function Like() {
+  const { data, isLoading } = useLikesCount();
+  const { likePost, isLiking } = useLike();
+  const { disLike, isDisliking } = useDislike();
+  const router = useRouter();
+  const user = useUserStore((state) => state.user);
+
+  const handleButtonClick = () => {
+    if (!user) return router.push("/login");
+    if (data?.userLike) return disLike();
+    return likePost();
+  };
+
+  if (isLoading)
+    return (
+      <div>
+        <Skeleton className="h-6 w-6" />
+      </div>
+    );
 
   return (
     <button
-      onClick={() => (isLiked ? dislikePost() : likePost())}
+      onClick={() => handleButtonClick()}
       disabled={isLiking || isDisliking}
     >
-      {isLiked ? (
+      {data?.userLike ? (
         <div className="flex gap-1 items-center cursor-pointer text-pink-500">
           <FaHeart className="text-pink-500" />
-          <p>{formatNumber(post._count.Like)}</p>
+          <p>{formatNumber(data?.likes || 0)}</p>
         </div>
       ) : (
         <div className="flex gap-1 items-center cursor-pointer">
           <FaRegHeart />
-          <p>{formatNumber(post._count.Like)}</p>
+          <p>{formatNumber(data?.likes || 0)}</p>
         </div>
       )}
     </button>

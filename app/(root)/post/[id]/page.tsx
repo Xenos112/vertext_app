@@ -86,7 +86,7 @@ export default function PostPage() {
         </Link>
       </div>
       {isLoadingPost && <div>Loading...</div>}
-      {post && <Post post={post} />}
+      {post && <Post id={post.id} />}
       {error && (
         <div className="flex items-center justify-center h-screen flex-col gap-4">
           <h1 className="text-2xl leading-none font-semibold">{error}</h1>

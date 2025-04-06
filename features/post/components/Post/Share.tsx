@@ -16,8 +16,9 @@ import { useMutation } from "@tanstack/react-query";
 import shareMutationFunction from "../../api/share";
 import { FiLoader } from "react-icons/fi";
 
+// TODO: make it in the v2 of the API
 export default function Share() {
-  const [post, setPost] = use(PostContext);
+  const post = use(PostContext);
 
   if (!post) throw new Error("Post not found");
 
@@ -36,15 +37,6 @@ export default function Share() {
     },
     onSuccess() {
       copyText(`${window.location.href}post/${post.id}`);
-      setPost((prev) => ({ ...prev!, share_number: prev!.share_number + 1 }));
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Post has been shared successfully",
-          },
-        }),
-      );
     },
   });
 

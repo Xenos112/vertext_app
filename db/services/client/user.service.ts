@@ -1,11 +1,14 @@
 import queryFunction from "@/utils/queryFetcherFunction";
-import { type GetMeRequest } from "@/app/api/v2/types";
+import { GetUserRequest, type GetMeRequest } from "@/app/api/v2/types";
 import type {
   UserLoginData,
   UserRegisterData,
 } from "@/db/services/validators/user.validator";
 
-const getUser = (id: string) => queryFunction(`/api/v2/users/${id}`);
+const getUser = (id: string) =>
+  queryFunction<GetUserRequest>(`/api/v2/users/${id}`).then(
+    (data) => data.user,
+  );
 const getMe = () =>
   queryFunction<GetMeRequest>(`/api/v2/users/me`).then((data) => data.me);
 

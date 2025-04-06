@@ -8,7 +8,7 @@ import { isImage } from "@/constants";
 import Video from "@/components/shared/Video";
 
 export default function Body() {
-  const [post] = use(PostContext);
+  const post = use(PostContext);
   if (!post) throw new Error("Post not found");
 
   const className =

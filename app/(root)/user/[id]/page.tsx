@@ -57,7 +57,7 @@ export default function UserPage() {
         </Button>
       </div>
       {activeTab === "posts" &&
-        userPosts?.map((post) => <Post key={post.id} post={post} />)}
+        userPosts?.map((post) => <Post key={post.id} id={post.id} />)}
       {activeTab === "communities" && (
         <div className="my-3">
           {userJoinedCommunities?.map((community) => (
