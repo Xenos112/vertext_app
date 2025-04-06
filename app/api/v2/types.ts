@@ -1,8 +1,4 @@
-import type {
-  GetUserRequest,
-  UpdateUserRequest,
-  DeleteUserRequest,
-} from "./users/[id]/route";
+import type { GetUserRequest, DeleteUserRequest } from "./users/[id]/route";
 import type { LoginRequest } from "./auth/login/route";
 import type { RegisterRequest } from "./auth/register/route";
 import type {
@@ -34,7 +30,7 @@ import type {
   CreateMembershipRequest,
   DeleteMembershipRequest,
 } from "./communities/[id]/membership/route";
-import type { GetMeRequest } from "./users/me/route";
+import type { GetMeRequest, UpdateUserRequest } from "./users/me/route";
 import type { CreatePostRequest } from "./posts/route";
 import type {
   CreateRelationRequest,

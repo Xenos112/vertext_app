@@ -3,17 +3,8 @@ import { APIResponse } from "@/types/api";
 
 const GET = UserService.getUser;
 const DELETE = UserService.deleteUser;
-const PUT = UserService.updateUser;
 
 type GetUserRequest = APIResponse<ReturnType<typeof GET>>;
-type UpdateUserRequest = APIResponse<ReturnType<typeof DELETE>>;
-type DeleteUserRequest = APIResponse<ReturnType<typeof PUT>>;
+type DeleteUserRequest = APIResponse<ReturnType<typeof DELETE>>;
 
-export {
-  GET,
-  DELETE,
-  PUT,
-  type GetUserRequest,
-  type UpdateUserRequest,
-  type DeleteUserRequest,
-};
+export { GET, DELETE, type GetUserRequest, type DeleteUserRequest };
