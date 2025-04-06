@@ -1,5 +1,6 @@
 import { prisma } from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
+import type { UserUpdateData } from "../services/validators/user.validator";
 
 async function getUserById(id: string, omitPassword: boolean = true) {
   const user = await prisma.user.findUnique({
@@ -27,15 +28,15 @@ async function createUser(user: Prisma.UserCreateInput) {
   return newUser;
 }
 
-async function updateUser(id: string, user: Prisma.UserUpdateInput) {
-  delete user.created_at;
-  delete user.Comment;
-  delete user.MembershipRequest;
-  delete user.premium;
-  delete user.password;
-  delete user.SubscriptionEndDate;
-  delete user.Save;
-  delete user.NotificationRecieved;
+async function getUserByTag(tag: string) {
+  const user = await prisma.user.findUnique({
+    where: { tag },
+  });
+
+  return user;
+}
+
+async function updateUser(id: string, user: UserUpdateData) {
   const updatedUser = await prisma.user.update({
     where: { id },
     data: user,
@@ -59,6 +60,7 @@ const UserRepository = {
   createUser,
   updateUser,
   deleteUser,
+  getUserByTag,
 };
 
 export default UserRepository;
