@@ -35,7 +35,12 @@ import type {
   DeleteMembershipRequest,
 } from "./communities/[id]/membership/route";
 import type { GetMeRequest } from "./users/me/route";
-import { CreatePostRequest } from "./posts/route";
+import type { CreatePostRequest } from "./posts/route";
+import type {
+  CreateRelationRequest,
+  DeleteRelationRequest,
+  GetRelationsNumbersRequest,
+} from "./users/[id]/relations/route";
 
 export {
   type GetUserRequest,
@@ -62,4 +67,7 @@ export {
   type DeleteMembershipRequest,
   type GetMeRequest,
   type CreatePostRequest,
+  type GetRelationsNumbersRequest,
+  type CreateRelationRequest,
+  type DeleteRelationRequest,
 };
