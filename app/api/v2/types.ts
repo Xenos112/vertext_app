@@ -38,6 +38,7 @@ import type {
   GetRelationsNumbersRequest,
 } from "./users/[id]/relations/route";
 import { type GetUserMembershipsRequest } from "./users/[id]/memberships/route";
+import { type LogoutRequest } from "./auth/logout/route";
 
 export {
   type GetUserRequest,
@@ -69,4 +70,5 @@ export {
   type DeleteRelationRequest,
   type GetUserMembershipsRequest,
   type GetPostsRequest,
+  type LogoutRequest,
 };

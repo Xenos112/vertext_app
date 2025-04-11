@@ -192,6 +192,12 @@ async function getMe() {
   return NextResponse.json({ me: authedUser });
 }
 
+async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete("auth_token");
+  return NextResponse.json({ message: "Logged out successfully" });
+}
+
 const UserService = {
   getUser,
   register,
@@ -199,6 +205,7 @@ const UserService = {
   updateUser,
   login,
   getMe,
+  logout,
 };
 
 export default UserService;

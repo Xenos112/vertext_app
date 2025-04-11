@@ -2,6 +2,7 @@ import queryFunction from "@/utils/queryFetcherFunction";
 import {
   GetUserMembershipsRequest,
   GetUserRequest,
+  LogoutRequest,
   type GetMeRequest,
 } from "@/app/api/v2/types";
 import type {
@@ -31,6 +32,8 @@ const getUserMemberships = (userId: string) =>
     `/api/v2/users/${userId}/memberships`,
   ).then((data) => data.memberships);
 
+const logout = () => queryFunction<LogoutRequest>("/api/v2/auth/logout");
+
 const UserClientService = {
   getUser,
   getMe,
@@ -38,6 +41,7 @@ const UserClientService = {
   register,
   updateUser,
   getUserMemberships,
+  logout,
 };
 
 export default UserClientService;
