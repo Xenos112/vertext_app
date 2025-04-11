@@ -126,6 +126,7 @@ model Membership {
 
   userId      String
   communityId String
+  createdAt   DateTime @default(now())
 
   @@id([userId, communityId])
 }
