@@ -1,19 +1,25 @@
 import MembershipRepository from "@/db/repositories/membership.repository";
+import UserRepository from "@/db/repositories/user.repository";
 import tryCatch from "@/utils/tryCatch";
 import validateAuth from "@/utils/validateAuth";
 import { NextResponse, type NextRequest } from "next/server";
 
 async function getMembership(
-  _req: NextRequest,
+  req: NextRequest,
   { params: { id } }: { params: { id: string } },
 ) {
-  const { data: authedUser, error: authedUserError } =
-    await tryCatch(validateAuth());
-  if (authedUserError)
-    return NextResponse.json(
-      { error: authedUserError.message },
-      { status: 400 },
-    );
+  const searchParams = req.nextUrl.searchParams;
+  let userId = searchParams.get("userId");
+  if (!userId) {
+    const { data: authedUser, error: authedUserError } =
+      await tryCatch(validateAuth());
+    if (authedUserError)
+      return NextResponse.json(
+        { error: authedUserError.message },
+        { status: 400 },
+      );
+    userId = authedUser.id;
+  }
 
   if (!id)
     return NextResponse.json(
@@ -22,7 +28,7 @@ async function getMembership(
     );
 
   const { data: membership, error } = await tryCatch(
-    MembershipRepository.getMembership(authedUser.id, id),
+    MembershipRepository.getMembership(userId, id),
   );
   if (error)
     return NextResponse.json(
@@ -97,10 +103,29 @@ async function deleteMembership(
     membership: deleteMembership,
   });
 }
+
+async function getUserMemberships(
+  _req: NextRequest,
+  { params: { id } }: { params: { id: string } },
+) {
+  const { data: memberships, error } = await tryCatch(
+    UserRepository.getUserMemberships(id),
+  );
+  if (error)
+    return NextResponse.json(
+      { error: "Failed to fetch the Memberships" },
+      { status: 400 },
+    );
+
+  return NextResponse.json({
+    memberships,
+  });
+}
 const MembershipService = {
   getMembership,
   createMembership,
   deleteMembership,
+  getUserMemberships,
 };
 
 export default MembershipService;

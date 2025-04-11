@@ -40,5 +40,28 @@ async function updatePost(post: Prisma.PostUpdateInput) {
   return updatedPost;
 }
 
-const PostRepository = { getPostById, createPost, deletePost, updatePost };
+async function getPosts(userId?: string, communityId?: string) {
+  const posts = await prisma.post.findMany({
+    where: {
+      userId,
+      communityId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const postIds = posts.map((post) => post.id);
+
+  return postIds;
+}
+
+const PostRepository = {
+  getPostById,
+  createPost,
+  deletePost,
+  updatePost,
+  getPosts,
+};
+
 export default PostRepository;

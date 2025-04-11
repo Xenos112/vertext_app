@@ -142,11 +142,28 @@ async function updatePost(
   return NextResponse.json({ post: updatedPost });
 }
 
+async function getPosts(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const userId = searchParams.get("userId") || undefined;
+  const communityId = searchParams.get("communityId") || undefined;
+  const { data: posts, error } = await tryCatch(
+    PostRepository.getPosts(userId, communityId),
+  );
+  if (error)
+    return NextResponse.json(
+      { error: "Failed to fetch the posts" },
+      { status: 400 },
+    );
+
+  return NextResponse.json({ posts });
+}
+
 const PostService = {
   getPostById,
   createPost,
   deletePost,
   updatePost,
+  getPosts,
 };
 
 export default PostService;

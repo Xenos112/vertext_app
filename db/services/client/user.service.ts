@@ -1,8 +1,13 @@
 import queryFunction from "@/utils/queryFetcherFunction";
-import { GetUserRequest, type GetMeRequest } from "@/app/api/v2/types";
+import {
+  GetUserMembershipsRequest,
+  GetUserRequest,
+  type GetMeRequest,
+} from "@/app/api/v2/types";
 import type {
   UserLoginData,
   UserRegisterData,
+  UserUpdateData,
 } from "@/db/services/validators/user.validator";
 
 const getUser = (id: string) =>
@@ -18,11 +23,21 @@ const login = (data: UserLoginData) =>
 const register = (data: UserRegisterData) =>
   queryFunction("/api/v2/auth/register", { method: "POST", json: data });
 
+const updateUser = (userData: UserUpdateData) =>
+  queryFunction("/api/v2/users/me", { method: "PUT", json: userData });
+
+const getUserMemberships = (userId: string) =>
+  queryFunction<GetUserMembershipsRequest>(
+    `/api/v2/users/${userId}/memberships`,
+  ).then((data) => data.memberships);
+
 const UserClientService = {
   getUser,
   getMe,
   login,
   register,
+  updateUser,
+  getUserMemberships,
 };
 
 export default UserClientService;

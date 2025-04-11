@@ -54,6 +54,16 @@ async function deleteUser(id: string) {
   return deletedUser;
 }
 
+async function getUserMemberships(userId: string) {
+  const memberships = await prisma.membership.findMany({
+    where: {
+      userId,
+    },
+  });
+
+  return memberships;
+}
+
 const UserRepository = {
   getUserById,
   getUserByEmail,
@@ -61,6 +71,7 @@ const UserRepository = {
   updateUser,
   deleteUser,
   getUserByTag,
+  getUserMemberships,
 };
 
 export default UserRepository;

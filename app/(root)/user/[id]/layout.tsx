@@ -1,44 +1,64 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
-import { getUserById } from "@/actions/user.actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, Suspense } from "react";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import formatDate from "@/utils/format-date";
 import useUserStore from "@/store/user";
-import { formatNumber } from "@/utils/format-number";
 import FollowButton from "@/features/user/components/FollowButton";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditProfileModal from "@/features/user/components/EditProfileModal";
+import { useQuery } from "@tanstack/react-query";
+import UserClientService from "@/db/services/client/user.service";
+import { Skeleton } from "@/components/ui/skeleton";
+import UserRelations from "./_components/UserRelations";
+import Image from "next/image";
 
-type UserType = Awaited<ReturnType<typeof getUserById>>["user"];
+const useUser = (id: string) => {
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["user", id],
+    queryFn: () => UserClientService.getUser(id),
+  });
 
+  return { user, isLoading };
+};
+
+function UserRelationsFallback() {
+  return (
+    <div className="flex gap-3 mt-4">
+      <Skeleton className="h-4 w-32" />
+      <Skeleton className="h-4 mb-1 w-32" />
+    </div>
+  );
+}
+
+// TODO: add banner url fallback
 export default function UserPage({ children }: { children: ReactNode }) {
   const { id } = useParams<{ id: string }>();
-  const [user, setUser] = useState<UserType>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const currentLoggedUser = useUserStore((state) => state.user);
-  const [follwersCount, setFollowersCount] = useState(0);
+  const { user, isLoading } = useUser(id);
 
-  useEffect(() => {
-    getUserById(id)
-      .then((data) => {
-        if ("status" in data!) {
-          setError("No User Found ");
-        } else if ("error" in data!) {
-          setError("Failed To Fetch the User");
-        } else {
-          setUser(data.user);
-          setFollowersCount(data.user?._count.followers || 0);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+  if (isLoading || !user)
+    return (
+      <div className="p-3">
+        <div>
+          <Skeleton className="h-56 w-full" />
+          <Skeleton className="size-[130px] rounded-full -translate-y-1/2 mx-3" />
+        </div>
+        <div className="flex gap-2 flex-col">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-3 mb-1 w-52" />
+          <Skeleton className="h-3 w-52" />
+          <div className="flex gap-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-5 w-32" />
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="border border-muted rounded-xl min-h-screen">
@@ -52,13 +72,18 @@ export default function UserPage({ children }: { children: ReactNode }) {
       {user?.id ? (
         <>
           <div className="relative">
-            <img
-              alt="banner"
-              src={user.banner_url || undefined}
-              className="h-[200px] bg-blue-400/30 w-full object-cover"
-            />
+            <div className="relative bg-muted h-56 w-full">
+              {user.banner_url && (
+                <Image
+                  alt="banner"
+                  fill
+                  src={user.banner_url!}
+                  className="h-[200px] bg-blue-400/30 w-full object-cover"
+                />
+              )}
+            </div>
             <Avatar className="size-[130px] absolute ring-4 ring-offset-transparent ring-background -translate-y-1/2 mx-3">
-              <AvatarImage src={user.image_url!} />
+              <AvatarImage src={user.image_url || undefined} />
               <AvatarFallback>
                 {formatUserNameForImage(user.user_name!)}
               </AvatarFallback>
@@ -84,26 +109,14 @@ export default function UserPage({ children }: { children: ReactNode }) {
             <p className="text-muted-foreground mt-2">
               Joined {formatDate(user!.created_at)}
             </p>
-            <div className="flex gap-3 mt-4">
-              <p className="space-x-1">
-                <span className="underline text-muted-foreground">
-                  Followers
-                </span>
-                <span>{formatNumber(follwersCount)}</span>
-              </p>
-              <p>
-                <span className="underline text-muted-foreground">
-                  Following
-                </span>{" "}
-                <span>{formatNumber(user?._count.following)}</span>
-              </p>
-            </div>
+            <p className="mt-2">{user.bio}</p>
+            <Suspense fallback={<UserRelationsFallback />}>
+              <UserRelations id={id} />
+            </Suspense>
           </div>
         </>
-      ) : loading ? (
+      ) : isLoading ? (
         <div>loading</div>
-      ) : error ? (
-        <div>{error}</div>
       ) : null}
       {children}
     </div>

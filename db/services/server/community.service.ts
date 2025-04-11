@@ -14,7 +14,7 @@ async function getCommunity(
   );
   if (fetchingCommunityError)
     return NextResponse.json(
-      { error: fetchingCommunityError },
+      { error: fetchingCommunityError.message },
       { status: 500 },
     );
   if (!community)
