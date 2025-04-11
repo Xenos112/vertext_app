@@ -59,14 +59,12 @@ export default function LeftBar() {
       <div className="flex items-center flex-col gap-2">
         <ThemeSwitcher />
         {user?.id ? (
-          <>
-            <Avatar className="flex items-center justify-center">
-              <AvatarImage src={user.image_url!} />
-              <AvatarFallback>
-                {formatUserNameForImage(user.user_name)}
-              </AvatarFallback>
-            </Avatar>
-          </>
+          <Avatar className="flex">
+            <AvatarImage src={user.image_url!} />
+            <AvatarFallback>
+              {formatUserNameForImage(user.user_name)}
+            </AvatarFallback>
+          </Avatar>
         ) : (
           <Link href="/login">
             <GoPerson size={26} />
