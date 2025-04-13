@@ -13,6 +13,7 @@ import CommunityClientService from "@/db/services/client/community.service";
 import { type CommunityCreateData } from "@/db/services/validators/community.validator";
 import sendToastEvent from "@/utils/sendToastEvent";
 import { useRouter } from "next/navigation";
+import useUploadFile from "@/hooks/useUploadFile";
 
 const useCreateCommunity = (data: CommunityCreateData) => {
   const router = useRouter();
@@ -44,71 +45,7 @@ export default function CreateCommunityForm() {
   const [description, setDescription] = useState("");
   const [image, setProfileImage] = useState<string>();
   const [banner, setBannerImage] = useState<string>();
-
-  const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await fetch("http://localhost:8080/upload", {
-      method: "POST",
-      body: formData,
-    });
-    if (!response.ok) throw new Error("File upload failed");
-    return response.json();
-  };
-
-  const profileUploadMutation = useMutation({
-    mutationFn: (file: File) => uploadFile(file),
-    onSuccess: (data) => {
-      setProfileImage(data.url);
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Profile image uploaded",
-            variant: "default",
-          },
-        }),
-      );
-    },
-    onError: (error: Error) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            variant: "destructive",
-            title: "Upload Error",
-            description: error.message,
-          },
-        }),
-      );
-    },
-  });
-
-  const bannerUploadMutation = useMutation({
-    mutationFn: (file: File) => uploadFile(file),
-    onSuccess: (data) => {
-      setBannerImage(data.url);
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Banner image uploaded",
-            variant: "default",
-          },
-        }),
-      );
-    },
-    onError: (error: Error) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            variant: "destructive",
-            title: "Upload Error",
-            description: error.message,
-          },
-        }),
-      );
-    },
-  });
+  const { uploadFile, isUploading } = useUploadFile();
 
   const { createCommunity, isPending } = useCreateCommunity({
     name: name || "",
@@ -117,14 +54,24 @@ export default function CreateCommunityForm() {
     image: image as string,
   });
 
-  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
-    if (file) profileUploadMutation.mutate(file);
+    if (file) {
+      const url = await uploadFile(file);
+      setProfileImage(url);
+    }
   };
 
-  const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBannerImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
-    if (file) bannerUploadMutation.mutate(file);
+    if (file) {
+      const url = await uploadFile(file);
+      setBannerImage(url);
+    }
   };
 
   return (
@@ -162,7 +109,7 @@ export default function CreateCommunityForm() {
               type="file"
               accept="image/*"
               onChange={handleProfileImageChange}
-              disabled={profileUploadMutation.isPending}
+              disabled={isUploading}
             />
           </div>
           <div>
@@ -172,7 +119,7 @@ export default function CreateCommunityForm() {
               type="file"
               accept="image/*"
               onChange={handleBannerImageChange}
-              disabled={bannerUploadMutation.isPending}
+              disabled={isUploading}
             />
           </div>
           <Button
