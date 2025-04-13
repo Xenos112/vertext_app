@@ -83,7 +83,7 @@ function CommunityPage() {
             <h1 className="text-xl font-semibold">{community.name}</h1>
             <p>{community.bio}</p>
             <time className="text-muted-foreground text-xs">
-              Created At {formatDate(community.created_at)}
+              Created {formatDate(community.created_at)}
             </time>
           </div>
           <div>
