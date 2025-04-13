@@ -11,7 +11,6 @@ import JoinButton from "@/features/community/components/JoinButton";
 import { useQuery } from "@tanstack/react-query";
 import CommunityClientService from "@/db/services/client/community.service";
 import Image from "next/image";
-import { useQueryState } from "nuqs";
 import PostClientService from "@/db/services/client/post.service";
 import Post from "@/features/post/components/Post";
 import CommunityFallback from "./_components/CommunityFallback";
@@ -62,7 +61,12 @@ function CommunityPage() {
           <div className="relative">
             <div className="relative bg-muted h-56 w-full">
               {community.banner && (
-                <Image src={community.banner} alt={community.name} fill />
+                <Image
+                  src={community.banner}
+                  alt={community.name}
+                  className="object-cover"
+                  fill
+                />
               )}
             </div>
             <Avatar className="size-[130px] absolute rounded-xl -translate-y-1/2 mx-4 ring-background ring-offset-transparent ring-4">
