@@ -4,6 +4,10 @@ import tryCatch from "@/utils/tryCatch";
 import validateAuth from "@/utils/validateAuth";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import CommunityValidators, {
+  CommunityCreateData,
+} from "../validators/community.validator";
+import { type } from "arktype";
 
 async function getCommunity(
   _req: NextRequest,
@@ -42,9 +46,9 @@ async function getCommunities(req: NextRequest) {
   return NextResponse.json({ communities });
 }
 
-// FIX: need validation
 async function createCommunity(req: NextRequest) {
-  const communityData = (await req.json()) as Prisma.CommunityCreateInput;
+  const requestJson = (await req.json()) as CommunityCreateData;
+
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
   if (authedUserError)
@@ -53,8 +57,14 @@ async function createCommunity(req: NextRequest) {
       { status: 400 },
     );
 
+  const communityData =
+    CommunityValidators.CREATE_COMMUNITY_VALIDATOR(requestJson);
+
+  if (communityData instanceof type.errors)
+    return NextResponse.json({ error: communityData.summary }, { status: 400 });
+
   const { data: newCommunity, error } = await tryCatch(
-    CommunityRepository.createCommunity(communityData),
+    CommunityRepository.createCommunity(requestJson),
   );
   if (error || !newCommunity)
     return NextResponse.json(
@@ -62,35 +72,22 @@ async function createCommunity(req: NextRequest) {
       { status: 400 },
     );
 
-  const { error: membershipError } = await tryCatch(
-    MembershipRepository.createMembership(newCommunity.id, authedUser.id),
+  const { data: membership, error: membershipError } = await tryCatch(
+    MembershipRepository.createMembership(
+      newCommunity.id,
+      authedUser.id,
+      "ADMIN",
+    ),
   );
   if (membershipError)
     return NextResponse.json(
-      { error: "Failed to create membership", _error: membershipError.message },
-      { status: 400 },
-    );
-
-  const { data: updatedMembership, error: updatedMembershipError } =
-    await tryCatch(
-      MembershipRepository.updateMembership(
-        authedUser.id,
-        newCommunity.id,
-        "ADMIN",
-      ),
-    );
-  if (updatedMembershipError)
-    return NextResponse.json(
-      {
-        error: "Failed to update membership",
-        _error: updatedMembershipError.message,
-      },
+      { error: "Failed to create Admin membership" },
       { status: 400 },
     );
 
   return NextResponse.json({
     community: newCommunity,
-    membership: updatedMembership,
+    membership,
   });
 }
 async function updateCommunity(

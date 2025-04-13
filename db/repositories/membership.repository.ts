@@ -9,9 +9,13 @@ async function getMembership(userId: string, communityId: string) {
   return membership;
 }
 
-async function createMembership(communityId: string, userId: string) {
+async function createMembership(
+  communityId: string,
+  userId: string,
+  role: Role = "USER",
+) {
   const newMembership = await prisma.membership.create({
-    data: { communityId, userId },
+    data: { communityId, userId, role },
   });
 
   return newMembership;

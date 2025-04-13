@@ -9,13 +9,41 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { GoArrowLeft } from "react-icons/go";
-import createCommunity from "@/features/community/api/createCommunity";
+import CommunityClientService from "@/db/services/client/community.service";
+import { type CommunityCreateData } from "@/db/services/validators/community.validator";
+import sendToastEvent from "@/utils/sendToastEvent";
+import { useRouter } from "next/navigation";
+
+const useCreateCommunity = (data: CommunityCreateData) => {
+  const router = useRouter();
+  const { mutate: createCommunity, isPending } = useMutation({
+    mutationKey: ["createCommunity"],
+    mutationFn: () => CommunityClientService.createCommunity(data),
+    onSuccess: (data) => {
+      sendToastEvent({
+        title: "Success",
+        description: "Community Created",
+      });
+
+      setTimeout(() => router.push(`/community/${data.community.id}`), 2000);
+    },
+    onError: (error: Error) => {
+      sendToastEvent({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  return { createCommunity, isPending };
+};
 
 export default function CreateCommunityForm() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState<string>("");
   const [description, setDescription] = useState("");
-  const [image, setProfileImage] = useState<string | null>(null);
-  const [banner, setBannerImage] = useState<string | null>(null);
+  const [image, setProfileImage] = useState<string>();
+  const [banner, setBannerImage] = useState<string>();
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
@@ -82,36 +110,11 @@ export default function CreateCommunityForm() {
     },
   });
 
-  const createCommunityMutation = useMutation({
-    mutationFn: () =>
-      createCommunity({
-        name,
-        banner: banner as string | undefined,
-        bio: description,
-        image: image as string | undefined,
-      }),
-    onSuccess: () => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Community Created",
-            variant: "default",
-          },
-        }),
-      );
-    },
-    onError: (error: Error) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            variant: "destructive",
-            title: "Error",
-            description: error.message,
-          },
-        }),
-      );
-    },
+  const { createCommunity, isPending } = useCreateCommunity({
+    name: name || "",
+    banner: banner,
+    bio: description as string,
+    image: image as string,
   });
 
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,12 +177,10 @@ export default function CreateCommunityForm() {
           </div>
           <Button
             type="button"
-            onClick={() => createCommunityMutation.mutate()}
-            disabled={createCommunityMutation.isPending}
+            onClick={() => createCommunity()}
+            disabled={isPending}
           >
-            {createCommunityMutation.isPending
-              ? "Creating..."
-              : "Create Community"}
+            {isPending ? "Creating..." : "Create Community"}
           </Button>
         </form>
 
@@ -201,7 +202,7 @@ export default function CreateCommunityForm() {
               )}
             </div>
             <div className="flex items-center space-x-4">
-              <div className="relative w-24 h-24 rounded-xl ml-2 overflow-hidden bg-gray-200 -mt-12 ring-background ring-offset-transparent ring-4">
+              <div className="relative w-24 h-24 rounded-lg ml-2 overflow-hidden bg-gray-200 -mt-12 ring-background ring-offset-transparent ring-4">
                 {image ? (
                   <Image
                     src={image}

@@ -1,5 +1,6 @@
 import prisma from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
+import { type CommunityCreateData } from "../services/validators/community.validator";
 
 async function getCommunityById(id: string) {
   const community = await prisma.community.findUnique({
@@ -9,7 +10,7 @@ async function getCommunityById(id: string) {
   return community;
 }
 
-async function createCommunity(community: Prisma.CommunityCreateInput) {
+async function createCommunity(community: CommunityCreateData) {
   const newCommunity = await prisma.community.create({
     data: community,
   });
