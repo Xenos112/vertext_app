@@ -4,6 +4,8 @@ export default async function queryFetcherFunction<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends Record<string, any>,
 >(url: string, opts?: Options) {
+  if (!navigator.onLine) throw new Error("No internet connection");
+
   type Final = T extends { error: string } | { errors: string[] } ? never : T;
   const response = await ky<T>(url, { throwHttpErrors: false, ...opts });
   const data = await response.json();
