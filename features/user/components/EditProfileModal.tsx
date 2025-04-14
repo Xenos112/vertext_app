@@ -177,14 +177,21 @@ export default function EditProfileModal() {
         }
         value={`@${newUserData.tag}`}
       />
-      <Textarea
-        placeholder="Bio"
-        rows={4}
-        onChange={(e) =>
-          setNewUserData((prev) => ({ ...prev!, bio: e.target.value }))
-        }
-        value={newUserData?.bio || ""}
-      />
+      <div className="relative">
+        <Textarea
+          placeholder="Bio"
+          rows={4}
+          onChange={(e) =>
+            setNewUserData((prev) => ({ ...prev!, bio: e.target.value }))
+          }
+          value={newUserData?.bio || ""}
+        />
+        <span
+          className={`absolute right-2 bottom-2 text-xs text-muted-foreground ${(newUserData?.bio?.length || 0) > 1000 ? "text-red-500" : ""}`}
+        >
+          {newUserData?.bio?.length || 0}/1000
+        </span>
+      </div>
       <DialogFooter className="flex gap-4">
         <DialogClose ref={closeModalRef}>Cancel</DialogClose>
         <Button
