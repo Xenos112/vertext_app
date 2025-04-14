@@ -17,7 +17,6 @@ type SuggestedCommunitiesType = Awaited<
   ReturnType<typeof getRecommendedCommunities>
 >["communities"];
 
-// TODO: make the follow button work
 export default function RightFloatMenu() {
   const [users, setUsers] = useState<SuggestedUsersType>();
   const [communities, setCommunities] = useState<SuggestedCommunitiesType>([]);
