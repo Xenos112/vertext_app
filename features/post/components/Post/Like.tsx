@@ -6,7 +6,6 @@ import useUserStore from "@/store/user";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LikePostClientService from "@/db/services/client/like.service";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
 
 type Like = {
   likes: number;
@@ -46,6 +45,7 @@ const useLike = () => {
       }));
     },
   });
+
   return { likePost, isLiking };
 };
 
@@ -78,11 +78,10 @@ export default function Like() {
   const { data, isLoading } = useLikesCount();
   const { likePost, isLiking } = useLike();
   const { disLike, isDisliking } = useDislike();
-  const router = useRouter();
-  const user = useUserStore((state) => state.user);
+  const validateOrRedirect = useUserStore((state) => state.validateOrRedirect);
 
   const handleButtonClick = () => {
-    if (!user) return router.push("/login");
+    validateOrRedirect();
     if (data?.userLike) return disLike();
     return likePost();
   };

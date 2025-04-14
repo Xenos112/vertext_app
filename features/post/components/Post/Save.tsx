@@ -6,7 +6,6 @@ import useUserStore from "@/store/user";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import SavePostClientService from "@/db/services/client/save.service";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
 
 type Save = {
   saves: number;
@@ -78,8 +77,7 @@ export default function Save() {
   const { data, isLoading } = useSaveCount();
   const { savePost, isSaving } = useSave();
   const { unsave, isUnsaving } = useUnsave();
-  const user = useUserStore((state) => state.user);
-  const router = useRouter();
+  const validateOrRedirect = useUserStore((state) => state.validateOrRedirect);
 
   if (isLoading)
     return (
@@ -89,7 +87,7 @@ export default function Save() {
     );
 
   const handleButtonClick = () => {
-    if (!user) return router.push("/login");
+    validateOrRedirect();
     if (data?.userSave) return unsave();
     return savePost();
   };
