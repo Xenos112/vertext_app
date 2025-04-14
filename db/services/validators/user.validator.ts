@@ -20,7 +20,7 @@ const UPDATE_USER_VALIDATOR = type({
 })
   .pipe((data) => {
     if (data.tag) {
-      data.tag = data.tag.trim().replace(/[#\s]/g, "").replace(/@/g, "");
+      data.tag = data.tag.trim().replace(/([#\s]|@)/g, "");
     }
     return data;
   })
