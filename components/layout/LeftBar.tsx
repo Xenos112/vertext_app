@@ -23,6 +23,7 @@ import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 export default function LeftBar() {
   const fetchUser = useUserStore((state) => state.fetchUser);
   const user = useUserStore((state) => state.user);
+  const validateOrRedirect = useUserStore((state) => state.validateOrRedirect);
 
   // TODO: add this in a Context
   useEffect(() => {
@@ -42,7 +43,7 @@ export default function LeftBar() {
           <GoSearch size={22} />
         </Link>
         <Dialog>
-          <DialogTrigger asChild>
+          <DialogTrigger onClick={() => validateOrRedirect()} asChild>
             <Button variant="default" size="sm" className="inline">
               <GoPlus />
             </Button>
