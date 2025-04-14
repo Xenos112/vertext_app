@@ -26,7 +26,7 @@ export const PostContext = createContext<Post | null>(null);
 export default function Post({ id }: { id: string }) {
   const { post, isLoading } = usePost(id);
 
-  if (!post || isLoading)
+  if (isLoading)
     return (
       <div className="p-4">
         <div className="flex gap-2 items-center">
@@ -54,6 +54,9 @@ export default function Post({ id }: { id: string }) {
         </div>
       </div>
     );
+
+  if (!post) return null;
+
   return (
     <PostContext value={post}>
       <div className="flex flex-col p-4 border-b border-muted">
