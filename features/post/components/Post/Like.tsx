@@ -3,9 +3,8 @@ import { FaHeart, FaRegHeart } from "react-icons/fa6";
 import { PostContext } from ".";
 import { use } from "react";
 import useUserStore from "@/store/user";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import LikePostClientService from "@/db/services/client/like.service";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type Like = {
   likes: number;
@@ -14,13 +13,10 @@ type Like = {
 
 const useLikesCount = () => {
   const post = use(PostContext);
+  const queryClient = useQueryClient();
+  const data = queryClient.getQueryData<Like>(["likes", post!.id]);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["likes", post!.id],
-    queryFn: () => LikePostClientService.getPostLikes(post!.id),
-  });
-
-  return { data, isLoading };
+  return { data };
 };
 
 const useLike = () => {
@@ -75,7 +71,7 @@ const useDislike = () => {
 };
 
 export default function Like() {
-  const { data, isLoading } = useLikesCount();
+  const { data } = useLikesCount();
   const { likePost, isLiking } = useLike();
   const { disLike, isDisliking } = useDislike();
   const validateOrRedirect = useUserStore((state) => state.validateOrRedirect);
@@ -85,13 +81,6 @@ export default function Like() {
     if (data?.userLike) return disLike();
     return likePost();
   };
-
-  if (isLoading)
-    return (
-      <div>
-        <Skeleton className="h-6 w-6" />
-      </div>
-    );
 
   return (
     <button

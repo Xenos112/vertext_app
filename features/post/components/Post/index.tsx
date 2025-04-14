@@ -7,17 +7,30 @@ import Like from "./Like";
 import Comment from "./Comment";
 import Share from "./Share";
 import Save from "./Save";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import PostClientService from "@/db/services/client/post.service";
 import { type Post } from "@prisma/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import LikePostClientService from "@/db/services/client/like.service";
+import SavePostClientService from "@/db/services/client/save.service";
 
 const usePost = (id: string) => {
-  const { data: post, isLoading } = useQuery({
-    queryKey: ["post", id],
-    queryFn: () => PostClientService.getPostById(id),
+  const [{ data: post, isLoading }] = useQueries({
+    queries: [
+      {
+        queryKey: ["post", id],
+        queryFn: () => PostClientService.getPostById(id),
+      },
+      {
+        queryKey: ["likes", id],
+        queryFn: () => LikePostClientService.getPostLikes(id),
+      },
+      {
+        queryKey: ["saves", id],
+        queryFn: () => SavePostClientService.getPostSaves(id),
+      },
+    ],
   });
-
   return { post, isLoading };
 };
 

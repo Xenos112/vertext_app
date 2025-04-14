@@ -3,9 +3,8 @@ import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 import { use } from "react";
 import { PostContext } from ".";
 import useUserStore from "@/store/user";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import SavePostClientService from "@/db/services/client/save.service";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type Save = {
   saves: number;
@@ -14,13 +13,11 @@ type Save = {
 
 const useSaveCount = () => {
   const post = use(PostContext);
+  const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["saves", post!.id],
-    queryFn: () => SavePostClientService.getPostSaves(post!.id),
-  });
+  const data = queryClient.getQueryData<Save>(["saves", post!.id]);
 
-  return { data, isLoading };
+  return { data };
 };
 
 const useSave = () => {
@@ -74,17 +71,10 @@ const useUnsave = () => {
 };
 
 export default function Save() {
-  const { data, isLoading } = useSaveCount();
+  const { data } = useSaveCount();
   const { savePost, isSaving } = useSave();
   const { unsave, isUnsaving } = useUnsave();
   const validateOrRedirect = useUserStore((state) => state.validateOrRedirect);
-
-  if (isLoading)
-    return (
-      <div>
-        <Skeleton className="h-6 w-6" />
-      </div>
-    );
 
   const handleButtonClick = () => {
     validateOrRedirect();
