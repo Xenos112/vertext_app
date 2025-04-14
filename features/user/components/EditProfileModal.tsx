@@ -170,9 +170,12 @@ export default function EditProfileModal() {
       <Input
         placeholder="@Tag"
         onChange={(e) =>
-          setNewUserData((prev) => ({ ...prev!, tag: e.target.value }))
+          setNewUserData((prev) => ({
+            ...prev!,
+            tag: e.target.value.replace(/@/g, ""),
+          }))
         }
-        value={newUserData.tag}
+        value={`@${newUserData.tag}`}
       />
       <Textarea
         placeholder="Bio"
