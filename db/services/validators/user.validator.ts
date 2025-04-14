@@ -16,11 +16,11 @@ const UPDATE_USER_VALIDATOR = type({
   "bio?": "string <= 1000 | null",
   "image_url?": "string.url | null",
   "banner_url?": "string.url | null",
-  "tag?": "string",
+  "tag?": "string.trim.preformatted",
 })
   .pipe((data) => {
     if (data.tag) {
-      data.tag = data.tag.trim().replace(/[#\s]/g, "");
+      data.tag = data.tag.trim().replace(/[#\s]/g, "").replace(/@/g, "");
     }
     return data;
   })
