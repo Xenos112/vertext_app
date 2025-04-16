@@ -172,7 +172,7 @@ export default function EditProfileModal() {
         onChange={(e) =>
           setNewUserData((prev) => ({
             ...prev!,
-            tag: e.target.value.replace(/(@|-)/g, ""),
+            tag: e.target.value.replace(/@/g, ""),
           }))
         }
         value={`@${newUserData.tag}`}
