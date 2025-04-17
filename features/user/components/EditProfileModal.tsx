@@ -175,7 +175,7 @@ export default function EditProfileModal() {
             tag: e.target.value.replace(/@/g, ""),
           }))
         }
-        value={`@${newUserData.tag}`}
+        value={`${newUserData.tag}`}
       />
       <div className="relative">
         <Textarea

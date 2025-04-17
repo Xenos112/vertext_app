@@ -23,6 +23,14 @@ const UPDATE_USER_VALIDATOR = type({
   })
   .narrow((data, ctx) => {
     const allowedChars = /^[a-zA-Z0-9_]+$/;
+    if (data.tag === "")
+      ctx.reject({
+        message:
+          "Please Provide a valid tag. Tag can only contain letters, numbers and underscores. No spaces or @ symbol",
+        path: ["tag"],
+        actual: data.tag,
+        expected: "string with only letters, numbers and underscores",
+      });
     if (data.tag) {
       if (!allowedChars.test(data.tag)) {
         ctx.reject({
