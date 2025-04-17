@@ -5,7 +5,8 @@ import validateAuth from "@/utils/validateAuth";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import CommunityValidators, {
-  CommunityCreateData,
+  type CommunityCreateData,
+  type CommunityUpdateData,
 } from "../validators/community.validator";
 import { type } from "arktype";
 
@@ -90,11 +91,12 @@ async function createCommunity(req: NextRequest) {
     membership,
   });
 }
+
 async function updateCommunity(
   req: NextRequest,
   { params: { id } }: { params: { id: string } },
 ) {
-  const communityData = (await req.json()) as Prisma.CommunityUpdateInput;
+  const jsonData = (await req.json()) as CommunityUpdateData;
   if (!id) {
     return NextResponse.json(
       { error: "Community id is required" },
@@ -116,7 +118,6 @@ async function updateCommunity(
     return NextResponse.json(
       {
         error: "Failed to fetch community",
-        _error: errorFetchingCommunity.message,
       },
       { status: 400 },
     );
@@ -130,7 +131,6 @@ async function updateCommunity(
     return NextResponse.json(
       {
         error: "Failed to fetch membership",
-        _error: errorFetchingMembership.message,
       },
       { status: 400 },
     );
@@ -139,15 +139,19 @@ async function updateCommunity(
       { error: "Membership not found" },
       { status: 404 },
     );
+
   if (membership.role !== "ADMIN")
     return NextResponse.json(
       { error: "You are not authorized to update this community" },
       { status: 401 },
     );
 
-  communityData.id = id;
+  const communityData = CommunityValidators.UPDATE_COMMUNITY(jsonData);
+  if (communityData instanceof type.errors)
+    return NextResponse.json({ error: communityData.summary }, { status: 400 });
+
   const { data: updatedCommunity, error: updateError } = await tryCatch(
-    CommunityRepository.updateCommunity(communityData),
+    CommunityRepository.updateCommunity(id, communityData),
   );
   if (updateError)
     return NextResponse.json(

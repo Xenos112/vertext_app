@@ -1,6 +1,9 @@
 import prisma from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
-import { type CommunityCreateData } from "../services/validators/community.validator";
+import {
+  CommunityUpdateData,
+  type CommunityCreateData,
+} from "../services/validators/community.validator";
 
 async function getCommunityById(id: string) {
   const community = await prisma.community.findUnique({
@@ -26,9 +29,12 @@ async function deleteCommunity(id: string) {
   return deletedCommunity;
 }
 
-async function updateCommunity(community: Prisma.CommunityUpdateInput) {
+async function updateCommunity(
+  communityId: string,
+  community: CommunityUpdateData,
+) {
   const updatedCommunity = await prisma.community.update({
-    where: { id: community.id as string },
+    where: { id: communityId },
     data: community,
   });
 

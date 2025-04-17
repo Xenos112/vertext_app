@@ -1,5 +1,5 @@
 import CommunityService from "@/db/services/server/community.service";
-import { APIResponse } from "@/types/api";
+import { type APIResponse } from "@/types/api";
 
 const GET = CommunityService.getCommunity;
 const PUT = CommunityService.updateCommunity;
