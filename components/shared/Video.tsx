@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect, VideoHTMLAttributes } from "react";
+import { useRef, useEffect } from "react";
 import Hls from "hls.js";
 import * as dashjs from "dashjs";
 
@@ -10,7 +10,6 @@ interface VideoPlayerProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
   type: VideoFormat;
   autoPlay?: boolean;
   controls?: boolean;
-  videoProps: VideoHTMLAttributes<HTMLVideoElement>;
 }
 
 const VideoPlayer = ({
@@ -18,7 +17,6 @@ const VideoPlayer = ({
   type = "mp4",
   autoPlay = false,
   controls = true,
-  ...videoProps
 }: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -75,7 +73,7 @@ const VideoPlayer = ({
     };
   }, [src, type, autoPlay]);
 
-  return <video ref={videoRef} controls={controls} {...videoProps} />;
+  return <video ref={videoRef} controls={controls} />;
 };
 
 export default VideoPlayer;

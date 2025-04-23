@@ -39,6 +39,14 @@ import type {
 } from "./users/[id]/relations/route";
 import { type GetUserMembershipsRequest } from "./users/[id]/memberships/route";
 import { type LogoutRequest } from "./auth/logout/route";
+import type {
+  CreateCommentRequest,
+  GetCommentsRequest,
+} from "./posts/[id]/comments/route";
+import type {
+  DeleteCommentRequest,
+  GetCommentRequest,
+} from "./posts/[id]/comments/[commentId]/route";
 
 export {
   type GetUserRequest,
@@ -71,4 +79,8 @@ export {
   type GetUserMembershipsRequest,
   type GetPostsRequest,
   type LogoutRequest,
+  type GetCommentsRequest,
+  type CreateCommentRequest,
+  type GetCommentRequest,
+  type DeleteCommentRequest,
 };

@@ -1,27 +1,42 @@
 import prisma from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
+import { type CreateCommentValidatorType } from "../services/validators/comment.validator";
 
 async function getComments(postId: string) {
-  const comments = await prisma.comment.findMany({
+  const commentsQueryResult = await prisma.comment.findMany({
     where: { postId },
     orderBy: { created_at: "desc" },
     take: 20,
+    select: {
+      id: true,
+    },
   });
+
+  const comments = commentsQueryResult.map((comment) => comment.id);
 
   return comments;
 }
 
-async function getComment(id: string) {
+async function getComment(commentId: string) {
   const comment = await prisma.comment.findUnique({
-    where: { id },
+    where: { id: commentId },
   });
 
   return comment;
 }
 
-async function createComment(comment: Prisma.CommentCreateInput) {
+async function createComment(
+  userId: string,
+  postId: string,
+  comment: CreateCommentValidatorType,
+) {
   const newComment = await prisma.comment.create({
-    data: comment,
+    data: {
+      medias: comment.medias,
+      content: comment.content,
+      postId,
+      userId,
+    },
   });
 
   return newComment;

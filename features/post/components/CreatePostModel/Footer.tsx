@@ -15,11 +15,10 @@ const useCreatePost = (postData: PostCreateData) => {
 
   const { mutate: createPost, isPending } = useMutation({
     mutationFn: () => PostClientService.createPost(postData),
-    onSuccess: (data) => {
+    onSuccess: () => {
       closeButtonRef.current?.click();
       sendToastEvent({
         title: "Post created successfully",
-        description: data.message,
       });
     },
     onError: (error) => {
