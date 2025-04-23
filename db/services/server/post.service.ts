@@ -7,7 +7,7 @@ import PostValidators, { PostCreateData } from "../validators/post.validator";
 import { type } from "arktype";
 
 async function getPostById(
-  req: NextRequest,
+  _req: NextRequest,
   { params: { id } }: { params: { id: string } },
 ) {
   if (!id)

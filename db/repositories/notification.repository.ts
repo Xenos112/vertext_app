@@ -1,5 +1,5 @@
 import prisma from "@/utils/prisma";
-import { Prisma } from "@prisma/client";
+import { type NotificationType } from "@prisma/client";
 
 async function getNotifications(reciverId: string) {
   const notifications = await prisma.notification.findMany({
@@ -17,11 +17,35 @@ async function getNotification(id: string) {
   return notification;
 }
 
-async function createNotification(
-  notification: Prisma.NotificationCreateInput,
-) {
+async function createNotification({
+  sender,
+  reciver,
+  type,
+  content,
+}: {
+  sender: string;
+  reciver: string;
+  type: NotificationType;
+  content: string;
+}) {
+  if (sender === reciver) return;
+  const latestNofication = await prisma.notification.findFirst({
+    where: { reciverId: reciver },
+    orderBy: { createdAt: "desc" },
+  });
+  if (
+    latestNofication &&
+    latestNofication.createdAt.getTime() > Date.now() - 30 * 60 * 1000
+  )
+    return latestNofication;
+
   const newNotification = await prisma.notification.create({
-    data: notification,
+    data: {
+      senderId: sender,
+      reciverId: reciver,
+      type,
+      content: content,
+    },
   });
 
   return newNotification;

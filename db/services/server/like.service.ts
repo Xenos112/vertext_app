@@ -1,18 +1,17 @@
 import LikeRepository from "@/db/repositories/like.repository";
+import NotificationRepository from "@/db/repositories/notification.repository";
 import PostRepository from "@/db/repositories/post.repository";
 import tryCatch from "@/utils/tryCatch";
-import validateUser from "@/utils/validate-user";
 import validateAuth from "@/utils/validateAuth";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 async function getPostLikes(
   req: NextRequest,
   { params: { postId } }: { params: { postId: string } },
 ) {
-  const cookiesStore = await cookies();
-  const token = cookiesStore.get("auth_token")?.value;
-  const user = await validateUser(token);
+  const { data: authedUser, error } = await tryCatch(validateAuth());
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 400 });
 
   if (!postId)
     return NextResponse.json({ error: "Post id is required" }, { status: 400 });
@@ -38,7 +37,7 @@ async function getPostLikes(
       { status: 400 },
     );
   const { data: userLike, error: userLikeError } = await tryCatch(
-    LikeRepository.getLike(postId, user?.id),
+    LikeRepository.getLike(postId, authedUser?.id),
   );
   if (userLikeError)
     return NextResponse.json(
@@ -101,6 +100,22 @@ async function createPostLike(
       { status: 400 },
     );
 
+  const { error: notificationError } = await tryCatch(
+    NotificationRepository.createNotification({
+      sender: authedUser.id,
+      reciver: post.userId,
+      type: "PostLiked",
+      content: `liked your post by ${authedUser?.user_name}`,
+    }),
+  );
+
+  if (notificationError)
+    return NextResponse.json(
+      {
+        error: "Failed to create notification",
+      },
+      { status: 400 },
+    );
   return NextResponse.json({ liked: true, like });
 }
 async function deletePostLike(

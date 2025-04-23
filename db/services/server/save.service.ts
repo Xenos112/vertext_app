@@ -5,6 +5,7 @@ import validateUser from "@/utils/validate-user";
 import validateAuth from "@/utils/validateAuth";
 import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import NotificationRepository from "@/db/repositories/notification.repository";
 
 async function getPostSaves(
   req: NextRequest,
@@ -98,6 +99,23 @@ async function createPostSave(
   if (saveError)
     return NextResponse.json(
       { error: "Failed to create save", _error: saveError.message },
+      { status: 400 },
+    );
+
+  const { error: NotificationError } = await tryCatch(
+    NotificationRepository.createNotification({
+      sender: authedUser.id,
+      reciver: post.userId,
+      type: "PostSaved",
+      content: `${authedUser.user_name} saved your post`,
+    }),
+  );
+  if (NotificationError)
+    return NextResponse.json(
+      {
+        error: "Failed to create notification",
+        _error: NotificationError.message,
+      },
       { status: 400 },
     );
 
