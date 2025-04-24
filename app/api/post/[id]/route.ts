@@ -4,13 +4,15 @@ import validateUser from "@/utils/validate-user";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (req: NextRequest, { params: { id } }: { params: { id: string } }) => {
+const GET = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) => {
   try {
+    const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
     const user = await validateUser(token);
-
-    if (!id) return NextResponse.json({ error: "Post ID is required" }, { status: 400 });
 
     const post = await prisma.post.findUnique({
       where: { id },
@@ -48,12 +50,14 @@ export const GET = async (req: NextRequest, { params: { id } }: { params: { id: 
     });
 
     return NextResponse.json({ post: post }, { status: 200 });
-
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 400 },
+    );
   }
-  catch (error) {
-    console.log(error)
-    return NextResponse.json({ error: "Something went wrong" }, { status: 400 });
-  }
-}
+};
 
-export type GetPostAPIResponse = APIResponse<ReturnType<typeof GET>>
+export type GetPostAPIResponse = APIResponse<ReturnType<typeof GET>>;
+export { GET };

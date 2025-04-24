@@ -5,8 +5,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 async function getRelationsNumbers(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data, error } = await tryCatch(
     RelationRepository.getRelationsNumbers(id),
   );
@@ -28,8 +29,9 @@ async function getRelationsNumbers(
 
 async function createRelation(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: authedUser, error: validationError } =
     await tryCatch(validateAuth());
   if (validationError)
@@ -56,8 +58,9 @@ async function createRelation(
 
 async function removeRelation(
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: authedUser, error: validationError } =
     await tryCatch(validateAuth());
   if (validationError)

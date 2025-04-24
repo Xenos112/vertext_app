@@ -1,7 +1,7 @@
 import UserRepository from "@/db/repositories/user.repository";
 import tryCatch from "@/utils/tryCatch";
 import { type NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import * as bcrypt from "bcrypt";
 import generateToken from "@/utils/generate-token";
 import { cookies } from "next/headers";
 import validateAuth from "@/utils/validateAuth";
@@ -15,8 +15,9 @@ import type { UserUpdateData } from "@/db/services/validators/user.validator";
 
 async function getUser(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: user, error } = await tryCatch(UserRepository.getUserById(id));
   if (!id)
     return NextResponse.json({ error: "User id is required" }, { status: 400 });
@@ -117,10 +118,9 @@ async function login(req: NextRequest) {
 
 async function deleteUser(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!id)
-    return NextResponse.json({ error: "User id is required" }, { status: 400 });
+  const { id } = await params;
 
   const { data: deletedUser, error } = await tryCatch(
     UserRepository.deleteUser(id),

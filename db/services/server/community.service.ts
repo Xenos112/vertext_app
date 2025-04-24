@@ -12,8 +12,9 @@ import { type } from "arktype";
 
 async function getCommunity(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: community, error: fetchingCommunityError } = await tryCatch(
     CommunityRepository.getCommunityById(id),
   );
@@ -94,15 +95,10 @@ async function createCommunity(req: NextRequest) {
 
 async function updateCommunity(
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const jsonData = (await req.json()) as CommunityUpdateData;
-  if (!id) {
-    return NextResponse.json(
-      { error: "Community id is required" },
-      { status: 400 },
-    );
-  }
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
   if (authedUserError)
@@ -163,8 +159,9 @@ async function updateCommunity(
 }
 async function deleteCommunity(
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   if (!id)
     return NextResponse.json(
       { error: "Community ID is required" },

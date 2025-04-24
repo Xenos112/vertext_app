@@ -1,4 +1,4 @@
-import { prisma } from "@/utils/prisma";
+import prisma from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
 import type { UserUpdateData } from "../services/validators/user.validator";
 

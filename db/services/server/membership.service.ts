@@ -6,8 +6,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 async function getMembership(
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const searchParams = req.nextUrl.searchParams;
   let userId = searchParams.get("userId");
   if (!userId) {
@@ -40,8 +41,9 @@ async function getMembership(
 }
 async function createMembership(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
   if (authedUserError)
@@ -62,8 +64,9 @@ async function createMembership(
 }
 async function deleteMembership(
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
   if (authedUserError)
@@ -106,8 +109,9 @@ async function deleteMembership(
 
 async function getUserMemberships(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: memberships, error } = await tryCatch(
     UserRepository.getUserMemberships(id),
   );

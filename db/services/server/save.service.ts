@@ -9,8 +9,9 @@ import NotificationRepository from "@/db/repositories/notification.repository";
 
 async function getPostSaves(
   req: NextRequest,
-  { params: { postId } }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
+  const { postId } = await params;
   const cookiesStore = await cookies();
   const token = cookiesStore.get("auth_token")?.value;
   const user = await validateUser(token);
@@ -55,10 +56,9 @@ async function getPostSaves(
 
 async function createPostSave(
   req: NextRequest,
-  { params: { postId } }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
-  if (!postId)
-    return NextResponse.json({ error: "Post id is required" }, { status: 400 });
+  const { postId } = await params;
 
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
@@ -123,10 +123,9 @@ async function createPostSave(
 }
 async function deletePostSave(
   req: NextRequest,
-  { params: { postId } }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
-  if (!postId)
-    return NextResponse.json({ error: "Post id is required" }, { status: 400 });
+  const { postId } = await params;
 
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());

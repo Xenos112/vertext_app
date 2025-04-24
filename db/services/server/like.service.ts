@@ -7,8 +7,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 async function getPostLikes(
   req: NextRequest,
-  { params: { postId } }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
+  const { postId } = await params;
   const { data: authedUser, error } = await tryCatch(validateAuth());
   if (error)
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -53,10 +54,9 @@ async function getPostLikes(
 
 async function createPostLike(
   req: NextRequest,
-  { params: { postId } }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
-  if (!postId)
-    return NextResponse.json({ error: "Post id is required" }, { status: 400 });
+  const { postId } = await params;
 
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
@@ -120,10 +120,9 @@ async function createPostLike(
 }
 async function deletePostLike(
   req: NextRequest,
-  { params: { postId } }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
-  if (!postId)
-    return NextResponse.json({ error: "Post id is required" }, { status: 400 });
+  const { postId } = await params;
 
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());

@@ -5,15 +5,10 @@ import { APIResponse } from "@/types/api";
 
 const GET = async (
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) => {
   try {
-    if (!id)
-      return NextResponse.json(
-        { error: "Please provide a user id" },
-        { status: STATUS_CODES.BAD_REQUEST },
-      );
-
+    const { id } = await params;
     const user = await getUserById(id);
     if (!user)
       return NextResponse.json(

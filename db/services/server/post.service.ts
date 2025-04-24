@@ -8,10 +8,9 @@ import { type } from "arktype";
 
 async function getPostById(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!id)
-    return NextResponse.json({ error: "Post id is required" }, { status: 400 });
+  const { id } = await params;
   const { data: post, error } = await tryCatch(PostRepository.getPostById(id));
   if (error)
     return NextResponse.json(
@@ -59,8 +58,9 @@ async function createPost(req: NextRequest) {
 
 async function deletePost(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
   if (authedUserError)
@@ -101,8 +101,9 @@ async function deletePost(
 // FIX: need validation
 async function updatePost(
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const postData = (await req.json()) as Prisma.PostUpdateInput;
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());

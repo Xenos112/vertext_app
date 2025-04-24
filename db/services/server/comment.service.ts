@@ -7,8 +7,9 @@ import { type } from "arktype";
 
 async function getComments(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: comments, error } = await tryCatch(
     CommentRepository.getComments(id),
   );
@@ -23,8 +24,9 @@ async function getComments(
 
 async function createComment(
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
   if (authedUserError)
@@ -54,8 +56,9 @@ async function createComment(
 
 async function getComment(
   req: NextRequest,
-  { params: { commentId } }: { params: { commentId: string } },
+  { params }: { params: Promise<{ commentId: string }> },
 ) {
+  const { commentId } = await params;
   const { data: comment, error } = await tryCatch(
     CommentRepository.getComment(commentId),
   );
@@ -70,8 +73,9 @@ async function getComment(
 
 async function deleteComment(
   _req: NextRequest,
-  { params: { commentId } }: { params: { commentId: string } },
+  { params }: { params: Promise<{ commentId: string }> },
 ) {
+  const { commentId } = await params;
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
   if (authedUserError)
