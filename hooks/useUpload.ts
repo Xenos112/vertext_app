@@ -45,7 +45,7 @@ export function useUpload() {
       });
       setUrl(data.url);
     }
-    return url;
+    return data.url;
   }
 
   return { url, upload, setUrl };

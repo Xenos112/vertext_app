@@ -80,6 +80,7 @@ export default function EditProfileModal() {
   }, [user]);
 
   const upladBannerImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
     const image = e.target.files?.[0];
     if (!image) return;
     const bannerUrl = await upload(image);
@@ -87,7 +88,8 @@ export default function EditProfileModal() {
   };
 
   const uploadProfileImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const image = e.target.files?.[0];
+    if (!e.target.files) return;
+    const image = e.target.files[0];
     if (!image) return;
     const imageUrl = await upload(image);
     console.log(url);
