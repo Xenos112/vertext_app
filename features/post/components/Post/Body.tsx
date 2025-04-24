@@ -6,10 +6,13 @@ import parsePostContent from "@/utils/parse-post-content";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { isImage } from "@/constants";
 import Video from "@/components/shared/Video";
+import { usePathname } from "next/navigation";
 
 export default function Body() {
   const post = use(PostContext);
+  const route = usePathname();
   if (!post) throw new Error("Post not found");
+  const RootTag = route.includes("post") ? "div" : Link;
 
   const className =
     post.medias.length === 1
@@ -23,7 +26,7 @@ export default function Body() {
             : "grid-cols-3 grid-rows-2";
 
   return (
-    <Link href={`post/${post.id}`} className="mt-3 block ml-[50px]">
+    <RootTag href={`post/${post.id}`} className="mt-3 block ml-[50px]">
       {post.content && (
         <p
           className="text-[15px]"
@@ -53,6 +56,6 @@ export default function Body() {
           </div>
         </div>
       )}
-    </Link>
+    </RootTag>
   );
 }
