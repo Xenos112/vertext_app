@@ -68,7 +68,15 @@ export default function Post({ id }: { id: string }) {
       </div>
     );
 
-  if (!post) return null;
+  if (!post)
+    return (
+      <div className="text-center p-4 my-4">
+        <h1 className="space-y-2 font-semibold text-2xl">Post Not Found</h1>
+        <p className="text-muted-foreground">
+          The post you are looking for does not exist
+        </p>
+      </div>
+    );
 
   return (
     <PostContext value={post}>
