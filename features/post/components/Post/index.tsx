@@ -24,10 +24,12 @@ const usePost = (id: string) => {
       {
         queryKey: ["likes", id],
         queryFn: () => LikePostClientService.getPostLikes(id),
+        refetchInterval: 1000 * 60, // 1 minute
       },
       {
         queryKey: ["saves", id],
         queryFn: () => SavePostClientService.getPostSaves(id),
+        refetchInterval: 1000 * 60, // 1 minute
       },
     ],
   });
