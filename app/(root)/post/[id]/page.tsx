@@ -1,34 +1,21 @@
 "use client";
-import getPostById from "@/features/post/api/getPost";
-import Comment from "@/features/post/components/Comment";
 import Post from "@/features/post/components/Post";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { GoArrowLeft, GoComment } from "react-icons/go";
 import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { useQuery } from "@tanstack/react-query";
-import getCommentsQueryFunction from "@/features/post/api/comments/getComments";
 import CreateCommentModel from "@/features/post/components/Comment/CreateCommentModel";
 import useUserStore from "@/store/user";
+import CommentsFeed from "./_components/CommentsFeed";
+import { Suspense } from "react";
+import CommentSkeleton from "./_components/CommentSkeleton";
 
 export default function PostPage() {
   const { id } = useParams() as { id: string };
-  const [error, setError] = useState("");
   const validateOrRedirect = useUserStore((state) => state.validateOrRedirect);
-
-  const { data: comments, isLoading: isLoadingComments } = useQuery({
-    queryKey: ["comments", id],
-    queryFn: async () => await getCommentsQueryFunction(id),
-  });
-
-  const { data: post, isLoading: isLoadingPost } = useQuery({
-    queryKey: ["post", id],
-    queryFn: async () => await getPostById(id),
-  });
 
   return (
     <div className="border min-h-screen border-muted rounded-xl">
@@ -38,22 +25,7 @@ export default function PostPage() {
           Return
         </Link>
       </div>
-      {isLoadingPost && <div>Loading...</div>}
-      {post && <Post id={post.id} />}
-      {error && (
-        <div className="flex items-center justify-center h-screen flex-col gap-4">
-          <h1 className="text-2xl leading-none font-semibold">{error}</h1>
-          <p className="text-muted-foreground leading-none">
-            Post Maybe Hidden or Have Deleted
-          </p>
-          <Link href="/">
-            <Button>
-              <GoArrowLeft />
-              Return To Home Page
-            </Button>
-          </Link>
-        </div>
-      )}
+      <Post id={id} />
       <div>
         <h1 className="p-4 border-b border-muted flex items-center gap-3">
           <GoComment />
@@ -77,11 +49,9 @@ export default function PostPage() {
         <CreateCommentModel postId={id} />
       </Dialog>
       {/* Post Comment Display*/}
-      {comments &&
-        comments.length > 0 &&
-        comments.map((comment) => (
-          <Comment key={comment.id} comment={comment} />
-        ))}
+      <Suspense fallback={<CommentSkeleton />}>
+        <CommentsFeed />
+      </Suspense>
     </div>
   );
 }
