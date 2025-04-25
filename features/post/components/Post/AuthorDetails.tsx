@@ -57,7 +57,7 @@ export default function AuthorDetails() {
                   <p className="text-muted-foreground text-xs">@{user.tag}</p>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {formatDate(user.created_at || new Date())}
+                  Joined {formatDate(user.created_at)}
                 </p>
               </div>
             </div>
