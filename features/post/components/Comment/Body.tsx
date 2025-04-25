@@ -22,7 +22,7 @@ export default function Body() {
             : "grid-cols-3 grid-rows-2";
 
   return (
-    <div className="mt-3 block ml-[50px]">
+    <div className="block ml-[50px]">
       {comment.content && (
         <p
           className="text-[15px]"
@@ -33,7 +33,7 @@ export default function Body() {
       )}
 
       {comment.medias.length !== 0 && (
-        <div className={`rounded-md overflow-hidden grid gap-1 mt-3`}>
+        <div className={`rounded-md overflow-hidden grid gap-1 mt-1`}>
           <div className={`${className} gap-1 grid`}>
             {comment.medias.map((media, index) => (
               <AspectRatio key={index} ratio={16 / 9}>

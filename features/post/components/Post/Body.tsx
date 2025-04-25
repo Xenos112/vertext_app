@@ -26,7 +26,7 @@ export default function Body() {
             : "grid-cols-3 grid-rows-2";
 
   return (
-    <RootTag href={`post/${post.id}`} className="mt-3 block ml-[50px]">
+    <RootTag href={`post/${post.id}`} className="mt-2 block ml-[50px]">
       {post.content && (
         <p
           className="text-[15px]"
@@ -37,7 +37,7 @@ export default function Body() {
       )}
 
       {post.medias.length !== 0 && (
-        <div className={`rounded-md overflow-hidden grid gap-1 mt-3`}>
+        <div className={`rounded-md overflow-hidden grid gap-1 mt-1`}>
           <div className={`${className} gap-1 grid`}>
             {post.medias.map((media, index) => (
               <AspectRatio key={index} ratio={16 / 9}>
