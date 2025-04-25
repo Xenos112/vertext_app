@@ -3,6 +3,7 @@ import type {
   GetCommentsRequest,
   CreateCommentRequest,
   DeleteCommentRequest,
+  GetCommentRequest,
 } from "@/app/api/v2/types";
 import { type CreateCommentValidatorType } from "../validators/comment.validator";
 
@@ -19,7 +20,7 @@ const createComment = (postId: string, comment: CreateCommentValidatorType) =>
   ).then((data) => data);
 
 const getComment = (postId: string, commentId: string) =>
-  queryFetcherFunction<GetCommentsRequest>(
+  queryFetcherFunction<GetCommentRequest>(
     `/api//v2/posts/${postId}/comments/${commentId}`,
   );
 
