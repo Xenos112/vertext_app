@@ -4,6 +4,7 @@ export const ERRORS = {
 };
 
 export const isImage = /\.*(.png|.jpg|.jpeg|.webp|.svg)/i;
+export const isVideo = /\.*(mp4|webm|ogv)$/i;
 
 export const STATUS_CODES = {
   NOT_FOUND: 404,
