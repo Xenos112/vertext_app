@@ -59,11 +59,20 @@ async function deleteComment(id: string) {
   return deletedComment;
 }
 
+async function getCommentCount(postId: string) {
+  const commentCount = await prisma.comment.count({
+    where: { postId },
+  });
+
+  return commentCount;
+}
+
 const CommentRepository = {
   getComments,
   getComment,
   createComment,
   updateComment,
   deleteComment,
+  getCommentCount,
 };
 export default CommentRepository;

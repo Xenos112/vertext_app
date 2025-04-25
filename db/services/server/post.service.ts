@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 import PostValidators, { PostCreateData } from "../validators/post.validator";
 import { type } from "arktype";
+import CommentRepository from "@/db/repositories/comment.repository";
 
 async function getPostById(
   _req: NextRequest,
@@ -19,6 +20,18 @@ async function getPostById(
     );
   if (!post)
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
+
+  const { data: commentCount, error: commentCountError } = await tryCatch(
+    CommentRepository.getCommentCount(id),
+  );
+
+  if (commentCountError)
+    return NextResponse.json(
+      { error: "Could't fetch Post Comments count" },
+      { status: 401 },
+    );
+
+  post.comments_number = commentCount;
 
   return NextResponse.json({ post });
 }
