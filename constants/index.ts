@@ -3,7 +3,7 @@ export const ERRORS = {
   POST_NOT_FOUND: "Post Not Found",
 };
 
-export const isImage = /\.*(.png|.jpg|.jpeg|.webp)/i;
+export const isImage = /\.*(.png|.jpg|.jpeg|.webp|.svg)/i;
 
 export const STATUS_CODES = {
   NOT_FOUND: 404,
