@@ -44,8 +44,6 @@ export default function Share() {
       });
       // HACK: maybe we could add a user for the post url so that we can track the share
       // and suggest the user to follow the one who shared it
-      const url = new URL(window.location.href);
-      url.pathname = `/post/${post.id}`;
       copyText(postUrl.toString());
     },
   });
