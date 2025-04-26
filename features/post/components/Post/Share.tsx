@@ -14,9 +14,9 @@ import copyText from "@/utils/copy-text";
 import { formatNumber } from "@/utils/format-number";
 import { useMutation } from "@tanstack/react-query";
 import shareMutationFunction from "../../api/share";
-import { FiLoader } from "react-icons/fi";
 import sendToastEvent from "@/utils/sendToastEvent";
 import useUserStore from "@/store/user";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // TODO: make it in the v2 of the API
 export default function Share() {
@@ -71,9 +71,11 @@ export default function Share() {
               value={postUrl.toString()}
               className="flex-1 px-3 py-2 select-none text-sm rounded-md"
             />
-            <Button onClick={() => share()}>
-              {isPending ? <FiLoader className="animate-spin" /> : "Share"}
-            </Button>
+            {isPending ? (
+              <Skeleton className="w-16 h-9" />
+            ) : (
+              <Button onClick={() => share()}>Share</Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
