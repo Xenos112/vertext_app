@@ -10,7 +10,9 @@ import useUserStore from "@/store/user";
 import { useRouter } from "next/navigation";
 import sendToastEvent from "@/utils/sendToastEvent";
 
-type FollowButtonProps = ButtonProps & { userId: string };
+type FollowButtonProps = ButtonProps & {
+  userId: string;
+};
 type RelationCount = {
   isFollowed: boolean;
   followers: number;
@@ -51,6 +53,12 @@ const useFollow = (userId: string) => {
         }),
       );
     },
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: ["relations", userId],
+        exact: true,
+      });
+    },
   });
 
   return { follow, isFollowing };
@@ -82,7 +90,10 @@ const useUnfollow = (userId: string) => {
       );
     },
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["relations", userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["relations", userId],
+        exact: true,
+      });
     },
   });
 
@@ -96,7 +107,8 @@ export default function FollowButton({ userId, ...props }: FollowButtonProps) {
   const user = useUserStore((state) => state.user);
   const router = useRouter();
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     if (!user) {
       sendToastEvent({
         title: "Error",
@@ -116,7 +128,11 @@ export default function FollowButton({ userId, ...props }: FollowButtonProps) {
       disabled={isFollowing || isUnfollowing}
     >
       {(isFollowing || isUnfollowing) && <FiLoader />}
-      {relationCount?.isFollowed ? "UnFollow" : "Follow"}
+      {props.children
+        ? props.children
+        : relationCount?.isFollowed
+          ? "Unfollow"
+          : "Follow"}
     </Button>
   );
 }

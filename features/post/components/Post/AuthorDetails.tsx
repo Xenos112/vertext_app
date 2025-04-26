@@ -9,12 +9,25 @@ import {
 import formatDate from "@/utils/format-date";
 import { MdVerified } from "react-icons/md";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import UserClientService from "@/db/services/client/user.service";
 import CommunityClientService from "@/db/services/client/community.service";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import FollowButton from "@/features/user/components/FollowButton";
+import RelationClientService from "@/db/services/client/relation.service";
+import useUserStore from "@/store/user";
+
+const useRelationCount = (userId: string) => {
+  const user = useUserStore((state) => state.user);
+  const { data: relationCount, isLoading } = useQuery({
+    queryKey: ["relations", userId],
+    queryFn: () => RelationClientService.getRelationsNumbers(userId),
+    enabled: user?.id !== userId,
+  });
+
+  return { relationCount, isLoading };
+};
 
 const useUser = () => {
   const post = use(PostContext);
@@ -42,17 +55,17 @@ const useCommunity = () => {
 export default function AuthorDetails() {
   const { user } = useUser();
   const { community } = useCommunity();
+  const { relationCount } = useRelationCount(user!.id);
   const userRef = useRef<HTMLDivElement>(null);
   const communityRef = useRef<HTMLSpanElement>(null);
   const currentUrl = usePathname();
+  const router = useRouter();
+  const currentUser = useUserStore((state) => state.user);
 
   async function handleClickUser(
     e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
   ) {
     e.stopPropagation();
-    const { useRouter } = await import("next/navigation");
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const router = useRouter();
     router.push(`/user/${user!.id}`);
   }
 
@@ -60,9 +73,6 @@ export default function AuthorDetails() {
     e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
   ) {
     e.stopPropagation();
-    const { useRouter } = await import("next/navigation");
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const router = useRouter();
     router.push(`/community/${community!.id}`);
   }
 
@@ -73,15 +83,23 @@ export default function AuthorDetails() {
     return (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger>
-            <Link href={`/user/${user.id}`}>
+          <TooltipTrigger asChild>
+            <div className="relative" onClick={handleClickUser}>
               <Avatar>
                 <AvatarImage src={user.image_url || undefined} />
                 <AvatarFallback>
                   {user.user_name?.slice(0, 2).toUpperCase() || "A"}
                 </AvatarFallback>
               </Avatar>
-            </Link>
+              {!relationCount?.isFollowed && user.id !== currentUser?.id && (
+                <FollowButton
+                  className="rounded-full text-sm font-light absolute bottom-0 right-0 size-4 p-0"
+                  userId={user.id}
+                >
+                  +
+                </FollowButton>
+              )}
+            </div>
           </TooltipTrigger>
           <TooltipContent className="max-w-[400px]">
             <div className="flex flex-col gap-3">
