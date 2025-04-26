@@ -48,7 +48,6 @@ const useUserUpdate = (userId: string, data: UserUpdateData) => {
   return { updateUser, isUpdating };
 };
 
-// FIX: The user banner image is uploaded but not applied in the first try
 export default function EditProfileModal() {
   const userData = useUserStore((state) => state.user);
   const [newUserData, setNewUserData] = useState<UserUpdateData>({});
@@ -128,7 +127,7 @@ export default function EditProfileModal() {
         }
       });
     };
-  }, []);
+  }, [updateUser]);
 
   if (!user) return;
   return (
