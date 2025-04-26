@@ -1,11 +1,14 @@
 import { Button, ButtonProps } from "@/components/ui/button";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { FiLoader } from "react-icons/fi";
 import RelationClientService from "@/db/services/client/relation.service";
 import useUserStore from "@/store/user";
 import { useRouter } from "next/navigation";
 import sendToastEvent from "@/utils/sendToastEvent";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type FollowButtonProps = ButtonProps & { userId: string };
 type RelationCount = {
@@ -15,7 +18,7 @@ type RelationCount = {
 };
 
 const useRelationCount = (userId: string) => {
-  const { data: relationCount, isLoading } = useQuery({
+  const { data: relationCount, isLoading } = useSuspenseQuery({
     queryKey: ["relations", userId],
     queryFn: () => RelationClientService.getRelationsNumbers(userId),
   });
@@ -87,7 +90,7 @@ const useUnfollow = (userId: string) => {
 };
 
 export default function FollowButton({ userId, ...props }: FollowButtonProps) {
-  const { relationCount, isLoading } = useRelationCount(userId);
+  const { relationCount } = useRelationCount(userId);
   const { follow, isFollowing } = useFollow(userId);
   const { unfollow, isUnfollowing } = useUnfollow(userId);
   const user = useUserStore((state) => state.user);
@@ -106,18 +109,11 @@ export default function FollowButton({ userId, ...props }: FollowButtonProps) {
     return follow();
   };
 
-  if (isLoading)
-    return (
-      <div>
-        <Skeleton className="h-8 w-20" />
-      </div>
-    );
-
   return (
     <Button
       onClick={handleButtonClick}
       {...props}
-      disabled={isLoading || isFollowing || isUnfollowing}
+      disabled={isFollowing || isUnfollowing}
     >
       {(isFollowing || isUnfollowing) && <FiLoader />}
       {relationCount?.isFollowed ? "UnFollow" : "Follow"}

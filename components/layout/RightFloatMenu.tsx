@@ -3,12 +3,13 @@ import {
   getRecommendedCommunities,
   getRecommendedUsers,
 } from "@/actions/user.actions";
-import React from "react";
+import React, { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import FollowButton from "@/features/user/components/FollowButton";
 import JoinCommunity from "@/features/community/components/JoinButton";
+import { Skeleton } from "../ui/skeleton";
 
 type SuggestedUsersType = Awaited<
   ReturnType<typeof getRecommendedUsers>
@@ -74,7 +75,9 @@ export default function RightFloatMenu() {
                   </Avatar>
                   <p>{user.user_name}</p>
                 </div>
-                <FollowButton userId={user.id}>Follow</FollowButton>
+                <Suspense fallback={<Skeleton className="h-8 w-20" />}>
+                  <FollowButton userId={user.id}>Follow</FollowButton>
+                </Suspense>
               </div>
             ))}
           </div>

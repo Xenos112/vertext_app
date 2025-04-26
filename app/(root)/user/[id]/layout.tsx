@@ -99,7 +99,9 @@ export default function UserPage({ children }: { children: ReactNode }) {
               </Dialog>
             ) : (
               <div>
-                <FollowButton userId={user.id} />
+                <Suspense fallback={<Skeleton className="h-8 w-20" />}>
+                  <FollowButton userId={user.id} />
+                </Suspense>
               </div>
             )}
           </div>
