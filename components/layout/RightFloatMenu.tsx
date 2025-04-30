@@ -76,7 +76,7 @@ export default function RightFloatMenu() {
                   <p>{user.user_name}</p>
                 </div>
                 <Suspense fallback={<Skeleton className="h-8 w-20" />}>
-                  <FollowButton userId={user.id}>Follow</FollowButton>
+                  <FollowButton userId={user.id} />
                 </Suspense>
               </div>
             ))}
