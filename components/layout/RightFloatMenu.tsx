@@ -10,6 +10,7 @@ import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import FollowButton from "@/features/user/components/FollowButton";
 import JoinCommunity from "@/features/community/components/JoinButton";
 import { Skeleton } from "../ui/skeleton";
+import sendToastEvent from "@/utils/sendToastEvent";
 
 type SuggestedUsersType = Awaited<
   ReturnType<typeof getRecommendedUsers>
@@ -25,15 +26,11 @@ export default function RightFloatMenu() {
   useEffect(() => {
     getRecommendedUsers().then((data) => {
       if (data.error) {
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              variant: "destructive",
-              title: "Error",
-              description: data.error as string,
-            },
-          }),
-        );
+        sendToastEvent({
+          variant: "destructive",
+          title: "Error",
+          description: data.error as string,
+        });
       } else {
         setUsers(data.users);
       }
@@ -43,15 +40,11 @@ export default function RightFloatMenu() {
   useEffect(() => {
     getRecommendedCommunities().then((data) => {
       if (data.error) {
-        document.dispatchEvent(
-          new CustomEvent("toast", {
-            detail: {
-              variant: "destructive",
-              title: "Error",
-              description: data.error as string,
-            },
-          }),
-        );
+        sendToastEvent({
+          variant: "destructive",
+          title: "Error",
+          description: data.error as string,
+        });
       } else {
         setCommunities(data.communities);
       }
