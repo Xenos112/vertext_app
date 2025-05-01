@@ -47,6 +47,7 @@ import type {
   DeleteCommentRequest,
   GetCommentRequest,
 } from "./posts/[id]/comments/[commentId]/route";
+import type { GetUserFeedResponse } from "./feed/users/route";
 
 export {
   type GetUserRequest,
@@ -83,4 +84,5 @@ export {
   type CreateCommentRequest,
   type GetCommentRequest,
   type DeleteCommentRequest,
+  type GetUserFeedResponse,
 };

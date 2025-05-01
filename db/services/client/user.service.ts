@@ -1,5 +1,6 @@
 import queryFunction from "@/utils/queryFetcherFunction";
 import {
+  GetUserFeedResponse,
   GetUserMembershipsRequest,
   GetUserRequest,
   LogoutRequest,
@@ -33,6 +34,10 @@ const getUserMemberships = (userId: string) =>
   ).then((data) => data.memberships);
 
 const logout = () => queryFunction<LogoutRequest>("/api/v2/auth/logout");
+const getUserFeed = () =>
+  queryFunction<GetUserFeedResponse>("/api/v2/feed/users").then(
+    (data) => data.userFeed,
+  );
 
 const UserClientService = {
   getUser,
@@ -42,6 +47,7 @@ const UserClientService = {
   updateUser,
   getUserMemberships,
   logout,
+  getUserFeed,
 };
 
 export default UserClientService;

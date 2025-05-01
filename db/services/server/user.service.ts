@@ -198,6 +198,27 @@ async function logout() {
   return NextResponse.json({ message: "Logged out successfully" });
 }
 
+async function getUserFeed() {
+  const { data: authedUser, error: authedUserError } =
+    await tryCatch(validateAuth());
+  if (authedUserError)
+    return NextResponse.json(
+      { error: authedUserError?.message },
+      { status: 401 },
+    );
+
+  const { data: userFeed, error } = await tryCatch(
+    UserRepository.getUsersFeed(authedUser.id),
+  );
+  if (error)
+    return NextResponse.json(
+      { error: "Failed to fetch the user feed", _error: error },
+      { status: 400 },
+    );
+
+  return NextResponse.json({ userFeed });
+}
+
 const UserService = {
   getUser,
   register,
@@ -206,6 +227,7 @@ const UserService = {
   login,
   getMe,
   logout,
+  getUserFeed,
 };
 
 export default UserService;

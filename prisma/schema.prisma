@@ -47,6 +47,7 @@ model User {
   NotificationRecieved Notification[]      @relation("recived")
   ResetPassword        ResetPassword[]
   MembershipRequest    MembershipRequest[]
+  likings              String[]
 }
 
 model Post {

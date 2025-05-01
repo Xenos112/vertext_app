@@ -1,41 +1,20 @@
 "use client";
-import {
-  getRecommendedCommunities,
-  getRecommendedUsers,
-} from "@/actions/user.actions";
+import { getRecommendedCommunities } from "@/actions/user.actions";
 import React, { Suspense } from "react";
 import { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
-import FollowButton from "@/features/user/components/FollowButton";
 import JoinCommunity from "@/features/community/components/JoinButton";
-import { Skeleton } from "../ui/skeleton";
 import sendToastEvent from "@/utils/sendToastEvent";
+import UsersSuggestions from "./UsersSuggestions";
+import UsersSuggestionsSkeleton from "./UsersSuggestionsSkeleton";
 
-type SuggestedUsersType = Awaited<
-  ReturnType<typeof getRecommendedUsers>
->["users"];
 type SuggestedCommunitiesType = Awaited<
   ReturnType<typeof getRecommendedCommunities>
 >["communities"];
 
 export default function RightFloatMenu() {
-  const [users, setUsers] = useState<SuggestedUsersType>();
   const [communities, setCommunities] = useState<SuggestedCommunitiesType>([]);
-
-  useEffect(() => {
-    getRecommendedUsers().then((data) => {
-      if (data.error) {
-        sendToastEvent({
-          variant: "destructive",
-          title: "Error",
-          description: data.error as string,
-        });
-      } else {
-        setUsers(data.users);
-      }
-    });
-  }, []);
 
   useEffect(() => {
     getRecommendedCommunities().then((data) => {
@@ -53,29 +32,9 @@ export default function RightFloatMenu() {
 
   return (
     <div className="absolute top-12 right-12 space-y-6">
-      {users && users?.length > 0 && (
-        <div className="space-y-5">
-          <h1 className="text-xl font-semibold">Who To Follow</h1>
-          <div className="w-72 space-y-4">
-            {users.map((user) => (
-              <div key={user.id} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Avatar className="size-[30px]">
-                    <AvatarImage src={user.image_url!} />
-                    <AvatarFallback className="text-xs">
-                      {formatUserNameForImage(user.user_name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <p>{user.user_name}</p>
-                </div>
-                <Suspense fallback={<Skeleton className="h-8 w-20" />}>
-                  <FollowButton userId={user.id} />
-                </Suspense>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <Suspense fallback={<UsersSuggestionsSkeleton />}>
+        <UsersSuggestions />
+      </Suspense>
       {communities && communities.length > 0 && (
         <div className="space-y-5">
           <h1 className="text-xl font-semibold">Communities to Join</h1>
