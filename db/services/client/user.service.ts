@@ -34,6 +34,7 @@ const getUserMemberships = (userId: string) =>
   ).then((data) => data.memberships);
 
 const logout = () => queryFunction<LogoutRequest>("/api/v2/auth/logout");
+
 const getUserFeed = () =>
   queryFunction<GetUserFeedResponse>("/api/v2/feed/users").then(
     (data) => data.userFeed,
