@@ -66,7 +66,7 @@ async function getUserMemberships(userId: string) {
 
 async function getUsersFeed(userId: string) {
   const user = await getUserById(userId);
-  if (!user) return [];
+  if (!user) throw new Error("User not found");
   const currentUserLikings = user.likings.map((liking) => liking) || [];
 
   if (currentUserLikings.length === 0) {
@@ -81,39 +81,42 @@ async function getUsersFeed(userId: string) {
     return randomUsersIds;
   } else {
     const usersByLiking = await prisma.$queryRaw<{ id: string }[]>`
-    WITH
-    target_data AS (
+      WITH
+      target_data AS (
+        SELECT
+          id AS target_id,
+          ARRAY(
+            SELECT DISTINCT lower(trim(word))
+            FROM unnest(likings) AS liking,
+                 regexp_split_to_table(liking, '\W+') AS word
+            WHERE word != ''
+          ) AS target_words
+        FROM "User"
+        WHERE id = ${user.id}
+      ),
+      candidates AS (
+        SELECT
+          u.id,
+          ARRAY(
+            SELECT DISTINCT lower(trim(word))
+            FROM unnest(u.likings) AS liking,
+                 regexp_split_to_table(liking, '\W+') AS word
+            WHERE word != ''
+          ) AS candidate_words
+        FROM "User" u
+        WHERE u.id != (SELECT target_id FROM target_data)
+      )
       SELECT
-        id AS target_id,
-        ARRAY(
-          SELECT DISTINCT lower(trim(word))
-          FROM unnest(likings) AS liking,
-               regexp_split_to_table(liking, '\W+') AS word
-          WHERE word != ''
-        ) AS target_words
-      FROM "User"
-      WHERE id = ${userId}
-    ),
-    candidates AS (
-      SELECT
-        u.id,
-        ARRAY(
-          SELECT DISTINCT lower(trim(word))
-          FROM unnest(u.likings) AS liking,
-               regexp_split_to_table(liking, '\W+') AS word
-          WHERE word != ''
-        ) AS candidate_words
-      FROM "User" u
-      WHERE u.id != (SELECT target_id FROM target_data)
-    )
-    SELECT
-      c.id
-    FROM candidates c
-    CROSS JOIN target_data td
-    WHERE CARDINALITY(td.target_words & c.candidate_words) >= 3
-      AND c.id != td.target_id
-    ORDER BY RANDOM()
-    LIMIT 3;
+        c.id
+      FROM candidates c
+      CROSS JOIN target_data td
+      WHERE (
+        SELECT COUNT(*) 
+        FROM unnest(td.target_words) AS t(word)
+        WHERE word = ANY(c.candidate_words)
+      ) >= 3
+      ORDER BY RANDOM()
+      LIMIT 3;
   `;
     const userByLikingIds = usersByLiking.map((user) => user.id);
 
