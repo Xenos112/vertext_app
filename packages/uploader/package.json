@@ -1,0 +1,20 @@
+{
+  "name": "@vertex/uploader",
+  "version": "0.0.1",
+  "description": "Uploader package for Vertex",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/types.ts",
+  "exports": {
+    ".": [
+      "./src/index.ts",
+      "./src/types.ts"
+    ]
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "ky": "^1.8.1"
+  }
+}

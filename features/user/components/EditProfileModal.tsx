@@ -13,17 +13,17 @@ import useUserStore from "@/store/user";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { useUpload } from "@/hooks/useUpload";
 import Image from "next/image";
 import UserClientService from "@/db/services/client/user.service";
 import type { UserUpdateData } from "@/db/services/validators/user.validator";
 import sendToastEvent from "@/utils/sendToastEvent";
+import { Uploader } from "@vertex/uploader";
 
-const useUserUpdate = (userId: string, data: UserUpdateData) => {
+const useUserUpdate = (userId: string) => {
   const queryClient = useQueryClient();
   const { mutate: updateUser, isPending: isUpdating } = useMutation({
     mutationKey: ["me"],
-    mutationFn: () => UserClientService.updateUser(data),
+    mutationFn: (data: UserUpdateData) => UserClientService.updateUser(data),
     onError(error) {
       sendToastEvent({
         title: "Error",
@@ -45,17 +45,22 @@ const useUserUpdate = (userId: string, data: UserUpdateData) => {
       document.dispatchEvent(new CustomEvent("close-edit-modal"));
     },
   });
+
   return { updateUser, isUpdating };
 };
 
+// FIX: this code looks like a mess
 export default function EditProfileModal() {
   const userData = useUserStore((state) => state.user);
   const [newUserData, setNewUserData] = useState<UserUpdateData>({});
-  const { url, upload } = useUpload();
   const profileImageInputRef = useRef<HTMLInputElement>(null);
   const bannerImageInputRef = useRef<HTMLInputElement>(null);
   const closeModalRef = useRef<HTMLButtonElement>(null);
   const modelRef = useRef<HTMLDivElement>(null);
+  const imageId = useRef("");
+  const bannerId = useRef("");
+  const uploader = useRef(new Uploader());
+  const [isUploading, setIsUploading] = useState(false);
   const { data: user } = useQuery({
     queryKey: ["user", userData?.id],
     queryFn: () => UserClientService.getUser(userData!.id),
@@ -80,28 +85,57 @@ export default function EditProfileModal() {
 
   const upladBannerImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    const image = e.target.files?.[0];
-    if (!image) return;
-    const bannerUrl = await upload(image);
-    setNewUserData((prev) => ({ ...prev!, banner_url: bannerUrl }));
+    const clientBanner = await uploader.current.uploadToClient(
+      e.target.files[0],
+    );
+    bannerId.current = clientBanner?.id || "";
+    setNewUserData((prev) => ({ ...prev!, banner_url: clientBanner?.name }));
   };
 
   const uploadProfileImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    const image = e.target.files[0];
-    if (!image) return;
-    const imageUrl = await upload(image);
-    console.log(url);
-    setNewUserData((prev) => ({ ...prev!, image_url: imageUrl }));
+    const clientImage = await uploader.current.uploadToClient(
+      e.target.files[0],
+    );
+    imageId.current = clientImage?.id || "";
+    setNewUserData((prev) => ({ ...prev!, image_url: clientImage?.name }));
   };
 
-  const { updateUser, isUpdating } = useUserUpdate(userData!.id, {
-    user_name: newUserData?.user_name,
-    bio: newUserData?.bio,
-    image_url: newUserData?.image_url,
-    banner_url: newUserData?.banner_url,
-    tag: newUserData?.tag,
-  });
+  const { updateUser, isUpdating } = useUserUpdate(userData!.id);
+
+  const handleUpdateUser = async () => {
+    setIsUploading(true);
+    const imageUrl = await uploader.current.sendOne(imageId.current, {
+      onError(e) {
+        sendToastEvent({
+          title: "Error",
+          description: e.message,
+          variant: "destructive",
+        });
+      },
+    });
+
+    const bannerUrl = await uploader.current.sendOne(bannerId.current, {
+      onError(e) {
+        sendToastEvent({
+          title: "Error",
+          description: e.message,
+          variant: "destructive",
+        });
+      },
+    });
+
+    const data = {
+      user_name: newUserData?.user_name,
+      bio: newUserData?.bio,
+      image_url: imageUrl?.data.url,
+      banner_url: bannerUrl?.data.url,
+      tag: newUserData?.tag,
+    };
+
+    await updateUser(data);
+    setIsUploading(false);
+  };
 
   useEffect(() => {
     document.addEventListener("close-edit-modal", () => {
@@ -113,7 +147,7 @@ export default function EditProfileModal() {
         e.key === "Enter" &&
         modelRef.current?.contains(document.activeElement)
       ) {
-        updateUser();
+        handleUpdateUser();
       }
     });
 
@@ -123,11 +157,11 @@ export default function EditProfileModal() {
       });
       document.removeEventListener("keypress", (e) => {
         if (e.key === "Enter") {
-          updateUser();
+          handleUpdateUser();
         }
       });
     };
-  }, [updateUser]);
+  }, []);
 
   if (!user) return;
   return (
@@ -196,8 +230,8 @@ export default function EditProfileModal() {
       <DialogFooter className="flex gap-4">
         <DialogClose ref={closeModalRef}>Cancel</DialogClose>
         <Button
-          onClick={() => updateUser()}
-          disabled={isUpdating || disableUpdateButton}
+          onClick={() => handleUpdateUser()}
+          disabled={isUpdating || disableUpdateButton || isUploading}
         >
           {isUpdating ? "Updating..." : "Update"}
         </Button>
