@@ -12,7 +12,6 @@ export default async function queryFetcherFunction<
     ...opts,
   });
   const data = await response.json();
-  console.log(data);
 
   if ("error" in data) throw new Error(data.error);
   if ("errors" in data) throw new Error(data.errors[0]);
