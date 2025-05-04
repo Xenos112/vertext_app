@@ -12,39 +12,54 @@ import { v4 as uuid } from "uuid";
 class Uploader {
   private files = new Map<string, UploadFileMetadata>();
 
+  // FIX: it should return error as well
   async uploadToClient(file: File) {
     const id = uuid();
+    const processorWorker = new Worker(
+      new URL("./workers/image.ts", import.meta.url),
+      { type: "module" },
+    );
 
-    const localUrl = URL.createObjectURL(file);
     const isImage = imageRegex.test(file.name);
     const isVideo = videoRegex.test(file.name);
-
+    const url = URL.createObjectURL(file);
     const type = isImage ? "image" : isVideo ? "video" : "unknown";
 
     const metadata: UploadFileMetadata = {
       id,
-      name: localUrl,
+      name: url,
       type,
       file,
       uploaded: false,
     };
 
     this.files.set(id, metadata);
-    console.log(this.files);
+
+    if (isImage) {
+      processorWorker.onmessage = (e) => {
+        const { id, file: processedFile } = e.data;
+        metadata.file = processedFile;
+        this.files.set(id, metadata);
+      };
+
+      processorWorker.postMessage({ id, file });
+      processorWorker.onerror = (err) => console.log(err);
+      console.log("WORKER RETURNED DATA");
+    }
 
     return this.files.get(id);
   }
 
   async sendOne(id: string, opts?: SendOneOptions) {
     const file = this.files.get(id);
-    console.log(this.files);
+
     let error = "";
     const formData = new FormData();
 
     if (!file?.file) {
       error = "File not found";
       if (opts?.onError) opts.onError(new Error(error));
-      return;
+      return { data: null, error };
     }
 
     formData.append("file", file.file);
@@ -59,7 +74,7 @@ class Uploader {
     if (response.status !== 200) {
       error = "Failed to Upload File";
       if (opts?.onError) opts.onError(new Error(error));
-      return;
+      return { data: null, error };
     }
 
     const data = await response.json();
@@ -71,7 +86,8 @@ class Uploader {
     if (opts?.callback) {
       opts.callback(data);
     }
-    return { data, error };
+
+    return { data, error: null };
   }
 
   async send(opts?: SendOptions) {

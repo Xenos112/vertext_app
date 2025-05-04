@@ -61,6 +61,7 @@ export default function EditProfileModal() {
   const bannerId = useRef("");
   const uploader = useRef(new Uploader());
   const [isUploading, setIsUploading] = useState(false);
+
   const { data: user } = useQuery({
     queryKey: ["user", userData?.id],
     queryFn: () => UserClientService.getUser(userData!.id),
@@ -125,11 +126,12 @@ export default function EditProfileModal() {
       },
     });
 
+    // PERF: this is a bad practice
     const data = {
       user_name: newUserData?.user_name,
       bio: newUserData?.bio,
-      image_url: imageUrl?.data.url,
-      banner_url: bannerUrl?.data.url,
+      image_url: imageUrl?.data?.url,
+      banner_url: bannerUrl?.data?.url,
       tag: newUserData?.tag,
     };
 
