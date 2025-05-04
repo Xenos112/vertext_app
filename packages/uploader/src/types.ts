@@ -21,3 +21,8 @@ export type SendOptions = {
 export type SendOneOptions = SendOptions & {
   callback?: (data: CDNReturnData) => void;
 };
+
+export type UploaderOptions = {
+  onError?: (error: Error) => void;
+  onSuccess?: (data: CDNReturnData[]) => void;
+};

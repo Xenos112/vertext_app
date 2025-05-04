@@ -86,20 +86,32 @@ export default function EditProfileModal() {
 
   const upladBannerImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    const clientBanner = await uploader.current.uploadToClient(
-      e.target.files[0],
-    );
-    bannerId.current = clientBanner?.id || "";
-    setNewUserData((prev) => ({ ...prev!, banner_url: clientBanner?.name }));
+    const { data } = await uploader.current.uploadToClient(e.target.files[0], {
+      onError() {
+        sendToastEvent({
+          title: "Error",
+          description: "Failed to upload banner",
+          variant: "destructive",
+        });
+      },
+    });
+    bannerId.current = data?.id || "";
+    setNewUserData((prev) => ({ ...prev!, banner_url: data?.name }));
   };
 
   const uploadProfileImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    const clientImage = await uploader.current.uploadToClient(
-      e.target.files[0],
-    );
-    imageId.current = clientImage?.id || "";
-    setNewUserData((prev) => ({ ...prev!, image_url: clientImage?.name }));
+    const { data } = await uploader.current.uploadToClient(e.target.files[0], {
+      onError() {
+        sendToastEvent({
+          title: "Error",
+          description: "Failed to upload profile image",
+          variant: "destructive",
+        });
+      },
+    });
+    imageId.current = data?.id || "";
+    setNewUserData((prev) => ({ ...prev!, image_url: data?.name }));
   };
 
   const { updateUser, isUpdating } = useUserUpdate(userData!.id);

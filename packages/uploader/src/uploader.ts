@@ -4,6 +4,7 @@ import type {
   CDNReturnData,
   SendOneOptions,
   SendOptions,
+  UploaderOptions,
   UploadFileMetadata,
 } from "./types";
 import { v4 as uuid } from "uuid";
@@ -13,8 +14,10 @@ class Uploader {
   private files = new Map<string, UploadFileMetadata>();
 
   // FIX: it should return error as well
-  async uploadToClient(file: File) {
+  async uploadToClient(file: File, opts?: UploaderOptions) {
+    opts = opts || {};
     const id = uuid();
+    let error = "";
     const processorWorker = new Worker(
       new URL("./workers/image.ts", import.meta.url),
       { type: "module" },
@@ -43,11 +46,16 @@ class Uploader {
       };
 
       processorWorker.postMessage({ id, file });
-      processorWorker.onerror = (err) => console.log(err);
+      processorWorker.onerror = (err) => {
+        error = "Failed to process file";
+        if (opts?.onError) opts.onError(new Error(error));
+        console.log(err);
+        return { data: null, error };
+      };
       console.log("WORKER RETURNED DATA");
     }
 
-    return this.files.get(id);
+    return { data: this.files.get(id), error: null };
   }
 
   async sendOne(id: string, opts?: SendOneOptions) {
