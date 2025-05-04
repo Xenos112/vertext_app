@@ -6,11 +6,13 @@ import FollowButton from "@/features/user/components/FollowButton";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
+import useUserStore from "@/store/user";
 
 const useUserFeed = () => {
+  const user = useUserStore((state) => state.user);
   const { data: userFeed } = useSuspenseQuery({
     queryKey: ["userFeed"],
-    queryFn: UserClientService.getUserFeed,
+    queryFn: user ? UserClientService.getUserFeed : () => [],
     staleTime: Infinity,
   });
 

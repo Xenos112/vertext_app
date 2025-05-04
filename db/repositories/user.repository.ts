@@ -66,7 +66,7 @@ async function getUserMemberships(userId: string) {
 
 async function getUsersFeed(userId: string) {
   const user = await getUserById(userId);
-  if (!user) throw new Error("User not found");
+  if (!user) return [];
   const currentUserLikings = user.likings.map((liking) => liking) || [];
 
   if (currentUserLikings.length === 0) {

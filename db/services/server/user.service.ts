@@ -187,7 +187,8 @@ async function updateUser(req: NextRequest) {
 async function getMe() {
   const { data: authedUser, error: authedUserError } =
     await tryCatch(validateAuth());
-  if (authedUserError) return NextResponse.json({ me: null });
+  if (authedUserError)
+    return NextResponse.json({ error: authedUserError.message });
 
   return NextResponse.json({ me: authedUser });
 }
