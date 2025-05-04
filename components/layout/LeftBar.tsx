@@ -19,6 +19,7 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import CreatePostModal from "@/features/post/components/CreatePostModel/index";
 import ThemeSwitcher from "../shared/ThemeSwitcher";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
+import Image from "next/image";
 
 export default function LeftBar() {
   const fetchUser = useUserStore((state) => state.fetchUser);
@@ -33,7 +34,7 @@ export default function LeftBar() {
   return (
     <div className="fixed top-0 left-0 h-screen p-6 flex  flex-col justify-between items-center">
       <Link href="/">
-        <SiNeovim size={30} />
+        <Image src="/logo.png" width={40} height={40} alt={"Vertex Logo"} />
       </Link>
       <div className="flex flex-col justify-center items-center gap-10">
         <Link href="/">
