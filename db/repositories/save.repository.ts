@@ -1,7 +1,7 @@
 import prisma from "@/utils/prisma";
 
 async function getSave(postId: string, userId?: string | null) {
-  if (!userId) return [];
+  if (!userId) return false;
   const save = await prisma.save.findUnique({
     where: { postId_userId: { userId, postId } },
   });

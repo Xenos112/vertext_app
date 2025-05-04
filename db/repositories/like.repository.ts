@@ -1,7 +1,7 @@
 import prisma from "@/utils/prisma";
 
 async function getLike(postId: string, userId?: string | null) {
-  if (!userId) return [];
+  if (!userId) return false;
   const like = await prisma.like.findUnique({
     where: { postId_userId: { userId, postId } },
   });
