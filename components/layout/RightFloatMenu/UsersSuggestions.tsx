@@ -4,19 +4,24 @@ import RelationClientService from "@/db/services/client/relation.service";
 import UserClientService from "@/db/services/client/user.service";
 import FollowButton from "@/features/user/components/FollowButton";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
-import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useQueries,
+  useQuery,
+  useSuspenseQueries,
+} from "@tanstack/react-query";
 import { Suspense } from "react";
 import useUserStore from "@/store/user";
 
 const useUserFeed = () => {
   const user = useUserStore((state) => state.user);
-  const { data: userFeed } = useSuspenseQuery({
+  const { data: userFeed } = useQuery({
     queryKey: ["userFeed"],
-    queryFn: user ? UserClientService.getUserFeed : () => [],
+    queryFn: () => UserClientService.getUserFeed(),
     staleTime: Infinity,
+    enabled: !!user?.id,
   });
 
-  const usersData = useQueries({
+  const usersData = useSuspenseQueries({
     queries: userFeed
       ? userFeed.map((id) => ({
           queryKey: ["user", id],
