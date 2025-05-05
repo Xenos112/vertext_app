@@ -1,9 +1,9 @@
 "use client";
 import React, { Suspense } from "react";
-import UsersSuggestions from "./UsersSuggestions";
-import UsersSuggestionsSkeleton from "./UsersSuggestionsSkeleton";
-import CommunitiesFeedSkeleton from "./CommunitiesFeedSkeleton";
+import UsersSuggestions from "./UsersFeed";
 import CommunitiesFeed from "./CommunitiesFeed";
+import UsersSuggestionsSkeleton from "./UsersFeedSkeleton";
+import CommunitiesFeedSkeleton from "./CommunitiesFeedSkeleton";
 
 export default function RightFloatMenu() {
   return (
