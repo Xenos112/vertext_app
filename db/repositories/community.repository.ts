@@ -4,6 +4,7 @@ import {
   CommunityUpdateData,
   type CommunityCreateData,
 } from "../services/validators/community.validator";
+import UserRepository from "./user.repository";
 
 async function getCommunityById(id: string) {
   const community = await prisma.community.findUnique({
@@ -46,11 +47,25 @@ async function getCommunities(data: Prisma.CommunityWhereInput) {
 
   return communities;
 }
+
+async function getCommunitiesSuggestions(userId: string) {
+  const currentUser = await UserRepository.getUserById(userId);
+  if (!currentUser) throw new Error("User not found");
+
+  const randomCommunities = await prisma.$queryRaw<{ id: string }[]>`
+      SELECT id FROM "Community"
+      ORDER BY RANDOM()
+      LIMIT 3;
+    `;
+  return randomCommunities.map((community) => community.id);
+}
 const CommunityRepository = {
   getCommunityById,
   createCommunity,
   deleteCommunity,
   updateCommunity,
   getCommunities,
+  getCommunitiesSuggestions,
 };
+
 export default CommunityRepository;

@@ -227,12 +227,35 @@ async function deleteCommunity(
   });
 }
 
+async function getCommunitiesSuggestions() {
+  const { data: authedUser, error: authedUserError } =
+    await tryCatch(validateAuth());
+  if (authedUserError)
+    return NextResponse.json(
+      { error: authedUserError?.message },
+      { status: 401 },
+    );
+
+  const { data: communityFeed, error } = await tryCatch(
+    CommunityRepository.getCommunitiesSuggestions(authedUser.id),
+  );
+
+  if (error)
+    return NextResponse.json(
+      { error: "Failed to fetch the community feed" },
+      { status: 400 },
+    );
+
+  return NextResponse.json({ communityFeed });
+}
+
 const CommunityService = {
   getCommunity,
   getCommunities,
   createCommunity,
   updateCommunity,
   deleteCommunity,
+  getCommunitiesSuggestions,
 };
 
 export default CommunityService;
