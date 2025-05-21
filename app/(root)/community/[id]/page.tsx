@@ -5,8 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import { Button } from "@/components/ui/button";
 import formatDate from "@/utils/format-date";
-import Link from "next/link";
-import { IoArrowBackSharp } from "react-icons/io5";
 import JoinButton from "@/features/community/components/JoinButton";
 import { useQuery } from "@tanstack/react-query";
 import CommunityClientService from "@/db/services/client/community.service";
@@ -15,6 +13,7 @@ import PostClientService from "@/db/services/client/post.service";
 import Post from "@/features/post/components/Post";
 import CommunityFallback from "./_components/CommunityFallback";
 import { Skeleton } from "@/components/ui/skeleton";
+import ReturnButton from "@/components/shared/ReturnButton";
 
 const useCommunityPosts = (id: string) => {
   const { data: posts, isLoading } = useQuery({
@@ -51,10 +50,7 @@ function CommunityPage() {
   return (
     <div className="border border-muted rounded-xl min-h-screen">
       <Button className="m-2" variant="ghost">
-        <Link href="/" className="flex gap-3 items-center">
-          <IoArrowBackSharp size={24} />
-          <span>Return</span>
-        </Link>
+        <ReturnButton label="Return" description="Back To Previous Page" />
       </Button>
       {community && (
         <div>

@@ -2,9 +2,8 @@
 import Post from "@/features/post/components/Post";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { useParams } from "next/navigation";
-import { GoArrowLeft, GoComment } from "react-icons/go";
+import { GoComment } from "react-icons/go";
 import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CreateCommentModel from "@/features/post/components/Comment/CreateCommentModel";
@@ -12,6 +11,7 @@ import useUserStore from "@/store/user";
 import CommentsFeed from "./_components/CommentsFeed";
 import { Suspense } from "react";
 import CommentSkeleton from "./_components/CommentSkeleton";
+import ReturnButton from "@/components/shared/ReturnButton";
 
 export default function PostPage() {
   const { id } = useParams() as { id: string };
@@ -20,10 +20,7 @@ export default function PostPage() {
   return (
     <div className="border min-h-screen border-muted rounded-xl">
       <div className="py-2 border-b border-muted">
-        <Link href="/" className="flex items-center gap-3 px-3 py-2">
-          <GoArrowLeft />
-          Return
-        </Link>
+        <ReturnButton label="Return" description="Back To Previous Page" />
       </div>
       <Post id={id} />
       <div>
