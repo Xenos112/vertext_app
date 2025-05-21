@@ -15,12 +15,8 @@ export default function PricingPage() {
       name: "Free",
       price: 0,
       description: "For individuals just getting started",
-      features: ["Basic features", "1 user", "100 MB storage", "Email support"],
-      notIncluded: [
-        "Advanced features",
-        "Team collaboration",
-        "Priority support",
-      ],
+      features: ["Basic features"],
+      notIncluded: ["Community Creation", "Team Support", "Priority support"],
       popular: false,
     },
     {
@@ -29,9 +25,7 @@ export default function PricingPage() {
       description: "Perfect for professionals and small teams",
       features: [
         "All Free features",
-        "Advanced features",
-        "5 users",
-        "1 GB storage",
+        "3 Communities Creation",
         "Priority email support",
       ],
       notIncluded: ["24/7 phone support", "Custom integrations"],
@@ -43,8 +37,6 @@ export default function PricingPage() {
       description: "For large teams and organizations",
       features: [
         "All Pro features",
-        "Unlimited users",
-        "10 GB storage",
         "24/7 phone support",
         "Custom integrations",
         "Dedicated account manager",
