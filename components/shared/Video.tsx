@@ -1,5 +1,4 @@
-"use client";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import Hls from "hls.js";
 import * as dashjs from "dashjs";
 
@@ -17,42 +16,57 @@ const VideoPlayer = ({
   type = "mp4",
   autoPlay = false,
   controls = true,
+  ...rest
 }: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const dashPlayerRef = useRef<dashjs.MediaPlayerClass | null>(null);
 
+  const handlePlay = useCallback(() => {
+    const video = videoRef.current;
+    if (video && video.paused) {
+      video.play().catch(() => {});
+    }
+  }, []);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !src) return;
+
+    let metadataListener: (() => void) | null = null;
 
     const initializePlayer = async () => {
       try {
         if (type === "hls") {
           if (video.canPlayType("application/vnd.apple.mpegurl")) {
             video.src = src;
-            if (autoPlay) video.play();
+            if (autoPlay) {
+              video.play().catch(() => {});
+            }
             return;
           }
 
-          const Hls = (await import("hls.js")).default;
           if (Hls.isSupported()) {
             hlsRef.current = new Hls();
             hlsRef.current.loadSource(src);
             hlsRef.current.attachMedia(video);
             hlsRef.current.on(Hls.Events.MANIFEST_PARSED, () => {
-              if (autoPlay) video.play();
+              if (autoPlay) {
+                video.play().catch(() => {});
+              }
             });
           }
         } else if (type === "dash") {
-          const dashjs = await import("dashjs");
           dashPlayerRef.current = dashjs.MediaPlayer().create();
           dashPlayerRef.current.initialize(video, src, autoPlay);
         } else {
           video.src = src;
-          video.addEventListener("loadedmetadata", () => {
-            if (autoPlay) video.play();
-          });
+          metadataListener = () => {
+            if (autoPlay) {
+              video.play().catch(() => {});
+            }
+          };
+          video.addEventListener("loadedmetadata", metadataListener);
         }
       } catch (error) {
         console.error("Error initializing video player:", error);
@@ -70,10 +84,20 @@ const VideoPlayer = ({
         dashPlayerRef.current.reset();
         dashPlayerRef.current = null;
       }
+      if (metadataListener && video) {
+        video.removeEventListener("loadedmetadata", metadataListener);
+      }
     };
   }, [src, type, autoPlay]);
 
-  return <video ref={videoRef} controls={controls} />;
+  return (
+    <video
+      ref={videoRef}
+      controls={controls}
+      onPlay={autoPlay ? undefined : handlePlay}
+      {...rest}
+    />
+  );
 };
 
 export default VideoPlayer;
