@@ -14,11 +14,23 @@ const useCreatePost = (postData: PostCreateData) => {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const { mutate: createPost, isPending } = useMutation({
-    mutationFn: () => PostClientService.createPost(postData),
+    mutationFn: () => {
+      if (postData.medias?.length === 0 && postData.content === "") {
+        sendToastEvent({
+          title: "Please add content or media",
+          description:
+            "You need to add at least one media or content to create a post.",
+          variant: "destructive",
+        });
+        throw new Error("No content or media provided");
+      }
+      return PostClientService.createPost(postData);
+    },
     onSuccess: () => {
       closeButtonRef.current?.click();
       sendToastEvent({
         title: "Post created successfully",
+        description: "Your post has been created successfully.",
       });
     },
     onError: (error) => {

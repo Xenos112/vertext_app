@@ -47,7 +47,9 @@ async function createPost(req: NextRequest) {
   const jsonData = (await req.json()) as PostCreateData;
   const postData = PostValidators.CREATE_POST_VALIDATOR(
     jsonData,
-  ) as PostCreateData & { Author: { connect: { id: string } } };
+  ) as PostCreateData & { Author: { connect: { id: string } } } & {
+    Community: { connect: { id: string } };
+  };
   if (jsonData instanceof type.errors)
     return NextResponse.json({ error: jsonData.summary }, { status: 400 });
 
@@ -56,15 +58,27 @@ async function createPost(req: NextRequest) {
       id: authedUser.id,
     },
   };
+
+  if (postData.communityId) {
+    postData.Community = {
+      connect: {
+        id: postData.communityId,
+      },
+    };
+  }
+  delete postData.communityId;
+
   const { data: newPost, error } = await tryCatch(
     PostRepository.createPost(postData),
   );
 
-  if (error || !newPost)
+  if (error || !newPost) {
+    console.log("error", error);
     return NextResponse.json(
       { error: "Failed to create post", _error: error.message },
       { status: 400 },
     );
+  }
 
   return NextResponse.json({ post: newPost });
 }

@@ -24,6 +24,7 @@ export default function CreatePostModel() {
   const [post, setPost] = useState<CreatePostState>({
     content: "",
     medias: [],
+    communityId: "",
   });
 
   return (

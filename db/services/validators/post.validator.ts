@@ -4,6 +4,7 @@ import { type } from "arktype";
 const CREATE_POST_VALIDATOR = type({
   "content?": "string.trim",
   "medias?": "string.url[]",
+  "communityId?": "string",
 }).narrow((data, ctx) => {
   if (
     (data.content && data.content.length > 0) ||
