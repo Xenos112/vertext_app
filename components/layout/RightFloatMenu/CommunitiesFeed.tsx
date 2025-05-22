@@ -34,7 +34,7 @@ export default function CommunitiesFeed() {
   const { communitiesFeed } = useCommunitiesFeed();
   return (
     <div>
-      <h1 className="font-semibold text-xl mb-3">Communitiess To Join</h1>
+      <h1 className="font-semibold text-xl mb-3">Communities To Join</h1>
       <div className="flex flex-col gap-3">
         {communitiesFeed.map((community) => (
           <div
