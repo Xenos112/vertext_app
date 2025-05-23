@@ -8,7 +8,6 @@ import {
   GoPlus,
   GoSearch,
 } from "react-icons/go";
-import { SiNeovim } from "react-icons/si";
 import { useEffect } from "react";
 import { Avatar } from "../ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
