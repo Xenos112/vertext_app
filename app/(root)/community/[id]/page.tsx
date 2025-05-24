@@ -86,12 +86,17 @@ function CommunityPage() {
               <div className="flex justify-center items-center h-full">
                 <Skeleton className="w-full h-full" />
               </div>
-            ) : posts ? (
-              <div>{posts?.map((id) => <Post key={id} id={id} />)}</div>
             ) : (
+              posts && (
+                <div>{posts?.map((id) => <Post key={id} id={id} />)}</div>
+              )
+            )}
+            {posts && posts.length === 0 && (
               <div>
-                <h1>No Posts</h1>
-                <h1>This Community has no posts yet</h1>
+                <h1 className="text-center text-3xl font-semibold">No Posts</h1>
+                <h1 className="text-muted-foreground text-sm text-center">
+                  This Community has no posts yet
+                </h1>
               </div>
             )}
           </div>
