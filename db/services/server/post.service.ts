@@ -6,6 +6,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import PostValidators, { PostCreateData } from "../validators/post.validator";
 import { type } from "arktype";
 import CommentRepository from "@/db/repositories/comment.repository";
+import prisma from "@/utils/prisma";
 
 async function getPostById(
   _req: NextRequest,
@@ -186,12 +187,37 @@ async function getPosts(req: NextRequest) {
   return NextResponse.json({ posts });
 }
 
+const search = async (query: string, limit: number = 3) => {
+  const posts = await prisma.$queryRaw<{ id: string }[]>`
+    WITH params AS (
+      SELECT
+        ${query}::text    AS qry,
+        0.1   ::float AS min_sim
+    )
+    SELECT
+      p.id,
+      word_similarity(p.content, params.qry) AS sim_score
+    FROM
+      "Post" p
+      CROSS JOIN params
+    WHERE
+      word_similarity(p.content, params.qry) >= params.min_sim
+    ORDER BY
+      sim_score DESC
+    LIMIT 
+    ${limit};
+    `;
+
+  return posts;
+};
+
 const PostService = {
   getPostById,
   createPost,
   deletePost,
   updatePost,
   getPosts,
+  search,
 };
 
 export default PostService;

@@ -9,6 +9,7 @@ import CommunityValidators, {
   type CommunityUpdateData,
 } from "../validators/community.validator";
 import { type } from "arktype";
+import prisma from "@/utils/prisma";
 
 async function getCommunity(
   _req: NextRequest,
@@ -249,6 +250,29 @@ async function getCommunitiesSuggestions() {
   return NextResponse.json({ communityFeed });
 }
 
+const searchCommunities = async (query: string, limit: number = 3) => {
+  const communities = await prisma.$queryRaw<{ id: string }[]>`
+  WITH params AS (
+    SELECT
+    ${query}::text   AS qry,
+    0.1    ::float  AS min_sim
+  )
+  SELECT
+  c.id,
+  word_similarity(c.name, params.qry) AS sim_score
+  FROM
+  "Community" c
+  CROSS JOIN params
+  WHERE
+  word_similarity(c.name, params.qry) >= params.min_sim
+  ORDER BY
+  sim_score DESC
+  LIMIT ${limit};
+  `;
+
+  return communities;
+};
+
 const CommunityService = {
   getCommunity,
   getCommunities,
@@ -256,6 +280,7 @@ const CommunityService = {
   updateCommunity,
   deleteCommunity,
   getCommunitiesSuggestions,
+  searchCommunities,
 };
 
 export default CommunityService;

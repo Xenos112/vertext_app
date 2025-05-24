@@ -12,6 +12,7 @@ import type {
   UserRegisterData,
 } from "@/db/services/validators/user.validator";
 import type { UserUpdateData } from "@/db/services/validators/user.validator";
+import prisma from "@/utils/prisma";
 
 async function getUser(
   _req: NextRequest,
@@ -220,6 +221,29 @@ async function getUserFeed() {
   return NextResponse.json({ userFeed });
 }
 
+const searchUsers = async (query: string, limit: number = 3) => {
+  const users = prisma.$queryRaw<{ id: string }[]>`
+  WITH params AS (
+    SELECT
+    ${query}::text   AS qry,
+    0.1    ::float  AS min_sim
+  )
+  SELECT
+  u.id,
+  word_similarity(u.user_name, params.qry) AS sim_score
+  FROM
+  "User" u
+  CROSS JOIN params
+  WHERE
+  word_similarity(u.user_name, params.qry) >= params.min_sim
+  ORDER BY
+  sim_score DESC
+  LIMIT ${limit};
+  `;
+
+  return users;
+};
+
 const UserService = {
   getUser,
   register,
@@ -229,6 +253,7 @@ const UserService = {
   getMe,
   logout,
   getUserFeed,
+  searchUsers,
 };
 
 export default UserService;
