@@ -3,7 +3,6 @@ import React from "react";
 import { useParams } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
-import { Button } from "@/components/ui/button";
 import formatDate from "@/utils/format-date";
 import JoinButton from "@/features/community/components/JoinButton";
 import { useQuery } from "@tanstack/react-query";
@@ -49,9 +48,9 @@ function CommunityPage() {
 
   return (
     <div className="border border-muted rounded-xl min-h-screen">
-      <Button className="m-2" variant="ghost">
+      <div className="m-2">
         <ReturnButton label="Return" description="Back To Previous Page" />
-      </Button>
+      </div>
       {community && (
         <div>
           <div className="relative">
