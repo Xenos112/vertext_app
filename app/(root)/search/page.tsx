@@ -11,6 +11,10 @@ import { GoArrowLeft } from "react-icons/go";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import Post from "@/features/post/components/Post";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
+import JoinButton from "@/features/community/components/JoinButton";
+import FollowButton from "@/features/user/components/FollowButton";
 
 type PostQeuryResult = Awaited<ReturnType<typeof postSearch>>["posts"];
 type UserQueryResult = Awaited<ReturnType<typeof usersSearch>>["users"];
@@ -87,13 +91,27 @@ export default function SearchPage() {
         <div className="px-4 py-2">
           <h2 className="text-xl font-bold">Users</h2>
           {users.map((user) => (
-            <div key={user.id} className="border border-muted rounded-md p-2">
+            <div
+              key={user.id}
+              className="rounded-md p-2 flex gap-2 items-center"
+            >
               <Link href={`/user/${user.id}`}>
-                <span className="text-xl font-bold hover:underline">
-                  {user.user_name}
-                </span>
+                <Avatar>
+                  <AvatarImage src={user.image_url || ""} />
+                  <AvatarFallback>
+                    {formatUserNameForImage(user.user_name)}
+                  </AvatarFallback>
+                </Avatar>
               </Link>
-              <p className="text-muted">{user.bio}</p>
+              <div className="flex flex-col gap-1">
+                <Link href={`/user/${user.id}`}>
+                  <h1 className="text-xl font-semibold">{user.user_name}</h1>
+                  <p className="text-sm text-muted-foreground">{user.bio}</p>
+                </Link>
+              </div>
+              <div className="ml-auto">
+                <FollowButton userId={user.id} />
+              </div>
             </div>
           ))}
         </div>
@@ -101,19 +119,37 @@ export default function SearchPage() {
       {type === "communities" && communities && communities.length > 0 && (
         <div className="px-4 py-2">
           <h2 className="text-xl font-bold">Communities</h2>
-          {communities.map((community) => (
-            <div
-              key={community.id}
-              className="border border-muted rounded-md p-2"
-            >
-              <Link href={`/community/${community.id}`}>
-                <span className="text-xl font-bold hover:underline">
-                  {community.name}
-                </span>
-              </Link>
-              <p className="text-muted">{community.bio}</p>
-            </div>
-          ))}
+          <div className="border-1 border-muted">
+            {communities.map((community) => (
+              <div
+                key={community.id}
+                className="rounded-md p-2 flex gap-2 items-center"
+              >
+                <Link href={`/community/${community.id}`}>
+                  <Avatar className="rounded-lg size-[50px]">
+                    <AvatarImage
+                      className="rounded-lg size-[50px]"
+                      src={community.image || ""}
+                    />
+                    <AvatarFallback className="rounded-lg">
+                      {formatUserNameForImage(community.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+                <div className="flex flex-col gap-1">
+                  <Link href={`/community/${community.id}`}>
+                    <h1 className="text-xl font-semibold">{community.name}</h1>
+                    <p className="text-sm text-muted-foreground">
+                      {community.bio}
+                    </p>
+                  </Link>
+                </div>
+                <div className="ml-auto">
+                  <JoinButton communityId={community.id} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
