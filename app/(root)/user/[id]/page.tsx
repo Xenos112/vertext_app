@@ -71,8 +71,8 @@ export default function UserPage() {
           Communities
         </Button>
       </div>
-      {activeTab === "posts" && posts?.map((id) => <Post key={id} id={id} />)}
-      {activeTab === "communities" &&
+      {activeTab === "posts" ? posts?.map((id) => <Post key={id} id={id} />) : null}
+      {activeTab === "communities" ?
         memberships?.map((membership) => (
           <Suspense
             key={membership.communityId}
@@ -84,7 +84,7 @@ export default function UserPage() {
               role={membership.role}
             />
           </Suspense>
-        ))}
+        )) : null}
       {activeTab === "likes" && (
         <div>
           <h1>likes</h1>
