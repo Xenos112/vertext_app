@@ -18,11 +18,11 @@ export default function UserRelations({ id }: { id: string }) {
     <div className="flex gap-3 mt-4">
       <p className="space-x-1">
         <span className="underline text-muted-foreground">Followers</span>
-        <span>{formatNumber(relations?.followers || 0)}</span>
+        <span>{formatNumber(relations?.following || 0)}</span>
       </p>
       <p>
         <span className="underline text-muted-foreground">Following</span>{" "}
-        <span>{formatNumber(relations?.following || 0)}</span>
+        <span>{formatNumber(relations?.followers || 0)}</span>
       </p>
     </div>
   );

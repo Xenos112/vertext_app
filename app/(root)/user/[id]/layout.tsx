@@ -68,7 +68,6 @@ export default function UserPage({ children }: { children: ReactNode }) {
           <span>Return </span>
         </Link>
       </Button>
-
       {user?.id ? (
         <>
           <div className="relative">
@@ -120,7 +119,7 @@ export default function UserPage({ children }: { children: ReactNode }) {
       ) : isLoading ? (
         <div>loading</div>
       ) : null}
-      {children}
+      {children}j{" "}
     </div>
   );
 }
