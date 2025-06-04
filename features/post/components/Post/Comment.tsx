@@ -5,13 +5,13 @@ import { PostContext } from ".";
 import { use } from "react";
 
 export default function Comment() {
-  const [postState] = use(PostContext);
+  const postState = use(PostContext);
 
   return (
     <Link href={`/post/${postState!.id}`}>
       <button className="flex gap-1 items-center">
         <FaRegComment />
-        <p>{formatNumber(postState!._count.Comment)}</p>
+        <p>{formatNumber(postState?.comments_number || 0)}</p>
       </button>
     </Link>
   );

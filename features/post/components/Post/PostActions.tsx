@@ -15,34 +15,40 @@ import { PostContext } from ".";
 import { use } from "react";
 import useUserStore from "@/store/user";
 import copyText from "@/utils/copy-text";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import deletePostAPI from "../../api/delete";
+import sendToastEvent from "@/utils/sendToastEvent";
+import UserClientService from "@/db/services/client/user.service";
+
+const useUser = () => {
+  const post = use(PostContext);
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["author", post?.id],
+    queryFn: () => UserClientService.getUser(post!.userId),
+  });
+
+  return { user, isLoading };
+};
 
 export default function PostActions() {
-  const [postState] = use(PostContext);
+  const postState = use(PostContext);
   const user = useUserStore((state) => state.user);
+  const { user: author } = useUser();
 
   const handleCopyText = (text: string) => {
     const data = copyText(text);
     if ("error" in data) {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Error",
-            description: data.error,
-            variant: "destructive",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Error",
+        description: data.error as string,
+        variant: "destructive",
+      });
     } else {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Text has been copied",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Success",
+        description: "Text has been copied",
+      });
     }
   };
 
@@ -50,26 +56,18 @@ export default function PostActions() {
     mutationFn: () => deletePostAPI(postState!.id),
     mutationKey: ["deletePost", postState!.id],
     onError(error) {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
 
     onSuccess() {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Post has been deleted",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Success",
+        description: "Post has been deleted",
+      });
     },
   });
 
@@ -99,7 +97,7 @@ export default function PostActions() {
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         )}
-        {postState!.Author.id === user?.id && (
+        {author?.id === user?.id && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem

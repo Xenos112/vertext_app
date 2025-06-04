@@ -62,7 +62,7 @@ export default function FileUploader() {
         );
         setPost((prevPost) => ({
           ...prevPost,
-          urls: [...(prevPost.urls || []), ...uploadedUrls],
+          medias: [...(prevPost.medias || []), ...uploadedUrls],
         }));
         setFileStatus((prevStatuses) =>
           prevStatuses.map((fileStatus) =>
@@ -109,19 +109,6 @@ export default function FileUploader() {
         onChange={handleFileChange}
         className="hidden"
       />
-
-      {fileStatus.length > 0 && (
-        <div className="mt-4">
-          {fileStatus.map(({ name, progress, status }) => (
-            <div key={name} className="mb-2">
-              <p>
-                {name} - {status}
-              </p>
-              <progress value={progress} max="100" className="w-full" />
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

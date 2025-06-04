@@ -15,6 +15,7 @@ enum Role {
 
 enum NotificationType {
   PostLiked
+  PostSaved
   Followed
   Commented
 }
@@ -46,6 +47,7 @@ model User {
   NotificationRecieved Notification[]      @relation("recived")
   ResetPassword        ResetPassword[]
   MembershipRequest    MembershipRequest[]
+  likings              String[]
 }
 
 model Post {
@@ -126,6 +128,7 @@ model Membership {
 
   userId      String
   communityId String
+  createdAt   DateTime @default(now())
 
   @@id([userId, communityId])
 }
@@ -160,6 +163,8 @@ model Notification {
   reciver   User             @relation(name: "recived", fields: [reciverId], references: [id], onDelete: Cascade)
   senderId  String
   reciverId String
+  seen      Boolean          @default(false)
+  createdAt DateTime         @default(now())
 }
 
 model ResetPassword {

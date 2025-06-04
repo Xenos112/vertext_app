@@ -43,12 +43,12 @@ export default function SavesPage() {
       {posts && posts.length > 0 && (
         <div className="p-4">
           {posts.map((post) => (
-            <Post key={post.id} post={post} />
+            <Post key={post.id} id={post.id} />
           ))}
         </div>
       )}
       <div>
-        {posts && posts.map((post) => <Post key={post.id} post={post} />)}
+        {posts && posts.map((post) => <Post key={post.id} id={post.id} />)}
       </div>
       {posts?.length === 0 && (
         <div className="flex flex-col items-center pt-10 justify-center ">

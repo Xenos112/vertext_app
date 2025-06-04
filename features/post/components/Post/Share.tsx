@@ -14,10 +14,17 @@ import copyText from "@/utils/copy-text";
 import { formatNumber } from "@/utils/format-number";
 import { useMutation } from "@tanstack/react-query";
 import shareMutationFunction from "../../api/share";
-import { FiLoader } from "react-icons/fi";
+import sendToastEvent from "@/utils/sendToastEvent";
+import useUserStore from "@/store/user";
+import { Skeleton } from "@/components/ui/skeleton";
 
+// TODO: make it in the v2 of the API
 export default function Share() {
-  const [post, setPost] = use(PostContext);
+  const post = use(PostContext);
+  const user = useUserStore((state) => state.user);
+  const postUrl = new URL(window.location.href);
+  postUrl.pathname = `/post/${post!.id}`;
+  if (user) postUrl.searchParams.set("u", user.id);
 
   if (!post) throw new Error("Post not found");
 
@@ -25,26 +32,19 @@ export default function Share() {
     mutationFn: () => shareMutationFunction(post.id),
     mutationKey: ["share", post.id],
     onError: (err) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Error",
-            description: err.message,
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Error",
+        description: err.message,
+      });
     },
     onSuccess() {
-      copyText(`${window.location.href}post/${post.id}`);
-      setPost((prev) => ({ ...prev!, share_number: prev!.share_number + 1 }));
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Post has been shared successfully",
-          },
-        }),
-      );
+      sendToastEvent({
+        title: "Success",
+        description: "Post shared successfully",
+      });
+      // HACK: maybe we could add a user for the post url so that we can track the share
+      // and suggest the user to follow the one who shared it
+      copyText(postUrl.toString());
     },
   });
 
@@ -68,12 +68,14 @@ export default function Share() {
             <input
               type="text"
               disabled
-              value={`${window.location.href}post/${post.id}`}
+              value={postUrl.toString()}
               className="flex-1 px-3 py-2 select-none text-sm rounded-md"
             />
-            <Button onClick={() => share()}>
-              {isPending ? <FiLoader className="animate-spin" /> : "Share"}
-            </Button>
+            {isPending ? (
+              <Skeleton className="w-16 h-9" />
+            ) : (
+              <Button onClick={() => share()}>Share</Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>

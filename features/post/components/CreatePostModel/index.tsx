@@ -16,12 +16,16 @@ export const CreatePostContext = createContext<
 
 type CreatePostState = {
   content?: string;
-  urls?: string[];
+  medias?: string[];
   communityId?: string;
 };
 
 export default function CreatePostModel() {
-  const [post, setPost] = useState<CreatePostState>({});
+  const [post, setPost] = useState<CreatePostState>({
+    content: "",
+    medias: [],
+    communityId: "",
+  });
 
   return (
     <CreatePostContext value={[post, setPost]}>

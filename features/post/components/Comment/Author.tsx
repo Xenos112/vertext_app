@@ -1,33 +1,41 @@
-import { use } from "react";
-import { CommentContext } from ".";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import UserClientService from "@/db/services/client/user.service";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
 import formatDate from "@/utils/format-date";
-import { MdVerified } from "react-icons/md";
+import Link from "next/link";
+import { CommentContext } from ".";
+import { use } from "react";
 
-export default function Author() {
-  const [comment] = use(CommentContext);
+const useUser = (userId: string) => {
+  const { data: user } = useSuspenseQuery({
+    queryKey: ["user", userId],
+    queryFn: () => UserClientService.getUser(userId),
+  });
+  return { user };
+};
 
-  if (!comment) throw new Error("Comment not found");
-
+export default function Author({ userId }: { userId: string }) {
+  const comment = use(CommentContext);
+  const { user } = useUser(userId);
   return (
-    <div className="flex gap-3 items-center">
+    <Link className="flex items-center gap-2" href={`/user/${user.id}`}>
       <Avatar>
-        <AvatarImage src={comment.Author.image_url!} />
+        <AvatarImage src={user?.image_url || undefined} />
         <AvatarFallback>
-          {formatUserNameForImage(comment.Author.user_name)}
+          {formatUserNameForImage(user.user_name)}
         </AvatarFallback>
       </Avatar>
-      <div>
+      <div className="flex flex-col">
         <div className="flex gap-1 items-center">
-          <p>{comment.Author.user_name}</p>
-          {comment.Author.premium && <MdVerified />}
-          <p className="text-muted-foreground text-xs">@{comment.Author.tag}</p>
+          <p>{user.user_name}</p>
+          <p className="text-muted-foreground text-xs">@{user.user_name}</p>
         </div>
-        <p className="text-xs text-muted-foreground">
-          {formatDate(comment.Author.created_at)}
-        </p>
+        <time className="text-muted-foreground text-xs">
+          {formatDate(comment!.created_at)}
+        </time>
       </div>
-    </div>
+    </Link>
   );
 }

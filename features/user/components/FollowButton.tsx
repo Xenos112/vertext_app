@@ -1,60 +1,138 @@
 import { Button, ButtonProps } from "@/components/ui/button";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import getRelationQuery from "../api/getRelationQuery";
-import followUserMutation from "../api/followUserMutation";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { FiLoader } from "react-icons/fi";
-import unfollowUserMutation from "../api/unFollowUserMutation";
+import RelationClientService from "@/db/services/client/relation.service";
+import useUserStore from "@/store/user";
+import { useRouter } from "next/navigation";
+import sendToastEvent from "@/utils/sendToastEvent";
 
-type FollowButtonProps = ButtonProps & { userId: string };
+type FollowButtonProps = ButtonProps & {
+  userId: string;
+};
+type RelationCount = {
+  isFollowed: boolean;
+  followers: number;
+  following: number;
+};
 
-export default function FollowButton({ userId, ...props }: FollowButtonProps) {
-  const queryClient = useQueryClient();
-  const { data: queryData, isPending: isQuering } = useQuery({
-    queryKey: ["userRelation", userId],
-    queryFn: () => getRelationQuery(userId),
+const useRelationCount = (userId: string) => {
+  const { data: relationCount, isLoading } = useSuspenseQuery({
+    queryKey: ["relations", userId],
+    queryFn: () => RelationClientService.getRelationsNumbers(userId),
   });
 
+  return { relationCount, isLoading };
+};
+
+const useFollow = (userId: string) => {
+  const queryClient = useQueryClient();
   const { mutate: follow, isPending: isFollowing } = useMutation({
     mutationKey: ["follow", userId],
-    mutationFn: () => followUserMutation(userId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userRelation", userId] });
-    },
-    onError: (error: Error) => {
-      console.log("ERROR_FOLLOW_USER " + error);
-      document.dispatchEvent(
-        new CustomEvent("toast-message", {
-          detail: { description: error.message, variant: "destructive" },
+    mutationFn: () => RelationClientService.createRelation(userId),
+    onMutate() {
+      queryClient.setQueryData<RelationCount>(
+        ["relations", userId],
+        (oldData) => ({
+          ...oldData!,
+          isFollowed: true,
+          followers: oldData!.followers + 1,
         }),
       );
+    },
+    onError() {
+      queryClient.setQueryData<RelationCount>(
+        ["relations", userId],
+        (oldData) => ({
+          ...oldData!,
+          isFollowed: false,
+          followers: oldData!.followers - 1,
+        }),
+      );
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: ["relations", userId],
+        exact: true,
+      });
     },
   });
 
-  const { mutate: unfollow, isPending: isUnFollowing } = useMutation({
+  return { follow, isFollowing };
+};
+
+const useUnfollow = (userId: string) => {
+  const queryClient = useQueryClient();
+  const { mutate: unfollow, isPending: isUnfollowing } = useMutation({
     mutationKey: ["follow", userId],
-    mutationFn: () => unfollowUserMutation(userId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userRelation", userId] });
-    },
-    onError: (error: Error) => {
-      console.log("ERROR_FOLLOW_USER " + error);
-      document.dispatchEvent(
-        new CustomEvent("toast-message", {
-          detail: { description: error.message, variant: "destructive" },
+    mutationFn: () => RelationClientService.removeRelation(userId),
+    onMutate() {
+      queryClient.setQueryData<RelationCount>(
+        ["relations", userId],
+        (oldData) => ({
+          ...oldData!,
+          isFollowed: true,
+          followers: oldData!.followers - 1,
         }),
       );
     },
+    onError() {
+      queryClient.setQueryData<RelationCount>(
+        ["relations", userId],
+        (oldData) => ({
+          ...oldData!,
+          isFollowed: false,
+          followers: oldData!.followers + 1,
+        }),
+      );
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: ["relations", userId],
+        exact: true,
+      });
+    },
   });
+
+  return { unfollow, isUnfollowing };
+};
+
+export default function FollowButton({ userId, ...props }: FollowButtonProps) {
+  const { relationCount } = useRelationCount(userId);
+  const { follow, isFollowing } = useFollow(userId);
+  const { unfollow, isUnfollowing } = useUnfollow(userId);
+  const user = useUserStore((state) => state.user);
+  const router = useRouter();
+
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (!user) {
+      sendToastEvent({
+        title: "Error",
+        description: "You need to login to follow someone",
+        variant: "destructive",
+      });
+      router.push("/login");
+    }
+    if (relationCount?.isFollowed) return unfollow();
+    return follow();
+  };
 
   return (
     <Button
-      onClick={() => (queryData?.followerId ? unfollow() : follow())}
+      onClick={handleButtonClick}
       {...props}
-      disabled={isQuering || isFollowing || isUnFollowing}
+      disabled={isFollowing || isUnfollowing}
     >
-      {isFollowing && <FiLoader />}
-      {isUnFollowing && <FiLoader />}
-      {queryData?.followerId ? "UnFollow" : "Follow"}
+      {(isFollowing || isUnfollowing) && <FiLoader />}
+      {props.children
+        ? props.children
+        : relationCount?.isFollowed
+          ? "Unfollow"
+          : "Follow"}
     </Button>
   );
 }

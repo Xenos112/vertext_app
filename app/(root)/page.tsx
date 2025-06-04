@@ -55,7 +55,7 @@ export default function Home() {
       {posts &&
         posts.map((post) => (
           <div key={post.id} className="">
-            <Post post={post} />
+            <Post id={post.id} />
           </div>
         ))}
     </div>

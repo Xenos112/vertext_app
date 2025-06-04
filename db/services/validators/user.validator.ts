@@ -1,0 +1,60 @@
+import { type } from "arktype";
+
+const REGISTER_VALIDATOR = type({
+  email: "string.email",
+  user_name: "5 <= string <= 20",
+  password: "string >= 8",
+});
+
+const LOGIN_VALIDATOR = REGISTER_VALIDATOR.pick("email", "password");
+
+const UPDATE_USER_VALIDATOR = type({
+  "user_name?": "5 <= string <= 20",
+  "bio?": "string <= 1000 | null",
+  "image_url?": "string.url | null",
+  "banner_url?": "string.url | null",
+  "tag?": "string.trim.preformatted",
+})
+  .pipe((data) => {
+    if (data.tag) {
+      data.tag = data.tag.trim().replace(/([#\s]|@)/g, "");
+    }
+    return data;
+  })
+  .narrow((data, ctx) => {
+    const allowedChars = /^[a-zA-Z0-9_]+$/;
+    if (data.tag === "")
+      ctx.reject({
+        message:
+          "Please Provide a valid tag. Tag can only contain letters, numbers and underscores. No spaces or @ symbol",
+        path: ["tag"],
+        actual: data.tag,
+        expected: "string with only letters, numbers and underscores",
+      });
+    if (data.tag) {
+      if (!allowedChars.test(data.tag)) {
+        ctx.reject({
+          message:
+            "Tag can only contain letters, numbers and underscores. No spaces or @ symbol",
+          path: ["tag"],
+          actual: data.tag,
+          expected: "string with only letters, numbers and underscores",
+        });
+      }
+    }
+
+    return true;
+  });
+
+type UserLoginData = typeof LOGIN_VALIDATOR.infer;
+type UserRegisterData = typeof REGISTER_VALIDATOR.infer;
+type UserUpdateData = typeof UPDATE_USER_VALIDATOR.infer;
+
+const UserValidators = {
+  LOGIN_VALIDATOR,
+  REGISTER_VALIDATOR,
+  UPDATE_USER_VALIDATOR,
+};
+
+export default UserValidators;
+export type { UserLoginData, UserRegisterData, UserUpdateData };

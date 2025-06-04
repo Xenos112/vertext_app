@@ -8,7 +8,6 @@ import {
   GoPlus,
   GoSearch,
 } from "react-icons/go";
-import { SiNeovim } from "react-icons/si";
 import { useEffect } from "react";
 import { Avatar } from "../ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -19,10 +18,12 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import CreatePostModal from "@/features/post/components/CreatePostModel/index";
 import ThemeSwitcher from "../shared/ThemeSwitcher";
 import { formatUserNameForImage } from "@/utils/format-user_name-for-image";
+import Image from "next/image";
 
 export default function LeftBar() {
   const fetchUser = useUserStore((state) => state.fetchUser);
   const user = useUserStore((state) => state.user);
+  const validateOrRedirect = useUserStore((state) => state.validateOrRedirect);
 
   // TODO: add this in a Context
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function LeftBar() {
   return (
     <div className="fixed top-0 left-0 h-screen p-6 flex  flex-col justify-between items-center">
       <Link href="/">
-        <SiNeovim size={30} />
+        <Image src="/logo.png" width={40} height={40} alt={"Vertex Logo"} />
       </Link>
       <div className="flex flex-col justify-center items-center gap-10">
         <Link href="/">
@@ -42,7 +43,7 @@ export default function LeftBar() {
           <GoSearch size={22} />
         </Link>
         <Dialog>
-          <DialogTrigger asChild>
+          <DialogTrigger onClick={() => validateOrRedirect()} asChild>
             <Button variant="default" size="sm" className="inline">
               <GoPlus />
             </Button>
@@ -59,14 +60,12 @@ export default function LeftBar() {
       <div className="flex items-center flex-col gap-2">
         <ThemeSwitcher />
         {user?.id ? (
-          <>
-            <Avatar className="flex items-center justify-center">
-              <AvatarImage src={user.image_url!} />
-              <AvatarFallback>
-                {formatUserNameForImage(user.user_name)}
-              </AvatarFallback>
-            </Avatar>
-          </>
+          <Avatar className="flex">
+            <AvatarImage src={user.image_url!} />
+            <AvatarFallback>
+              {formatUserNameForImage(user.user_name)}
+            </AvatarFallback>
+          </Avatar>
         ) : (
           <Link href="/login">
             <GoPerson size={26} />

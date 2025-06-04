@@ -9,119 +9,69 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { GoArrowLeft } from "react-icons/go";
-import createCommunity from "@/features/community/api/createCommunity";
+import CommunityClientService from "@/db/services/client/community.service";
+import { type CommunityCreateData } from "@/db/services/validators/community.validator";
+import sendToastEvent from "@/utils/sendToastEvent";
+import { useRouter } from "next/navigation";
+import useUploadFile from "@/hooks/useUploadFile";
+
+const useCreateCommunity = (data: CommunityCreateData) => {
+  const router = useRouter();
+  const { mutate: createCommunity, isPending } = useMutation({
+    mutationKey: ["createCommunity"],
+    mutationFn: () => CommunityClientService.createCommunity(data),
+    onSuccess: (data) => {
+      sendToastEvent({
+        title: "Success",
+        description: "Community Created",
+      });
+
+      setTimeout(() => router.push(`/community/${data.community.id}`), 2000);
+    },
+    onError: (error: Error) => {
+      sendToastEvent({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  return { createCommunity, isPending };
+};
 
 export default function CreateCommunityForm() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState<string>("");
   const [description, setDescription] = useState("");
-  const [image, setProfileImage] = useState<string | null>(null);
-  const [banner, setBannerImage] = useState<string | null>(null);
+  const [image, setProfileImage] = useState<string>();
+  const [banner, setBannerImage] = useState<string>();
+  const { uploadFile, isUploading } = useUploadFile();
 
-  const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await fetch("http://localhost:8080/upload", {
-      method: "POST",
-      body: formData,
-    });
-    if (!response.ok) throw new Error("File upload failed");
-    return response.json();
+  const { createCommunity, isPending } = useCreateCommunity({
+    name: name || "",
+    banner: banner,
+    bio: description as string,
+    image: image as string,
+  });
+
+  const handleProfileImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = await uploadFile(file);
+      setProfileImage(url);
+    }
   };
 
-  const profileUploadMutation = useMutation({
-    mutationFn: (file: File) => uploadFile(file),
-    onSuccess: (data) => {
-      setProfileImage(data.url);
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Profile image uploaded",
-            variant: "default",
-          },
-        }),
-      );
-    },
-    onError: (error: Error) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            variant: "destructive",
-            title: "Upload Error",
-            description: error.message,
-          },
-        }),
-      );
-    },
-  });
-
-  const bannerUploadMutation = useMutation({
-    mutationFn: (file: File) => uploadFile(file),
-    onSuccess: (data) => {
-      setBannerImage(data.url);
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Banner image uploaded",
-            variant: "default",
-          },
-        }),
-      );
-    },
-    onError: (error: Error) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            variant: "destructive",
-            title: "Upload Error",
-            description: error.message,
-          },
-        }),
-      );
-    },
-  });
-
-  const createCommunityMutation = useMutation({
-    mutationFn: () =>
-      createCommunity({
-        name,
-        banner: banner as string | undefined,
-        bio: description,
-        image: image as string | undefined,
-      }),
-    onSuccess: () => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            title: "Success",
-            description: "Community Created",
-            variant: "default",
-          },
-        }),
-      );
-    },
-    onError: (error: Error) => {
-      document.dispatchEvent(
-        new CustomEvent("toast", {
-          detail: {
-            variant: "destructive",
-            title: "Error",
-            description: error.message,
-          },
-        }),
-      );
-    },
-  });
-
-  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBannerImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
-    if (file) profileUploadMutation.mutate(file);
-  };
-
-  const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) bannerUploadMutation.mutate(file);
+    if (file) {
+      const url = await uploadFile(file);
+      setBannerImage(url);
+    }
   };
 
   return (
@@ -159,7 +109,7 @@ export default function CreateCommunityForm() {
               type="file"
               accept="image/*"
               onChange={handleProfileImageChange}
-              disabled={profileUploadMutation.isPending}
+              disabled={isUploading}
             />
           </div>
           <div>
@@ -169,17 +119,15 @@ export default function CreateCommunityForm() {
               type="file"
               accept="image/*"
               onChange={handleBannerImageChange}
-              disabled={bannerUploadMutation.isPending}
+              disabled={isUploading}
             />
           </div>
           <Button
             type="button"
-            onClick={() => createCommunityMutation.mutate()}
-            disabled={createCommunityMutation.isPending}
+            onClick={() => createCommunity()}
+            disabled={isPending}
           >
-            {createCommunityMutation.isPending
-              ? "Creating..."
-              : "Create Community"}
+            {isPending ? "Creating..." : "Create Community"}
           </Button>
         </form>
 
@@ -201,7 +149,7 @@ export default function CreateCommunityForm() {
               )}
             </div>
             <div className="flex items-center space-x-4">
-              <div className="relative w-24 h-24 rounded-xl ml-2 overflow-hidden bg-gray-200 -mt-12 ring-background ring-offset-transparent ring-4">
+              <div className="relative w-24 h-24 rounded-lg ml-2 overflow-hidden bg-gray-200 -mt-12 ring-background ring-offset-transparent ring-4">
                 {image ? (
                   <Image
                     src={image}
